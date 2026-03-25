@@ -1,0 +1,132 @@
+{
+  "items": [
+    {
+      "id": "BL-001",
+      "title": "Supabase-Schema: Tenants, Profiles, Rollen",
+      "version": "MVP-1",
+      "feature": "FEAT-001",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-002",
+      "title": "Auth-Flow: Invite, Registrierung, Login, Set-Password",
+      "version": "MVP-1",
+      "feature": "FEAT-001",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-003",
+      "title": "RLS-Policies für Tenant-Isolation",
+      "version": "MVP-1",
+      "feature": "FEAT-001",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-004",
+      "title": "Admin: Tenant CRUD + Run-Management + Catalog-Import",
+      "version": "MVP-1",
+      "feature": "FEAT-002",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-005",
+      "title": "Tenant: Login + Dashboard mit Run-Übersicht",
+      "version": "MVP-1",
+      "feature": "FEAT-003",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-006",
+      "title": "Tenant: Run Workspace mit Block-Navigation",
+      "version": "MVP-1",
+      "feature": "FEAT-004",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-007",
+      "title": "Event-Sourcing: question_events, append-only, idempotent",
+      "version": "MVP-1",
+      "feature": "FEAT-005",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-008",
+      "title": "Evidence Upload: File + Text + Labels + Links",
+      "version": "MVP-1",
+      "feature": "FEAT-006",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-009",
+      "title": "Run Submission Checkpoint + Status-Management",
+      "version": "MVP-1",
+      "feature": "FEAT-007",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-010",
+      "title": "Admin: ZIP-Export (Data Contract v1.0)",
+      "version": "MVP-1",
+      "feature": "FEAT-008",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-011",
+      "title": "Docker Compose: Supabase Self-Hosted Stack",
+      "version": "MVP-1",
+      "feature": "FEAT-001",
+      "status": "done",
+      "created": "2026-02-23"
+    },
+    {
+      "id": "BL-012",
+      "title": "Dify.ai Integration und LLM-Rückfrage-Workflow",
+      "version": "V1.1",
+      "feature": "FEAT-009",
+      "status": "planned",
+      "created": "2026-03-24"
+    },
+    {
+      "id": "BL-013",
+      "title": "Ollama/Qwen 2.5 Setup auf Hetzner",
+      "version": "V1.1",
+      "feature": "FEAT-009",
+      "status": "planned",
+      "created": "2026-03-24"
+    },
+    {
+      "id": "BL-014",
+      "title": "Rückfrage-Prompts und Regeln konfigurieren",
+      "version": "V1.1",
+      "feature": "FEAT-009",
+      "status": "planned",
+      "created": "2026-03-24"
+    },
+    {
+      "id": "BL-015",
+      "title": "Antwort-Review Übersichtsseite mit Block-Fortschritt",
+      "version": "V1.1",
+      "feature": "FEAT-010",
+      "status": "planned",
+      "created": "2026-03-24"
+    },
+    {
+      "id": "BL-016",
+      "title": "PDF/TXT-Parsing für LLM-Dokumentenkontext",
+      "version": "V1.1",
+      "feature": "FEAT-009",
+      "status": "planned",
+      "created": "2026-03-24"
+    }
+  ]
+}

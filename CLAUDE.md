@@ -1,52 +1,64 @@
-# AI Coding Starter Kit
+# Strategaize Blueprint Plattform
 
-> A Next.js template with an AI-powered development workflow using specialized skills for Requirements, Architecture, Frontend, Backend, QA, and Deployment.
+## Purpose
+
+Dieses Projekt wird über das Strategaize Dev System gesteuert. Das Dev System Repository (`strategaize-dev-system`) enthält alle Rules, Skills und Workflow-Definitionen.
+
+> Self-hosted auf Hetzner. Kein Vercel, kein Supabase Cloud, keine externen Dienste.
+> Deployment via Coolify + Docker Compose.
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router), TypeScript
 - **Styling:** Tailwind CSS + shadcn/ui (copy-paste components)
-- **Backend:** Supabase (PostgreSQL + Auth + Storage) - optional
-- **Deployment:** Vercel
+- **Backend:** Supabase self-hosted (PostgreSQL + GoTrue Auth + Storage API) — required, nicht optional
+- **Deployment:** Self-hosted auf Hetzner VM via Coolify + Docker Compose — KEIN Vercel
 - **Validation:** Zod + react-hook-form
 - **State:** React useState / Context API
+- **AI-Services (nicht SoT, optional in MVP-1):** Dify (Orchestrierung), Ollama (lokales LLM), Whisper (Transkription, MVP-2)
+
+## Core Principles
+
+- **Source of Truth = Event-Log:** `question_events` ist die einzige Wahrheitsquelle für Antworten. "Aktuelle Antwort" wird serverseitig abgeleitet (jüngstes `answer_submitted` Event via SQL VIEW `v_current_answers`).
+- **Append-only (Event-Tabellen):** `question_events`, `evidence_items`, `evidence_links`, `run_submissions` sind INSERT-only. Kein UPDATE, kein DELETE, kein UPSERT.
+- **Status-managed:** `runs.status` wird nur serverseitig über definierte Endpoints geändert (collecting → submitted → locked).
+- **Invite-only Auth:** Kein offener Self-Signup. Zugang nur über Admin-Einladung.
+- **RLS mandatory:** PostgreSQL Row Level Security auf jeder Tabelle. Tenant-Isolation auf DB-Ebene.
+- **Self-hosted:** Alle Dienste laufen auf Hetzner-VMs. Keine Daten verlassen die Infrastruktur.
 
 ## Project Structure
 
 ```
 src/
-  app/              Pages (Next.js App Router)
+  app/              Pages (Next.js App Router) + API Routes
   components/
     ui/             shadcn/ui components (NEVER recreate these)
   hooks/            Custom React hooks
-  lib/              Utilities (supabase.ts, utils.ts)
-features/           Feature specifications (PROJ-X-name.md)
+  lib/              Utilities (supabase clients, api-utils, validations)
+sql/
+  schema.sql        Database tables + views
+  rls.sql           RLS policies + grants
+  functions.sql     SECURITY DEFINER functions
+features/           Feature specifications
   INDEX.md          Feature status overview
+slices/             Slice tracking
+  INDEX.md          Slice status overview
 docs/
+  STATE.md          Current project state
   PRD.md            Product Requirements Document
-  production/       Production guides (Sentry, security, performance)
+  ARCHITECTURE.md   Technical architecture
+  DATA_MODEL.md     Database schema & RLS policies
+  API.md            API endpoints specification
+  EXPORT.md         Export Data Contract v1.0
+  BACKEND.md        Backend-specific notes
+  DECISIONS.md      Key decisions log
+  KNOWN_ISSUES.md   Known problems
+  RELEASES.md       Release history
+  MIGRATIONS.md     Schema/structural migrations
+planning/
+  roadmap.json      Version roadmap
+  backlog.json      Work item backlog
 ```
-
-## Development Workflow
-
-1. `/requirements` - Create feature spec from idea
-2. `/architecture` - Design tech architecture (PM-friendly, no code)
-3. `/frontend` - Build UI components (shadcn/ui first!)
-4. `/backend` - Build APIs, database, RLS policies
-5. `/qa` - Test against acceptance criteria + security audit
-6. `/deploy` - Deploy to Vercel + production-ready checks
-
-## Feature Tracking
-
-All features tracked in `features/INDEX.md`. Every skill reads it at start and updates it when done. Feature specs live in `features/PROJ-X-name.md`.
-
-## Key Conventions
-
-- **Feature IDs:** PROJ-1, PROJ-2, etc. (sequential)
-- **Commits:** `feat(PROJ-X): description`, `fix(PROJ-X): description`
-- **Single Responsibility:** One feature per spec file
-- **shadcn/ui first:** NEVER create custom versions of installed shadcn components
-- **Human-in-the-loop:** All workflows have user approval checkpoints
 
 ## Build & Test Commands
 
@@ -57,10 +69,34 @@ npm run lint       # ESLint
 npm run start      # Production server
 ```
 
-## Product Context
+## Workflow
 
+Dieses Projekt folgt dem Strategaize Dev System Workflow:
+
+1. `/discovery` (wenn Idee noch grob)
+2. `/requirements`
+3. `/architecture`
+4. `/slice-planning`
+5. `/frontend` und/oder `/backend` (pro Slice)
+6. `/qa` (nach jedem Slice + Gesamt-QA)
+7. `/final-check`
+8. `/go-live`
+9. `/deploy`
+10. `/post-launch`
+
+## Project Records
+
+@docs/STATE.md
 @docs/PRD.md
-
-## Feature Overview
-
 @features/INDEX.md
+
+## Key Conventions
+
+- **Feature IDs:** FEAT-001, FEAT-002, etc. (neue Strategaize-IDs)
+- **Legacy Feature IDs:** PROJ-1 bis PROJ-8 (aus der lokalen Entwicklung, Referenz in features/)
+- **Slice IDs:** SLC-001, SLC-002, etc.
+- **Commits:** `feat(FEAT-XXX): description`, `fix(FEAT-XXX): description`
+- **shadcn/ui first:** NEVER create custom versions of installed shadcn components
+- **Single Responsibility:** One feature per spec file, one slice per implementation unit
+- **Append-only tables:** NEVER generate UPDATE or DELETE statements for tenant event tables
+- **Human-in-the-loop:** All workflows have user approval checkpoints
