@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { login } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,36 +19,21 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackError = searchParams.get("error");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(callbackError);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      const supabase = createClient();
-      const { data, error: authError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const formData = new FormData(e.currentTarget);
+      const result = await login(formData);
 
-      if (authError) {
-        setError(authError.message);
-        return;
+      if (result?.error) {
+        setError(result.error);
       }
-
-      if (!data.session) {
-        setError("Login fehlgeschlagen — keine Session erstellt");
-        return;
-      }
-
-      // Use window.location.href (Supabase auth best practice)
-      window.location.href = "/dashboard";
     } catch {
       setError("Ein unerwarteter Fehler ist aufgetreten");
     } finally {
@@ -76,9 +61,8 @@ export function LoginForm() {
               <Label htmlFor="email">E-Mail</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@unternehmen.de"
                 required
                 autoComplete="email"
@@ -88,9 +72,8 @@ export function LoginForm() {
               <Label htmlFor="password">Passwort</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Passwort"
                 required
                 autoComplete="current-password"
