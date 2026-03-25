@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  async rewrites() {
+    return [
+      {
+        source: "/supabase/:path*",
+        destination: "http://supabase-kong:8000/:path*",
+      },
+    ];
+  },
   async headers() {
     return [
       {
