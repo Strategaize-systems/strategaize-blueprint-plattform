@@ -1,46 +1,25 @@
 {
   "versions": [
     {
-      "version": "MVP-1",
-      "status": "done",
-      "label": "Kernplattform — Exit Ready Blueprint",
-      "description": "Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission, Export",
-      "features": [
-        "FEAT-001",
-        "FEAT-002",
-        "FEAT-003",
-        "FEAT-004",
-        "FEAT-005",
-        "FEAT-006",
-        "FEAT-007",
-        "FEAT-008"
-      ],
-      "created": "2026-02-23",
-      "completed": "2026-02-25"
+      "id": "mvp-1",
+      "name": "MVP-1",
+      "status": "released",
+      "summary": "Kernplattform — Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission, ZIP-Export",
+      "order": 1
     },
     {
-      "version": "V1.1",
+      "id": "v1-1",
+      "name": "V1.1",
       "status": "planned",
-      "label": "LLM-Integration",
-      "description": "LLM-gestützte Rückfragen via Dify + Ollama/Qwen, Antwort-Review Übersichtsseite",
-      "features": [
-        "FEAT-009",
-        "FEAT-010"
-      ],
-      "created": "2026-03-24"
+      "summary": "LLM-Integration — Rückfragen via Dify + Ollama/Qwen, Antwort-Review Übersichtsseite",
+      "order": 2
     },
     {
-      "version": "V2",
+      "id": "v2",
+      "name": "V2",
       "status": "planned",
-      "label": "Voice & Scoring",
-      "description": "Spracheingabe via Whisper, Audio-Wiedergabe, Multi-User Tenant, Scoring-Dashboard, Fragebogen-Editor",
-      "features": [
-        "FEAT-011",
-        "FEAT-012",
-        "FEAT-013",
-        "FEAT-014"
-      ],
-      "created": "2026-03-24"
+      "summary": "Voice & Scoring — Spracheingabe via Whisper, Audio-Wiedergabe, Multi-User Tenant, Scoring-Dashboard, Fragebogen-Editor",
+      "order": 3
     }
   ]
 }

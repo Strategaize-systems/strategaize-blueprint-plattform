@@ -3,130 +3,162 @@
     {
       "id": "BL-001",
       "title": "Supabase-Schema: Tenants, Profiles, Rollen",
-      "version": "MVP-1",
-      "feature": "FEAT-001",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Basis-Schema für Mandantenfähigkeit mit Tenants, Profiles und Rollenmodell",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-002",
       "title": "Auth-Flow: Invite, Registrierung, Login, Set-Password",
-      "version": "MVP-1",
-      "feature": "FEAT-001",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Invite-only Auth über GoTrue mit Passwort-Setzung nach Einladung",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-003",
       "title": "RLS-Policies für Tenant-Isolation",
-      "version": "MVP-1",
-      "feature": "FEAT-001",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Row Level Security auf allen Tabellen für strikte Mandantentrennung",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-004",
       "title": "Admin: Tenant CRUD + Run-Management + Catalog-Import",
-      "version": "MVP-1",
-      "feature": "FEAT-002",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Admin-Oberfläche für Tenant-Verwaltung, Run-Erstellung und Fragenkatalog-Import",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-005",
       "title": "Tenant: Login + Dashboard mit Run-Übersicht",
-      "version": "MVP-1",
-      "feature": "FEAT-003",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Tenant-Login und Dashboard mit Übersicht der zugewiesenen Runs",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-006",
       "title": "Tenant: Run Workspace mit Block-Navigation",
-      "version": "MVP-1",
-      "feature": "FEAT-004",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Arbeitsbereich für Tenants mit Block-basierter Navigation durch 9 Themenblöcke",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-007",
       "title": "Event-Sourcing: question_events, append-only, idempotent",
-      "version": "MVP-1",
-      "feature": "FEAT-005",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Append-only Event-Log als Source of Truth für alle Antworten mit Idempotenz",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-008",
       "title": "Evidence Upload: File + Text + Labels + Links",
-      "version": "MVP-1",
-      "feature": "FEAT-006",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Datei- und Text-Evidence mit Labels und Verlinkung zu Fragen",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-009",
       "title": "Run Submission Checkpoint + Status-Management",
-      "version": "MVP-1",
-      "feature": "FEAT-007",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Submission-Checkpoints mit versionierten Snapshots und Status-Transitions",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-010",
       "title": "Admin: ZIP-Export (Data Contract v1.0)",
-      "version": "MVP-1",
-      "feature": "FEAT-008",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "Strukturierter ZIP-Export aller Antworten und Evidence nach Data Contract v1.0",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-011",
       "title": "Docker Compose: Supabase Self-Hosted Stack",
-      "version": "MVP-1",
-      "feature": "FEAT-001",
+      "type": "feature",
+      "priority": "high",
       "status": "done",
-      "created": "2026-02-23"
+      "version": "MVP-1",
+      "description": "10-Service Docker Compose Stack für Self-Hosted Supabase auf Hetzner",
+      "createdAt": "2026-02-23"
     },
     {
       "id": "BL-012",
       "title": "Dify.ai Integration und LLM-Rückfrage-Workflow",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
       "version": "V1.1",
-      "feature": "FEAT-009",
-      "status": "planned",
-      "created": "2026-03-24"
+      "description": "Integration von Dify.ai für LLM-orchestrierte Rückfragen bei Antworten",
+      "createdAt": "2026-03-24"
     },
     {
       "id": "BL-013",
       "title": "Ollama/Qwen 2.5 Setup auf Hetzner",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
       "version": "V1.1",
-      "feature": "FEAT-009",
-      "status": "planned",
-      "created": "2026-03-24"
+      "description": "Lokales LLM-Setup mit Ollama und Qwen 2.5 auf Hetzner-Server",
+      "createdAt": "2026-03-24"
     },
     {
       "id": "BL-014",
       "title": "Rückfrage-Prompts und Regeln konfigurieren",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
       "version": "V1.1",
-      "feature": "FEAT-009",
-      "status": "planned",
-      "created": "2026-03-24"
+      "description": "Prompts und Regelwerke für kontextbezogene LLM-Rückfragen in Dify konfigurieren",
+      "createdAt": "2026-03-24"
     },
     {
       "id": "BL-015",
       "title": "Antwort-Review Übersichtsseite mit Block-Fortschritt",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
       "version": "V1.1",
-      "feature": "FEAT-010",
-      "status": "planned",
-      "created": "2026-03-24"
+      "description": "Übersichtsseite für Antwort-Review mit Fortschrittsanzeige pro Block",
+      "createdAt": "2026-03-24"
     },
     {
       "id": "BL-016",
       "title": "PDF/TXT-Parsing für LLM-Dokumentenkontext",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
       "version": "V1.1",
-      "feature": "FEAT-009",
-      "status": "planned",
-      "created": "2026-03-24"
+      "description": "Parsing von hochgeladenen PDF- und TXT-Dateien als Kontext für LLM-Rückfragen",
+      "createdAt": "2026-03-24"
     }
   ]
 }
