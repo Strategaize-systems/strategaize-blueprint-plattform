@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { logout } from "@/app/login/actions";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { Button } from "@/components/ui/button";
@@ -54,9 +54,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
   }, []);
 
   async function handleLogout() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    await logout();
   }
 
   return (

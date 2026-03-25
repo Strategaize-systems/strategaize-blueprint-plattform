@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { logout } from "@/app/login/actions";
 
 const NAV_ITEMS = [
   { href: "/admin/tenants", label: "Tenants" },
@@ -15,9 +15,7 @@ export function AdminNav({ email }: { email?: string }) {
   const pathname = usePathname();
 
   async function handleLogout() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    await logout();
   }
 
   return (

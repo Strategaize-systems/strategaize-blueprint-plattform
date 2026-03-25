@@ -1,0 +1,33 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+
+export async function setPassword(formData: FormData) {
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!password || password.length < 8) {
+    return { error: "Passwort muss mindestens 8 Zeichen lang sein" };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Passwörter stimmen nicht überein" };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      console.error("[set-password] Auth error:", error.message);
+      return { error: error.message };
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[set-password] Unexpected error:", msg);
+    return { error: `Verbindungsfehler: ${msg}` };
+  }
+
+  redirect("/dashboard");
+}
