@@ -68,17 +68,21 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   GRANT ALL ON SCHEMA public TO authenticated;
   GRANT ALL ON SCHEMA public TO service_role;
 
+  -- Service-Rollen brauchen CREATE ON DATABASE fuer CREATE SCHEMA IF NOT EXISTS
+  GRANT CREATE ON DATABASE postgres TO supabase_auth_admin;
+  GRANT CREATE ON DATABASE postgres TO supabase_storage_admin;
+
   -- Auth-Schema (GoTrue)
   CREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION supabase_auth_admin;
-  GRANT USAGE ON SCHEMA auth TO supabase_auth_admin;
+  GRANT ALL ON SCHEMA auth TO supabase_auth_admin;
 
   -- Storage-Schema
   CREATE SCHEMA IF NOT EXISTS storage AUTHORIZATION supabase_storage_admin;
-  GRANT USAGE ON SCHEMA storage TO supabase_storage_admin;
+  GRANT ALL ON SCHEMA storage TO supabase_storage_admin;
 
-  -- Realtime-Schema
-  CREATE SCHEMA IF NOT EXISTS _realtime;
-  GRANT USAGE ON SCHEMA _realtime TO supabase_admin;
+  -- Realtime-Schema (supabase_admin braucht ALL fuer Ecto-Migrations)
+  CREATE SCHEMA IF NOT EXISTS _realtime AUTHORIZATION supabase_admin;
+  GRANT ALL ON SCHEMA _realtime TO supabase_admin;
 
   -- Extensions
   CREATE SCHEMA IF NOT EXISTS extensions;
