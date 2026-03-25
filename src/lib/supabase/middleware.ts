@@ -35,10 +35,9 @@ export async function updateSession(request: NextRequest) {
   const publicPaths = ["/login", "/auth/callback", "/auth/set-password"];
   const isPublicPath = publicPaths.some((p) => pathname.startsWith(p));
   const isApiHealth = pathname === "/api/health";
-  const isApiDebug = pathname.startsWith("/api/debug");
 
   // Not logged in → redirect to login (unless on public path)
-  if (!user && !isPublicPath && !isApiHealth && !isApiDebug) {
+  if (!user && !isPublicPath && !isApiHealth) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
