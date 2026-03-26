@@ -10,6 +10,15 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+  			// StrategAIze Brand Colors (from Style Guide)
+  			brand: {
+  				'primary-dark': '#120774',
+  				'primary': '#4454b8',
+  				'success-dark': '#00a84f',
+  				'success': '#4dcb8b',
+  				'warning-dark': '#f2b705',
+  				'warning': '#ffd54f',
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
