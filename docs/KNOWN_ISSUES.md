@@ -35,12 +35,12 @@
 - Next Action: Keine — behoben am 2026-03-26 (SLC-002)
 
 ### ISSUE-004 — Kein Error-Tracking in Production
-- Status: open
+- Status: deferred
 - Severity: High
 - Area: Monitoring
-- Summary: docs/production/error-tracking.md beschreibt Sentry-Integration — nichts davon existiert. Kein @sentry/nextjs, keine Config, kein DSN.
-- Impact: Produktionsfehler bleiben unbemerkt, User-Probleme nicht sichtbar
-- Next Action: Sentry oder alternatives Error-Tracking aufsetzen
+- Summary: Sentry-Integration auf V1.1 verschoben (BL-017). Erst relevant wenn erste Kunden auf der Plattform sind. Sentry.io Free Tier geplant (5k Errors/Monat, externer Dienst — akzeptabel für Monitoring).
+- Impact: Produktionsfehler bleiben vorerst nur in Server-Logs sichtbar
+- Next Action: BL-017 in V1.1 implementieren
 
 ### ISSUE-005 — ARCHITECTURE.md funktional leer und widersprüchlich
 - Status: resolved
@@ -94,12 +94,12 @@
 - Next Action: Keine — behoben am 2026-03-26 (SLC-004)
 
 ### ISSUE-011 — N+1 Queries in Admin-List-Endpoints
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Performance
-- Summary: /api/admin/runs macht pro Run 2 extra Queries (answered count + evidence count). /api/admin/tenants macht pro Tenant 2 Queries (owner email + run count). Bei 50 Tenants = 100 extra Queries.
-- Impact: Performance-Degradation bei wachsender Datenmenge
-- Next Action: DB-Views oder Joins statt N+1
+- Summary: Admin-Runs und Admin-Tenants GET-Endpoints auf Batch-Queries umgestellt. Statt 2N+1 Queries jetzt 3 Queries (Basis + answered counts + evidence/run counts). Map-basiertes Enrichment.
+- Impact: Konstante Query-Anzahl unabhängig von Datenmenge
+- Next Action: Keine — behoben am 2026-03-26 (SLC-005)
 
 ### ISSUE-012 — RELEASES.md leer trotz Live-Deployment
 - Status: resolved
@@ -128,18 +128,18 @@
 ## Low
 
 ### ISSUE-015 — Evidence Upload Partial Failure hinterlässt verwaiste Records
-- Status: open
+- Status: resolved
 - Severity: Low
 - Area: Backend
-- Summary: Bei Evidence-File-Upload wird zuerst DB-Record erstellt, dann Storage-Upload. Bei Storage-Fehler bleibt evidence_items-Record ohne file_path.
-- Next Action: Cleanup-Logic oder Transaktionshandling ergänzen
+- Summary: Upload-Flow umgebaut auf Upload-First: Storage-Upload passiert VOR dem DB-INSERT. Bei Upload-Fehler wird kein DB-Record erstellt. Bei DB-Insert-Fehler wird die hochgeladene Datei aus Storage gelöscht. Keine verwaisten Records mehr möglich.
+- Next Action: Keine — behoben am 2026-03-26 (SLC-005)
 
 ### ISSUE-016 — console.error Debug-Leftovers in Server Actions
-- Status: open
+- Status: deferred
 - Severity: Low
 - Area: Code Quality
-- Summary: login/actions.ts und auth/set-password/actions.ts enthalten console.error Statements ohne strukturierte Logging-Strategie.
-- Next Action: Evaluieren ob console.error für Production akzeptabel
+- Summary: console.error bleibt vorerst bestehen. Wird in V1.1 durch Sentry.captureException ersetzt (BL-018, abhängig von BL-017).
+- Next Action: BL-018 in V1.1 implementieren
 
 ### ISSUE-017 — run_submit validiert Antwort-Vollständigkeit nicht
 - Status: open

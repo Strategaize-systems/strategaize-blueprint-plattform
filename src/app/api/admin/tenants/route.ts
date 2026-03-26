@@ -18,28 +18,42 @@ export async function GET() {
     return errorResponse("INTERNAL_ERROR", error.message, 500);
   }
 
-  // Enrich with owner email and run count
-  const enriched = await Promise.all(
-    (tenants ?? []).map(async (t) => {
-      const { data: owner } = await adminClient!
+  // Batch-fetch owner emails and run counts (avoids N+1 queries)
+  const tenantIds = (tenants ?? []).map((t) => t.id);
+
+  // Single query: all tenant_owner profiles
+  const { data: owners } = tenantIds.length > 0
+    ? await adminClient!
         .from("profiles")
-        .select("email")
-        .eq("tenant_id", t.id)
+        .select("tenant_id, email")
+        .in("tenant_id", tenantIds)
         .eq("role", "tenant_owner")
-        .single();
+    : { data: [] };
 
-      const { count } = await adminClient!
+  const ownerByTenant = new Map<string, string>();
+  for (const o of owners ?? []) {
+    ownerByTenant.set(o.tenant_id, o.email);
+  }
+
+  // Single query: all runs for these tenants
+  const { data: runRows } = tenantIds.length > 0
+    ? await adminClient!
         .from("runs")
-        .select("id", { count: "exact", head: true })
-        .eq("tenant_id", t.id);
+        .select("tenant_id")
+        .in("tenant_id", tenantIds)
+    : { data: [] };
 
-      return {
-        ...t,
-        owner_email: owner?.email ?? null,
-        run_count: count ?? 0,
-      };
-    })
-  );
+  const runsByTenant = new Map<string, number>();
+  for (const r of runRows ?? []) {
+    runsByTenant.set(r.tenant_id, (runsByTenant.get(r.tenant_id) ?? 0) + 1);
+  }
+
+  // Enrich tenants with pre-fetched data
+  const enriched = (tenants ?? []).map((t) => ({
+    ...t,
+    owner_email: ownerByTenant.get(t.id) ?? null,
+    run_count: runsByTenant.get(t.id) ?? 0,
+  }));
 
   return NextResponse.json({ tenants: enriched });
 }

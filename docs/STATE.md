@@ -9,13 +9,13 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: post-launch
-- Current Focus: Fix-Slices nach Post-Launch QA — SLC-001 bis SLC-004 abgeschlossen, SLC-005 als nächstes
-- Current Phase: Post-Launch Stabilisierung (MVP-1)
+- High-Level State: stable
+- Current Focus: Alle 5 Fix-Slices abgeschlossen. MVP-1 stabilisiert. V1.1-Planung als nächstes.
+- Current Phase: Stable (MVP-1)
 
 ## Immediate Next Steps
-1. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
-2. SLC-004 SQL-Änderungen auf Production-DB anwenden (Trigger, tenant_id, FK)
+1. SLC-004 + SLC-005 SQL-Änderungen auf Production-DB deployen (App Re-Deployment via Coolify)
+2. V1.1 Planung starten (LLM-Integration, Sentry, Review-Übersicht)
 3. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
 4. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
 

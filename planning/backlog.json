@@ -159,6 +159,26 @@
       "version": "V1.1",
       "description": "Parsing von hochgeladenen PDF- und TXT-Dateien als Kontext für LLM-Rückfragen",
       "createdAt": "2026-03-24"
+    },
+    {
+      "id": "BL-017",
+      "title": "Sentry Error-Tracking Integration",
+      "type": "improvement",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Sentry.io (Free Tier) Integration für automatisches Error-Tracking in Production. @sentry/nextjs, DSN als Env-Variable, Source-Maps. Erst relevant wenn erste Kunden auf der Plattform sind.",
+      "createdAt": "2026-03-26"
+    },
+    {
+      "id": "BL-018",
+      "title": "Strukturiertes Logging (console.error → Sentry.captureException)",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "console.error in Server Actions durch Sentry.captureException ersetzen. Fallback auf console.error wenn kein SENTRY_DSN konfiguriert. Abhängig von BL-017.",
+      "createdAt": "2026-03-26"
     }
   ]
 }

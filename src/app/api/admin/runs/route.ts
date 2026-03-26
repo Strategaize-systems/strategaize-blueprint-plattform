@@ -35,41 +35,57 @@ export async function GET(request: Request) {
     return errorResponse("INTERNAL_ERROR", error.message, 500);
   }
 
-  // Enrich with answered_count and evidence_count
-  const enriched = await Promise.all(
-    (runs ?? []).map(async (r) => {
-      const tenantData = r.tenants as unknown as { name: string };
-      const catalogData = r.question_catalog_snapshots as unknown as {
-        version: string;
-        question_count: number;
-      };
+  // Batch-fetch answered counts and evidence counts (avoids N+1 queries)
+  const runIds = (runs ?? []).map((r) => r.id);
 
-      // Count distinct questions with at least one answer_submitted event
-      const { count: answeredCount } = await adminClient!
+  // Single query: answered count per run
+  const { data: answerCounts } = runIds.length > 0
+    ? await adminClient!
         .from("v_current_answers")
-        .select("question_id", { count: "exact", head: true })
-        .eq("run_id", r.id);
+        .select("run_id")
+        .in("run_id", runIds)
+    : { data: [] };
 
-      const { count: evidenceCount } = await adminClient!
+  const answeredByRun = new Map<string, number>();
+  for (const row of answerCounts ?? []) {
+    answeredByRun.set(row.run_id, (answeredByRun.get(row.run_id) ?? 0) + 1);
+  }
+
+  // Single query: evidence count per run
+  const { data: evidenceCounts } = runIds.length > 0
+    ? await adminClient!
         .from("evidence_items")
-        .select("id", { count: "exact", head: true })
-        .eq("run_id", r.id);
+        .select("run_id")
+        .in("run_id", runIds)
+    : { data: [] };
 
-      return {
-        id: r.id,
-        tenant_id: r.tenant_id,
-        tenant_name: tenantData?.name ?? null,
-        title: r.title,
-        status: r.status,
-        catalog_version: catalogData?.version ?? null,
-        question_count: catalogData?.question_count ?? 0,
-        answered_count: answeredCount ?? 0,
-        evidence_count: evidenceCount ?? 0,
-        created_at: r.created_at,
-        submitted_at: r.submitted_at,
-      };
-    })
-  );
+  const evidenceByRun = new Map<string, number>();
+  for (const row of evidenceCounts ?? []) {
+    evidenceByRun.set(row.run_id, (evidenceByRun.get(row.run_id) ?? 0) + 1);
+  }
+
+  // Enrich runs with pre-fetched counts
+  const enriched = (runs ?? []).map((r) => {
+    const tenantData = r.tenants as unknown as { name: string };
+    const catalogData = r.question_catalog_snapshots as unknown as {
+      version: string;
+      question_count: number;
+    };
+
+    return {
+      id: r.id,
+      tenant_id: r.tenant_id,
+      tenant_name: tenantData?.name ?? null,
+      title: r.title,
+      status: r.status,
+      catalog_version: catalogData?.version ?? null,
+      question_count: catalogData?.question_count ?? 0,
+      answered_count: answeredByRun.get(r.id) ?? 0,
+      evidence_count: evidenceByRun.get(r.id) ?? 0,
+      created_at: r.created_at,
+      submitted_at: r.submitted_at,
+    };
+  });
 
   return NextResponse.json({ runs: enriched });
 }

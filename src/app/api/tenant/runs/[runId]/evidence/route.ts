@@ -172,30 +172,10 @@ export async function POST(
     const buffer = Buffer.from(await file.arrayBuffer());
     const sha256 = createHash("sha256").update(buffer).digest("hex");
 
-    // INSERT evidence_item first to get the ID for the storage path
-    const { data: item, error: insertError } = await supabase
-      .from("evidence_items")
-      .insert({
-        tenant_id: profile!.tenant_id,
-        run_id: runId,
-        item_type: "file",
-        label,
-        file_name: safeName,
-        file_size_bytes: file.size,
-        file_mime_type: file.type,
-        sha256,
-        created_by: user!.id,
-      })
-      .select("id, item_type, label, file_name, file_size_bytes, file_mime_type, sha256, created_at")
-      .single();
-
-    if (insertError) {
-      return errorResponse("INTERNAL_ERROR", insertError.message, 500);
-    }
-
-    // Upload to Supabase Storage using admin client (bypasses storage RLS)
+    // Generate item ID upfront so we can use it in the storage path
+    const itemId = crypto.randomUUID();
     const adminClient = createAdminClient();
-    const storagePath = `${profile!.tenant_id}/${runId}/${item.id}/${safeName}`;
+    const storagePath = `${profile!.tenant_id}/${runId}/${itemId}/${safeName}`;
 
     // Ensure bucket exists
     const { error: bucketError } = await adminClient.storage.createBucket("evidence", {
@@ -206,6 +186,7 @@ export async function POST(
       // Non-critical: bucket might already exist
     }
 
+    // Upload FIRST — if this fails, no orphaned DB record is created
     const { error: uploadError } = await adminClient.storage
       .from("evidence")
       .upload(storagePath, buffer, {
@@ -214,8 +195,6 @@ export async function POST(
       });
 
     if (uploadError) {
-      // Cleanup: we already inserted the evidence_item, update file_path to null
-      // But since evidence_items is append-only, we leave it and report error
       return errorResponse(
         "INTERNAL_ERROR",
         `Datei-Upload fehlgeschlagen: ${uploadError.message}`,
@@ -223,12 +202,30 @@ export async function POST(
       );
     }
 
-    // Update file_path on the evidence_item
-    // NOTE: This is an admin-level update on the file_path field only
-    await adminClient
+    // INSERT evidence_item with file_path included (no UPDATE needed — append-only safe)
+    const { data: item, error: insertError } = await supabase
       .from("evidence_items")
-      .update({ file_path: `evidence/${storagePath}` })
-      .eq("id", item.id);
+      .insert({
+        id: itemId,
+        tenant_id: profile!.tenant_id,
+        run_id: runId,
+        item_type: "file",
+        label,
+        file_name: safeName,
+        file_path: `evidence/${storagePath}`,
+        file_size_bytes: file.size,
+        file_mime_type: file.type,
+        sha256,
+        created_by: user!.id,
+      })
+      .select("id, item_type, label, file_name, file_path, file_size_bytes, file_mime_type, sha256, created_at")
+      .single();
+
+    if (insertError) {
+      // Storage upload succeeded but DB insert failed — cleanup storage
+      await adminClient.storage.from("evidence").remove([storagePath]);
+      return errorResponse("INTERNAL_ERROR", insertError.message, 500);
+    }
 
     // If question_id provided, create evidence_link + event (default relation: supports)
     const validRelations = ["proof", "supports", "example", "supersedes"];
