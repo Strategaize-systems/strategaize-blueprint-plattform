@@ -109,8 +109,11 @@ services:
       GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_FROM:-noreply@example.com}
       GOTRUE_SMTP_SENDER_NAME: StrategAIze
       GOTRUE_MAILER_SUBJECTS_INVITE: "Ihre Einladung zur StrategAIze Plattform"
+      GOTRUE_MAILER_TEMPLATES_INVITE: "file:///templates/invite.html"
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
       GOTRUE_LOG_LEVEL: warn
+    volumes:
+      - ./config/auth-templates:/templates:ro
     depends_on:
       supabase-db:
         condition: service_healthy
