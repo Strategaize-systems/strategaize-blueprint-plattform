@@ -100,7 +100,8 @@ services:
       GOTRUE_DISABLE_SIGNUP: "true"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
       # SMTP für Invite-Emails
-      API_EXTERNAL_URL: ${NEXT_PUBLIC_APP_URL}
+      API_EXTERNAL_URL: ${NEXT_PUBLIC_APP_URL}/auth/v1
+      GOTRUE_API_EXTERNAL_URL: ${NEXT_PUBLIC_APP_URL}/auth/v1
       GOTRUE_SMTP_HOST: ${SMTP_HOST:-smtp.example.com}
       GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
       GOTRUE_SMTP_USER: ${SMTP_USER:-unused}
