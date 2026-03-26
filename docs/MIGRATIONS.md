@@ -20,3 +20,11 @@
 - Affected Areas: evidence_links (Cross-Tenant-Schutz), profiles (Role-Validation bei Invite)
 - Reason: ISSUE-007 (Cross-Tenant evidence linking) und ISSUE-009 (silent role default)
 - Rollback Notes: DROP POLICY tenant_insert_evidence_links + CREATE alte Version ohne link_id Check. handle_new_user: IF-Block zurück auf v_role := 'tenant_owner'
+
+### MIG-004 — DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
+- Date: 2026-03-26
+- Scope: prevent_modify() Trigger auf 5 append-only Tabellen, evidence_links.tenant_id Spalte (NOT NULL, FK RESTRICT), questions FK CASCADE → RESTRICT, evidence_links RLS-Policies vereinfacht
+- Affected Areas: question_events, evidence_items, evidence_links, run_submissions, admin_events (Trigger), evidence_links (Schema + RLS), questions (FK), API-Route evidence/link (tenant_id INSERT)
+- Reason: ISSUE-010 (append-only nur RLS), ISSUE-014 (evidence_links ohne tenant_id), ISSUE-018 (CASCADE statt RESTRICT)
+- Risk: evidence_links.tenant_id ist NOT NULL — bestehende Rows ohne tenant_id müssen backfilled werden. Trigger verhindert UPDATE auf append-only Tabellen — auch für service_role.
+- Rollback Notes: DROP TRIGGER enforce_append_only auf allen 5 Tabellen. ALTER TABLE evidence_links DROP COLUMN tenant_id. ALTER TABLE questions FK zurück auf CASCADE.

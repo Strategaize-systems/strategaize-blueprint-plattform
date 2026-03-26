@@ -86,12 +86,12 @@
 - Next Action: Keine — behoben am 2026-03-26 (SLC-002)
 
 ### ISSUE-010 — Append-only Enforcement nur über RLS
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Database
-- Summary: question_events, evidence_items, evidence_links, run_submissions, admin_events sind append-only designt. Enforcement nur über fehlende UPDATE/DELETE RLS-Policies, kein DB-Trigger.
-- Impact: Bei RLS-Deaktivierung oder BYPASSRLS-Bug können Events geändert werden
-- Next Action: DB-Trigger BEFORE UPDATE OR DELETE auf Event-Tabellen
+- Summary: prevent_modify() Trigger-Function erstellt. BEFORE UPDATE OR DELETE Trigger auf allen 5 append-only Tabellen. DB-Level Enforcement zusätzlich zu RLS.
+- Impact: Events können auch bei BYPASSRLS nicht mehr modifiziert werden
+- Next Action: Keine — behoben am 2026-03-26 (SLC-004)
 
 ### ISSUE-011 — N+1 Queries in Admin-List-Endpoints
 - Status: open
@@ -116,12 +116,12 @@
 - Next Action: Keine — behoben am 2026-03-26 (SLC-003)
 
 ### ISSUE-014 — evidence_links hat keine tenant_id-Spalte
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Database / Security
-- Summary: evidence_links hat keine eigene tenant_id-Spalte. Tenant-Isolation nur über Subquery auf evidence_items. Fragiles indirektes Isolation-Pattern.
-- Impact: Bei Bugs in evidence_items könnte evidence_links Isolation brechen
-- Next Action: tenant_id-Spalte zu evidence_links hinzufügen (Breaking Change, nach ISSUE-001 Fix)
+- Summary: tenant_id-Spalte zu evidence_links hinzugefügt (NOT NULL, FK tenants RESTRICT). RLS-Policies vereinfacht auf direkte tenant_id-Prüfung. Alle 3 INSERT-Stellen in API-Routes aktualisiert.
+- Impact: Direkte Tenant-Isolation statt fragiler Subquery
+- Next Action: Keine — behoben am 2026-03-26 (SLC-004). Backfill auf Production nötig.
 
 ---
 
@@ -149,9 +149,9 @@
 - Next Action: Optional Pflichtfragen-Check ergänzen
 
 ### ISSUE-018 — questions FK nutzt CASCADE statt RESTRICT
-- Status: open
+- Status: resolved
 - Severity: Low
 - Area: Database
-- Summary: questions zu catalog_snapshots FK nutzt CASCADE. Löschen eines Snapshots kaskadiert auf alle Questions und indirekt referenzierte Events.
-- Impact: Widerspricht Immutabilitäts-Prinzip
-- Next Action: FK auf RESTRICT ändern
+- Summary: FK von questions.catalog_snapshot_id auf ON DELETE RESTRICT geändert. Catalog-Snapshots können nicht mehr versehentlich gelöscht werden.
+- Impact: Immutabilitäts-Prinzip durchgesetzt
+- Next Action: Keine — behoben am 2026-03-26 (SLC-004). FK-Änderung auf Production nötig.

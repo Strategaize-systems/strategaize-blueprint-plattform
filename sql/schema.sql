@@ -62,7 +62,7 @@ COMMENT ON TABLE question_catalog_snapshots IS 'Versionierte Snapshots des Exit 
 -- ============================================================
 CREATE TABLE IF NOT EXISTS questions (
   id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  catalog_snapshot_id uuid        NOT NULL REFERENCES question_catalog_snapshots ON DELETE CASCADE,
+  catalog_snapshot_id uuid        NOT NULL REFERENCES question_catalog_snapshots ON DELETE RESTRICT,
   frage_id            text        NOT NULL,  -- Stabile ID aus Blueprint Master: F-BP-001 bis F-BP-091
   block               text        NOT NULL CHECK (block IN ('A','B','C','D','E','F','G','H','I')),
   ebene               text        NOT NULL CHECK (ebene IN ('Kern','Workspace')),
@@ -172,6 +172,7 @@ COMMENT ON TABLE evidence_items IS 'Append-only. Kein UPDATE/DELETE für Tenants
 CREATE TABLE IF NOT EXISTS evidence_links (
   id                uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   evidence_item_id  uuid        NOT NULL REFERENCES evidence_items ON DELETE RESTRICT,
+  tenant_id         uuid        NOT NULL REFERENCES tenants ON DELETE RESTRICT,
   link_type         text        NOT NULL CHECK (link_type IN ('question','run')),
   link_id           uuid        NOT NULL,  -- question_id oder run_id
   relation          text        NOT NULL CHECK (relation IN ('proof','supports','example','supersedes')),
@@ -181,6 +182,7 @@ CREATE TABLE IF NOT EXISTS evidence_links (
 
 CREATE INDEX IF NOT EXISTS idx_evidence_links_item ON evidence_links (evidence_item_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_links_link ON evidence_links (link_type, link_id);
+CREATE INDEX IF NOT EXISTS idx_evidence_links_tenant ON evidence_links (tenant_id);
 
 COMMENT ON TABLE evidence_links IS 'Append-only. Verknüpft evidence_items mit Fragen oder dem Run.';
 

@@ -76,6 +76,7 @@ export async function POST(
     .from("evidence_links")
     .insert({
       evidence_item_id: evidenceId,
+      tenant_id: profile!.tenant_id,
       link_type,
       link_id,
       relation,

@@ -222,10 +222,7 @@ CREATE POLICY "tenant_select_own_evidence_links"
   TO authenticated
   USING (
     auth.user_role() IN ('tenant_owner','tenant_member')
-    AND evidence_item_id IN (
-      SELECT id FROM evidence_items
-      WHERE tenant_id = auth.user_tenant_id()
-    )
+    AND tenant_id = auth.user_tenant_id()
   );
 
 CREATE POLICY "tenant_insert_evidence_links"
@@ -233,6 +230,7 @@ CREATE POLICY "tenant_insert_evidence_links"
   TO authenticated
   WITH CHECK (
     auth.user_role() IN ('tenant_owner','tenant_member')
+    AND tenant_id = auth.user_tenant_id()
     AND evidence_item_id IN (
       SELECT ei.id FROM evidence_items ei
       JOIN runs r ON r.id = ei.run_id

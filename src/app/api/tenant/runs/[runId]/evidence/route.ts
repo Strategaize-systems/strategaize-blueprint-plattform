@@ -85,6 +85,7 @@ export async function POST(
     if (question_id) {
       await supabase.from("evidence_links").insert({
         evidence_item_id: item.id,
+        tenant_id: profile!.tenant_id,
         link_type: "question",
         link_id: question_id,
         relation: noteRelation ?? "supports",
@@ -236,6 +237,7 @@ export async function POST(
     if (questionId) {
       await supabase.from("evidence_links").insert({
         evidence_item_id: item.id,
+        tenant_id: profile!.tenant_id,
         link_type: "question",
         link_id: questionId,
         relation: effectiveRelation,

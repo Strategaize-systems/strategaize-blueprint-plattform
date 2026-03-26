@@ -271,3 +271,35 @@ $$;
 
 COMMENT ON FUNCTION log_admin_event(text, uuid, uuid, jsonb) IS
   'SECURITY DEFINER. Erstellt Admin-Audit-Events. Aufgerufen aus Next.js API Routes via service_role.';
+
+-- ============================================================
+-- TRIGGER FUNCTION: prevent_modify()
+-- Verhindert UPDATE und DELETE auf append-only Tabellen auf DB-Ebene.
+-- RLS allein reicht nicht — BYPASSRLS oder versehentliche Policy-Änderungen
+-- könnten Events modifizierbar machen. Dieser Trigger ist die letzte Verteidigung.
+-- ============================================================
+CREATE OR REPLACE FUNCTION prevent_modify()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RAISE EXCEPTION 'append-only table: % does not allow % operations',
+    TG_TABLE_NAME, TG_OP
+    USING ERRCODE = 'P0403';
+END;
+$$;
+
+COMMENT ON FUNCTION prevent_modify() IS
+  'Append-only enforcement trigger. Prevents UPDATE and DELETE on event tables.';
+
+-- Apply to all append-only tables
+CREATE TRIGGER enforce_append_only BEFORE UPDATE OR DELETE
+  ON question_events FOR EACH ROW EXECUTE FUNCTION prevent_modify();
+CREATE TRIGGER enforce_append_only BEFORE UPDATE OR DELETE
+  ON evidence_items FOR EACH ROW EXECUTE FUNCTION prevent_modify();
+CREATE TRIGGER enforce_append_only BEFORE UPDATE OR DELETE
+  ON evidence_links FOR EACH ROW EXECUTE FUNCTION prevent_modify();
+CREATE TRIGGER enforce_append_only BEFORE UPDATE OR DELETE
+  ON run_submissions FOR EACH ROW EXECUTE FUNCTION prevent_modify();
+CREATE TRIGGER enforce_append_only BEFORE UPDATE OR DELETE
+  ON admin_events FOR EACH ROW EXECUTE FUNCTION prevent_modify();

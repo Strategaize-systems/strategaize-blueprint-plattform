@@ -10,12 +10,12 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: post-launch
-- Current Focus: Fix-Slices nach Post-Launch QA — SLC-001 bis SLC-003 abgeschlossen, SLC-004 als nächstes
+- Current Focus: Fix-Slices nach Post-Launch QA — SLC-001 bis SLC-004 abgeschlossen, SLC-005 als nächstes
 - Current Phase: Post-Launch Stabilisierung (MVP-1)
 
 ## Immediate Next Steps
-1. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
-2. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
+1. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
+2. SLC-004 SQL-Änderungen auf Production-DB anwenden (Trigger, tenant_id, FK)
 3. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
 4. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
 
