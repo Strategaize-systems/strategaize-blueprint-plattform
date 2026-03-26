@@ -31,7 +31,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-008 | [Admin Layout: Sidebar](SLC-008-admin-layout.md) | BL-020 | done | High | 2026-03-26 |
 | SLC-009 | [Admin Pages: Cards + Tables](SLC-009-admin-pages.md) | BL-020 | done | High | 2026-03-26 |
 | SLC-010 | [Tenant Pages: Dashboard + Workspace](SLC-010-tenant-pages.md) | BL-020 | done | High | 2026-03-26 |
-| SLC-011 | [Auth Pages + Shared Components](SLC-011-auth-shared.md) | BL-020 | planned | Medium | 2026-03-26 |
+| SLC-011 | [Auth Pages + Shared Components](SLC-011-auth-shared.md) | BL-020 | done | Medium | 2026-03-26 |
 
 ## Execution Order
 
