@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AdminNav } from "@/components/admin-nav";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -129,10 +128,8 @@ export function TenantsClient({ email }: { email: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav email={email} />
-
-      <main className="mx-auto max-w-6xl px-4 py-8">
+    <div>
+      <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Tenant-Verwaltung</h2>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -267,7 +264,7 @@ export function TenantsClient({ email }: { email: string }) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </main>
+      </div>
     </div>
   );
 }

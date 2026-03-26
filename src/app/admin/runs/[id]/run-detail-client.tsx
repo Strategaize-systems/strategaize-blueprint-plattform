@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin-nav";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { Button } from "@/components/ui/button";
@@ -135,26 +134,20 @@ export function RunDetailClient({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <AdminNav email={email} />
-        <main className="mx-auto max-w-6xl px-4 py-8">
-          <Skeleton className="mb-4 h-8 w-64" />
-          <Skeleton className="h-96 w-full" />
-        </main>
+      <div>
+        <Skeleton className="mb-4 h-8 w-64" />
+        <Skeleton className="h-96 w-full" />
       </div>
     );
   }
 
   if (!run) {
     return (
-      <div className="min-h-screen bg-background">
-        <AdminNav email={email} />
-        <main className="mx-auto max-w-6xl px-4 py-8">
-          <p className="text-muted-foreground">Run nicht gefunden.</p>
-          <Link href="/admin/runs" className="text-sm underline mt-2 inline-block">
-            Zurück zur Übersicht
-          </Link>
-        </main>
+      <div>
+        <p className="text-muted-foreground">Run nicht gefunden.</p>
+        <Link href="/admin/runs" className="text-sm underline mt-2 inline-block">
+          Zurück zur Übersicht
+        </Link>
       </div>
     );
   }
@@ -171,10 +164,8 @@ export function RunDetailClient({
   const activeQ = run.questions.find((q) => q.id === activeQuestion);
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav email={email} />
-
-      <main className="mx-auto max-w-6xl px-4 py-8">
+    <div>
+      <div>
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -392,7 +383,7 @@ export function RunDetailClient({
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

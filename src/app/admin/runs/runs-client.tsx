@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AdminNav } from "@/components/admin-nav";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { Button } from "@/components/ui/button";
@@ -140,10 +139,8 @@ export function RunsClient({ email }: { email: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav email={email} />
-
-      <main className="mx-auto max-w-6xl px-4 py-8">
+    <div>
+      <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Alle Runs</h2>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -274,7 +271,7 @@ export function RunsClient({ email }: { email: string }) {
             ))}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }
