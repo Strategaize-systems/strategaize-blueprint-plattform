@@ -179,6 +179,16 @@
       "version": "V1.1",
       "description": "console.error in Server Actions durch Sentry.captureException ersetzen. Fallback auf console.error wenn kein SENTRY_DSN konfiguriert. Abhängig von BL-017.",
       "createdAt": "2026-03-26"
+    },
+    {
+      "id": "BL-019",
+      "title": "GoTrue Invite-E-Mail auf Deutsch + Custom Text",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "GoTrue Invite-E-Mail Templates anpassen: Deutsch statt Englisch, StrategAIze-Branding, Custom Text. GOTRUE_MAILER_TEMPLATES_INVITE konfigurieren.",
+      "createdAt": "2026-03-26"
     }
   ]
 }
