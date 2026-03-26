@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LayoutDashboard } from "lucide-react";
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -42,10 +43,14 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>StrategAIze Login</CardTitle>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+      <Card className="relative w-full max-w-md overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+        <CardHeader className="pt-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary shadow-[var(--shadow-glow-brand)]">
+            <LayoutDashboard className="h-6 w-6 text-white" />
+          </div>
+          <CardTitle className="text-2xl text-slate-900">StrategAIze Login</CardTitle>
           <CardDescription>
             Melden Sie sich mit Ihren Zugangsdaten an.
           </CardDescription>
@@ -86,7 +91,7 @@ export function LoginForm() {
               {loading ? "Anmelden..." : "Anmelden"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-xs text-muted-foreground">
+          <p className="mt-6 text-center text-xs text-slate-400">
             Kein Account? Der Zugang erfolgt ausschließlich per Einladung.
           </p>
         </CardContent>
