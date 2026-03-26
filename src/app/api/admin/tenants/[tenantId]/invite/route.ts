@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, errorResponse, validationError } from "@/lib/api-utils";
 import { inviteTenantUserSchema } from "@/lib/validations";
+import { sendInviteEmail } from "@/lib/email";
 
 // POST /api/admin/tenants/[tenantId]/invite — Invite a user to a tenant
 export async function POST(
@@ -72,20 +73,48 @@ export async function POST(
 
   const role = existingOwner ? "tenant_member" : "tenant_owner";
 
-  // Create user via GoTrue Admin API (invite flow)
-  const { error: inviteError } = await adminClient!.auth.admin.inviteUserByEmail(
-    email,
-    {
-      data: {
-        tenant_id: tenantId,
-        role,
+  // Create user via GoTrue Admin API and get the invite token.
+  // We use generateLink instead of inviteUserByEmail because GoTrue
+  // generates verify URLs using the internal Docker hostname (supabase-kong)
+  // instead of the external domain. By getting the token ourselves, we can
+  // construct the correct URL and send the email via our own SMTP.
+  const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`;
+  const { data: linkData, error: linkError } =
+    await adminClient!.auth.admin.generateLink({
+      type: "invite",
+      email,
+      options: {
+        data: { tenant_id: tenantId, role },
+        redirectTo,
       },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-    }
-  );
+    });
 
-  if (inviteError) {
-    return errorResponse("INTERNAL_ERROR", inviteError.message, 500);
+  if (linkError || !linkData) {
+    return errorResponse(
+      "INTERNAL_ERROR",
+      linkError?.message ?? "Failed to generate invite link",
+      500
+    );
+  }
+
+  // Construct the correct verify URL using the external domain
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const hashedToken = linkData.properties?.hashed_token;
+  const verifyUrl = `${appUrl}/auth/v1/verify?token=${hashedToken}&type=invite&redirect_to=${encodeURIComponent(redirectTo)}`;
+
+  // Send invite email via our own SMTP (bypasses GoTrue's broken URL generation)
+  try {
+    await sendInviteEmail({
+      to: email,
+      tenantName: tenant.name,
+      verifyUrl,
+    });
+  } catch (emailError) {
+    return errorResponse(
+      "INTERNAL_ERROR",
+      `User erstellt, aber E-Mail-Versand fehlgeschlagen: ${emailError instanceof Error ? emailError.message : "Unbekannter Fehler"}`,
+      500
+    );
   }
 
   // Log admin event (use user session so auth.uid() resolves)
