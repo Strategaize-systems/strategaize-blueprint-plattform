@@ -9,14 +9,14 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: deploying
-- Current Focus: Go-Live CONDITIONAL GO. Coolify Re-Deploy + Smoke-Test ausstehend.
-- Current Phase: Deploying (MVP-1)
+- High-Level State: post-launch
+- Current Focus: MVP-1 deployed und funktional. Invite-Link-Bug (ISSUE-019) blockiert Tenant-Onboarding.
+- Current Phase: Post-Launch Stabilisierung (MVP-1)
 
 ## Immediate Next Steps
-1. /go-live — Go/No-Go Entscheidung
-2. SMTP konfigurieren (Invite-Emails)
-3. Coolify Re-Deploy (SLC-005 Code-Änderungen)
+1. ISSUE-019 fixen: GoTrue Invite-Link zeigt auf internen Hostname statt externe Domain
+2. Tenant-Invite-Flow E2E testen (Invite → Set-Password → Login → Dashboard)
+3. UI-Update mit Style Guide
 4. V1.1 Planung starten
 3. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
 4. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)

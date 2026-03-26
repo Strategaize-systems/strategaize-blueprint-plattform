@@ -160,13 +160,14 @@
 
 ## Final-Check Findings (2026-03-26)
 
-### ISSUE-019 — SMTP nicht konfiguriert — Invite-Emails nicht funktional
+### ISSUE-019 — GoTrue Invite-Link zeigt auf internen Docker-Hostname
 - Status: open
 - Severity: High
-- Area: Operations
-- Summary: GoTrue Invite-Flow braucht SMTP. Aktuell konfiguriert mit smtp.example.com Defaults. Ohne funktionales SMTP können keine User eingeladen werden.
-- Impact: Kein Kunden-Onboarding möglich bis SMTP konfiguriert ist
-- Next Action: SMTP-Provider einrichten (z.B. Mailgun, SendGrid, oder eigener SMTP) und Credentials in .env auf Hetzner setzen
+- Area: Auth / Deployment
+- Summary: SMTP funktioniert (IONOS), Invite-Email kommt an. Aber der Verify-Link in der E-Mail zeigt auf "supabase-kong" (interner Docker-Hostname) statt auf blueprint.strategaizetransition.com. GoTrue nutzt den Request Host-Header statt API_EXTERNAL_URL für die Link-Generierung. Getestete Fixes die NICHT funktioniert haben: API_EXTERNAL_URL/GOTRUE_API_EXTERNAL_URL env vars, X-Forwarded-Host im Admin-Client, Kong request-transformer Plugin, Custom Email Template (Volume-Mount + HTTP-URL von App).
+- Impact: Invite-Flow blockiert — eingeladene User können den Link nicht anklicken
+- Workaround: Admin kann den korrekten Link manuell konstruieren (Token aus E-Mail + externe URL)
+- Next Action: Weitere Debugging-Ansätze: 1) Prüfen ob GoTrue die Template-URL tatsächlich fetchen kann (Docker-Netzwerk-Connectivity), 2) Template auf externer URL hosten, 3) generateLink API nutzen und Email selbst senden via nodemailer
 
 ### ISSUE-020 — Keine automatisierten Tests vorhanden
 - Status: open
