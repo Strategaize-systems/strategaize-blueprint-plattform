@@ -27,7 +27,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-007 | [Design Foundation](SLC-007-design-foundation.md) | BL-020 | planned | High | 2026-03-26 |
+| SLC-007 | [Design Foundation](SLC-007-design-foundation.md) | BL-020 | done | High | 2026-03-26 |
 | SLC-008 | [Admin Layout: Sidebar](SLC-008-admin-layout.md) | BL-020 | planned | High | 2026-03-26 |
 | SLC-009 | [Admin Pages: Cards + Tables](SLC-009-admin-pages.md) | BL-020 | planned | High | 2026-03-26 |
 | SLC-010 | [Tenant Pages: Dashboard + Workspace](SLC-010-tenant-pages.md) | BL-020 | planned | High | 2026-03-26 |
