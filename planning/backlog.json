@@ -185,9 +185,19 @@
       "title": "GoTrue Invite-E-Mail auf Deutsch + Custom Text",
       "type": "improvement",
       "priority": "medium",
+      "status": "done",
+      "version": "MVP-1",
+      "description": "Invite-E-Mail ist jetzt deutsch mit StrategAIze-Branding. Gelöst durch eigenen E-Mail-Versand via nodemailer statt GoTrue Templates (ISSUE-019).",
+      "createdAt": "2026-03-26"
+    },
+    {
+      "id": "BL-020",
+      "title": "UI-Update mit Style Guide",
+      "type": "improvement",
+      "priority": "high",
       "status": "open",
       "version": "V1.1",
-      "description": "GoTrue Invite-E-Mail Templates anpassen: Deutsch statt Englisch, StrategAIze-Branding, Custom Text. GOTRUE_MAILER_TEMPLATES_INVITE konfigurieren.",
+      "description": "Alle Seiten (Admin + Tenant) mit dem Strategaize Style Guide überarbeiten: Brand-Farben, Typografie, Spacing, Premium-Cards, Navigation. Seite für Seite via /frontend.",
       "createdAt": "2026-03-26"
     }
   ]

@@ -10,7 +10,7 @@
     {
       "id": "v1-1",
       "name": "V1.1",
-      "status": "planned",
+      "status": "active",
       "summary": "LLM-Integration — Rückfragen via Dify + Ollama/Qwen, Antwort-Review Übersichtsseite",
       "order": 2
     },

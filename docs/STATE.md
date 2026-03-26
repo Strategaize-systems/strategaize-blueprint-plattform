@@ -9,28 +9,25 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: post-launch
-- Current Focus: MVP-1 deployed und funktional. Invite-Link-Bug (ISSUE-019) blockiert Tenant-Onboarding.
-- Current Phase: Post-Launch Stabilisierung (MVP-1)
+- High-Level State: stable
+- Current Focus: MVP-1 deployed, Invite-Flow E2E verifiziert. UI-Update mit Style Guide als nächstes.
+- Current Phase: Stable (MVP-1)
 
 ## Immediate Next Steps
-1. ISSUE-019 fixen: GoTrue Invite-Link zeigt auf internen Hostname statt externe Domain
-2. Tenant-Invite-Flow E2E testen (Invite → Set-Password → Login → Dashboard)
-3. UI-Update mit Style Guide
-4. V1.1 Planung starten
-3. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
-4. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
+1. UI-Update mit Style Guide — Seite für Seite das Premium-Design anwenden
+2. V1.1 Planung starten (LLM-Integration, Sentry, Review-Übersicht)
+3. Erstes echtes Kunden-Onboarding vorbereiten
 
 ## Active Scope
-MVP-1 — Kernplattform implementiert und deployed (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25.
+MVP-1 — Kernplattform implementiert, deployed und E2E getestet (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25. SMTP konfiguriert (IONOS), Invite-Flow komplett funktional seit 2026-03-26.
 
-V1.1 — Geplant: LLM-Rückfragen (Dify + Ollama/Qwen), Antwort-Review-Übersicht.
+V1.1 — Geplant: LLM-Rückfragen (Dify + Ollama/Qwen), Antwort-Review-Übersicht, Sentry Error-Tracking.
 
 ## Blockers
 - aktuell keine
 
 ## Last Stable Version
-- MVP-1 — 2026-03-26 — deployed auf https://blueprint.strategaizetransition.com (Admin-Seiten funktional nach ISSUE-001 Fix)
+- MVP-1 — 2026-03-26 — deployed auf https://blueprint.strategaizetransition.com (alle Flows verifiziert: Admin, Invite, Tenant-Login, Fragebogen)
 
 ## Notes
-ISSUE-001 (Blocker: permission denied for table tenants) am 2026-03-26 behoben. Root Cause: service_role hatte BYPASSRLS aber keine Table-Level GRANTs. Fix in sql/rls.sql und auf Production-DB angewendet. 17 offene Issues verbleiben (6 High, 6 Medium, 4 Low, 1 resolved). Siehe `/docs/KNOWN_ISSUES.md` und `/slices/INDEX.md`.
+MVP-1 Post-Launch-Phase am 2026-03-26 abgeschlossen: 5 Fix-Slices (SLC-001 bis SLC-005), ISSUE-019 (Invite-Link), SMTP-Konfiguration. Invite-Flow E2E getestet: Invite → E-Mail → Set-Password → Login → Dashboard → Fragen beantworten. 15 von 19 Issues resolved, 4 deferred (V1.1/Future). Nächster Schritt: UI-Update mit Style Guide.

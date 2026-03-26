@@ -19,6 +19,7 @@ Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker �
 | SLC-003 | [Documentation Accuracy](SLC-003-docs-accuracy.md) | — | done | High | ISSUE-005, 006, 012, 013 | 2026-03-25 |
 | SLC-004 | [DB Integrity Hardening](SLC-004-db-integrity.md) | FEAT-001, 005, 006 | done | Medium | ISSUE-010, 014, 018 | 2026-03-25 |
 | SLC-005 | [Monitoring & Observability](SLC-005-monitoring-setup.md) | — | done | High/Medium | ISSUE-004, 011, 015, 016 | 2026-03-25 |
+| SLC-006 | Invite-Flow Fix + SMTP | FEAT-001 | done | Blocker | ISSUE-019 | 2026-03-26 |
 
 ## Execution Order
 
