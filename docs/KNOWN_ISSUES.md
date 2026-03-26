@@ -155,3 +155,23 @@
 - Summary: FK von questions.catalog_snapshot_id auf ON DELETE RESTRICT geändert. Catalog-Snapshots können nicht mehr versehentlich gelöscht werden.
 - Impact: Immutabilitäts-Prinzip durchgesetzt
 - Next Action: Keine — behoben am 2026-03-26 (SLC-004). FK-Änderung auf Production nötig.
+
+---
+
+## Final-Check Findings (2026-03-26)
+
+### ISSUE-019 — SMTP nicht konfiguriert — Invite-Emails nicht funktional
+- Status: open
+- Severity: High
+- Area: Operations
+- Summary: GoTrue Invite-Flow braucht SMTP. Aktuell konfiguriert mit smtp.example.com Defaults. Ohne funktionales SMTP können keine User eingeladen werden.
+- Impact: Kein Kunden-Onboarding möglich bis SMTP konfiguriert ist
+- Next Action: SMTP-Provider einrichten (z.B. Mailgun, SendGrid, oder eigener SMTP) und Credentials in .env auf Hetzner setzen
+
+### ISSUE-020 — Keine automatisierten Tests vorhanden
+- Status: open
+- Severity: Medium
+- Area: Testing
+- Summary: Identisch mit ISSUE-002. 89 TS-Dateien, 0 Tests. Final-Check bestätigt: Regressionsrisiko bei zukünftigen Änderungen.
+- Impact: Keine automatische Erkennung von Regressionen bei Deployments
+- Next Action: Test-Framework (vitest) als eigenen Slice in V1.1 oder V2 planen
