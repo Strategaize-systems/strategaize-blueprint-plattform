@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LayoutDashboard, LogOut } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -58,45 +59,62 @@ export function DashboardClient({ profile }: { profile: Profile }) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <div>
-            <h1 className="text-xl font-semibold">StrategAIze</h1>
-            <p className="text-sm text-muted-foreground">
-              {profile.email}
-            </p>
+    <div className="min-h-screen bg-slate-50">
+      {/* Premium Header */}
+      <header className="bg-white border-b shadow-sm">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary">
+              <LayoutDashboard className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900">StrategAIze</h1>
+              <p className="text-xs text-slate-500">{profile.email}</p>
+            </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900"
+          >
+            <LogOut className="h-4 w-4" />
             Abmelden
-          </Button>
+          </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <h2 className="mb-6 text-2xl font-bold">Ihre Runs</h2>
+      <main className="mx-auto max-w-[1200px] px-6 py-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-slate-900">Ihre Runs</h2>
+          <p className="mt-1 text-sm text-slate-500">Ihre zugewiesenen Assessment-Runs</p>
+        </div>
 
         {loading ? (
           <div className="space-y-4">
             {[1, 2].map((i) => (
-              <Skeleton key={i} className="h-32 w-full" />
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
             ))}
           </div>
         ) : runs.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Noch keine Runs zugewiesen. Bitte warten Sie auf eine
-              Zuweisung durch StrategAIze.
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                <LayoutDashboard className="h-8 w-8 text-slate-400" />
+              </div>
+              <p className="text-lg font-semibold text-slate-900">Noch keine Runs zugewiesen</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Bitte warten Sie auf eine Zuweisung durch StrategAIze.
+              </p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-4">
             {runs.map((run) => (
               <Link key={run.id} href={`/runs/${run.id}`}>
-                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
-                  <CardHeader className="pb-2">
+                <Card className="relative overflow-hidden cursor-pointer">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                  <CardHeader className="pb-3 pt-5">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{run.title}</CardTitle>
+                      <CardTitle className="text-lg text-brand-primary-dark">{run.title}</CardTitle>
                       <StatusBadge status={run.status} />
                     </div>
                     {run.description && (
@@ -108,14 +126,17 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                       answered={run.answered_count}
                       total={run.question_count}
                     />
-                    <div className="flex gap-4 text-xs text-muted-foreground mt-2">
-                      <span>{run.evidence_count} Evidence-Dokumente</span>
+                    <div className="flex gap-4 text-xs text-slate-500 mt-3">
+                      <span>
+                        <span className="font-semibold text-brand-primary">{run.evidence_count}</span> Evidence-Dokumente
+                      </span>
+                      <span>
+                        Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}
+                      </span>
                       {run.submitted_at && (
                         <span>
-                          Zuletzt eingereicht:{" "}
-                          {new Date(run.submitted_at).toLocaleDateString(
-                            "de-DE"
-                          )}
+                          Eingereicht:{" "}
+                          {new Date(run.submitted_at).toLocaleDateString("de-DE")}
                         </span>
                       )}
                     </div>

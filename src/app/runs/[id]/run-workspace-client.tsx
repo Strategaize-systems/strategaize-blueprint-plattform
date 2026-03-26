@@ -324,9 +324,9 @@ export function RunWorkspaceClient({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <Skeleton className="mb-4 h-8 w-64" />
-        <Skeleton className="h-96 w-full" />
+      <div className="min-h-screen bg-slate-50 p-8">
+        <Skeleton className="mb-4 h-8 w-64 rounded-xl" />
+        <Skeleton className="h-96 w-full rounded-xl" />
       </div>
     );
   }
@@ -363,19 +363,19 @@ export function RunWorkspaceClient({
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <div className="min-h-screen bg-slate-50">
+      {/* Premium Header */}
+      <header className="bg-white border-b shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-muted-foreground hover:underline"
+              className="text-sm text-slate-500 hover:text-brand-primary hover:underline"
             >
               Dashboard
             </Link>
-            <span className="text-muted-foreground">/</span>
-            <h1 className="text-lg font-semibold">{run.title}</h1>
+            <span className="text-slate-300">/</span>
+            <h1 className="text-lg font-bold text-slate-900">{run.title}</h1>
             <StatusBadge status={run.status} />
           </div>
           <div className="flex items-center gap-2">
@@ -423,12 +423,12 @@ export function RunWorkspaceClient({
       </header>
 
       {/* Progress bar */}
-      <div className="mx-auto max-w-7xl px-4 py-4">
+      <div className="mx-auto max-w-7xl px-6 py-4">
         <ProgressIndicator answered={answered} total={total} />
       </div>
 
       {message && (
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto max-w-7xl px-6">
           <Alert
             variant={message.type === "error" ? "destructive" : "default"}
             className="mb-2"
@@ -439,7 +439,7 @@ export function RunWorkspaceClient({
       )}
 
       {/* Main content */}
-      <div className="mx-auto max-w-7xl px-4 py-4">
+      <div className="mx-auto max-w-7xl px-6 py-4">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left: Question list by block */}
           <div className="lg:col-span-1">
