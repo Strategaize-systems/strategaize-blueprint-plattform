@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         source: "/supabase/:path*",
         destination: "http://supabase-kong:8000/:path*",
       },
+      {
+        // GoTrue verify/callback endpoints — needed for invite email links
+        source: "/auth/v1/:path*",
+        destination: "http://supabase-kong:8000/auth/v1/:path*",
+      },
     ];
   },
   async headers() {
