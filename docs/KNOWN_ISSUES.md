@@ -7,12 +7,12 @@
 ## Blocker
 
 ### ISSUE-001 — Permission denied for table tenants
-- Status: open
+- Status: resolved
 - Severity: Blocker
 - Area: RLS / Database
-- Summary: Nach Login als Admin wird /admin/tenants geladen aber Datenabruf schlägt fehl mit "permission denied for table tenants". API-Route nutzt adminClient (service_role), trotzdem denied. SQL-Migrationen (schema.sql, rls.sql, functions.sql) wahrscheinlich nicht auf Produktions-DB angewendet.
-- Impact: Alle Admin-Seiten (Tenants, Runs, Catalog) nicht funktional
-- Next Action: Auf Hetzner-DB prüfen ob RLS Policies und GRANTs applied wurden
+- Summary: service_role hatte BYPASSRLS aber keine Table-Level GRANTs. PostgreSQL BYPASSRLS umgeht nur RLS-Policies, nicht GRANT/REVOKE. Fix: GRANT ALL ON ALL TABLES/SEQUENCES/ROUTINES TO service_role. Root Cause in sql/rls.sql gefixt und ins Dev System Playbook aufgenommen (Problem 14).
+- Impact: Alle Admin-Seiten (Tenants, Runs, Catalog) waren nicht funktional
+- Next Action: Keine — behoben am 2026-03-26
 
 ---
 

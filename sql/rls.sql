@@ -299,5 +299,12 @@ TO authenticated;
 -- VIEW: kein direktes INSERT möglich (Supabase/PostgREST respektiert das)
 GRANT SELECT ON TABLE v_current_answers TO authenticated;
 
+-- service_role = Server-seitiger Admin-Zugriff (Next.js API Routes mit SUPABASE_SERVICE_ROLE_KEY)
+-- BYPASSRLS umgeht nur RLS-Policies, NICHT Table-Level-Permissions.
+-- Ohne explizite GRANTs bekommt service_role "permission denied" auf allen Tabellen.
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO service_role;
+
 -- anon role hat keinen Zugriff auf Datentabellen (Login-Seite = public, aber kein Datenzugriff)
 REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon;
