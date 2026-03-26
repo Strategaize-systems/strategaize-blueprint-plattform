@@ -14,7 +14,7 @@ Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker â†
 
 | ID | Slice | Issues | Priority | Status | Created |
 |----|-------|--------|----------|--------|---------|
-| SLC-001 | [RLS & Grants Fix](SLC-001-rls-grants-fix.md) | ISSUE-001 | Blocker | planned | 2026-03-25 |
+| SLC-001 | [RLS & Grants Fix](SLC-001-rls-grants-fix.md) | ISSUE-001 | Blocker | done | 2026-03-25 |
 | SLC-002 | [Security Hardening](SLC-002-security-hardening.md) | ISSUE-003, 007, 009 | High | planned | 2026-03-25 |
 | SLC-003 | [Documentation Accuracy](SLC-003-docs-accuracy.md) | ISSUE-005, 006, 012, 013 | High | planned | 2026-03-25 |
 | SLC-004 | [DB Integrity Hardening](SLC-004-db-integrity.md) | ISSUE-010, 014, 018 | Medium | planned | 2026-03-25 |
