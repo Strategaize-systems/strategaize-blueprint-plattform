@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { loginLimiter } from "@/lib/rate-limit";
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
@@ -9,6 +11,14 @@ export async function login(formData: FormData) {
 
   if (!email || !password) {
     return { error: "E-Mail und Passwort sind erforderlich" };
+  }
+
+  // Rate limiting by IP
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rateCheck = loginLimiter.check(ip);
+  if (!rateCheck.allowed) {
+    return { error: rateCheck.error };
   }
 
   try {

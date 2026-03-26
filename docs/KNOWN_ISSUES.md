@@ -27,12 +27,12 @@
 - Next Action: Test-Framework aufsetzen (vitest), kritische API-Routes testen
 
 ### ISSUE-003 — Kein Rate-Limiting auf API
-- Status: open
+- Status: resolved
 - Severity: High
 - Area: Security
-- Summary: docs/production/rate-limiting.md beschreibt Upstash Redis Rate-Limiting — nichts davon implementiert. Weder Dependency noch Middleware noch API-Route-Checks vorhanden.
-- Impact: Brute-Force auf Login, API-Abuse auf Tenant-Endpoints, DoS auf Export-Endpoint möglich
-- Next Action: Mindestens Login-Endpoint mit Rate-Limit schützen
+- Summary: In-Memory Rate-Limiting (5 Versuche / 15 Min) für Login und Set-Password Server Actions implementiert. Kein Redis nötig für MVP. Weiterführende Rate-Limits auf API-Endpoints sind V1.1-Scope.
+- Impact: Login und Set-Password sind jetzt gegen Brute-Force geschützt
+- Next Action: Keine — behoben am 2026-03-26 (SLC-002)
 
 ### ISSUE-004 — Kein Error-Tracking in Production
 - Status: open
@@ -59,12 +59,12 @@
 - Next Action: Docs als Planned markieren oder löschen
 
 ### ISSUE-007 — evidence_links INSERT-Policy validiert link_id Ownership nicht
-- Status: open
+- Status: resolved
 - Severity: High
 - Area: RLS / Security
-- Summary: RLS-Policy tenant_insert_evidence_links prüft nur ob evidence_item_id dem Tenant gehört, aber nicht ob link_id (verlinkte Question oder Run) dem Tenant gehört. Cross-Tenant-Datenverknüpfung möglich.
-- Impact: Tenant könnte Evidence-Links mit link_id einer Question eines anderen Tenants erstellen
-- Next Action: Policy erweitern mit link_id Ownership-Check
+- Summary: RLS-Policy tenant_insert_evidence_links erweitert mit link_id Ownership-Check. link_type='run' prüft jetzt ob Run dem eigenen Tenant gehört, link_type='question' prüft ob Question über einen eigenen Run erreichbar ist.
+- Impact: Cross-Tenant-Datenverknüpfung nicht mehr möglich
+- Next Action: Keine — behoben am 2026-03-26 (SLC-002)
 
 ---
 
@@ -78,12 +78,12 @@
 - Next Action: Keine — behoben
 
 ### ISSUE-009 — handle_new_user defaultet ungültige Rollen stillschweigend
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Database / Security
-- Summary: In sql/functions.sql setzt handle_new_user() ungültige Rollen stillschweigend auf tenant_owner statt Fehler zu werfen. Bugs in Admin-Invite-API könnten unbemerkt falsche Rollen zuweisen.
-- Impact: Tippfehler im Admin-Code gibt versehentlich Owner-Rechte
-- Next Action: RAISE EXCEPTION statt stillem Default
+- Summary: handle_new_user() wirft jetzt RAISE EXCEPTION mit ERRCODE P0400 bei ungültigen Rollen statt silent auf tenant_owner zu defaulten.
+- Impact: Ungültige Rollen werden sofort abgelehnt
+- Next Action: Keine — behoben am 2026-03-26 (SLC-002)
 
 ### ISSUE-010 — Append-only Enforcement nur über RLS
 - Status: open

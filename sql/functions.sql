@@ -27,9 +27,10 @@ BEGIN
     'tenant_owner'
   );
 
-  -- Validierung: role muss gültig sein
+  -- Validierung: role muss gültig sein — ungültige Rollen werden ABGELEHNT (nicht silent-defaulted)
   IF v_role NOT IN ('strategaize_admin', 'tenant_owner', 'tenant_member') THEN
-    v_role := 'tenant_owner';
+    RAISE EXCEPTION 'handle_new_user: invalid role: %', v_role
+      USING ERRCODE = 'P0400';
   END IF;
 
   -- Validierung: Tenant-Rollen brauchen eine gültige tenant_id

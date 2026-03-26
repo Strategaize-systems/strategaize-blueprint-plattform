@@ -15,7 +15,7 @@ Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker �
 | ID | Slice | Feature | Status | Priority | Issues | Created |
 |----|-------|---------|--------|----------|--------|---------|
 | SLC-001 | [RLS & Grants Fix](SLC-001-rls-grants-fix.md) | FEAT-001 | done | Blocker | ISSUE-001 | 2026-03-25 |
-| SLC-002 | [Security Hardening](SLC-002-security-hardening.md) | FEAT-001 | planned | High | ISSUE-003, 007, 009 | 2026-03-25 |
+| SLC-002 | [Security Hardening](SLC-002-security-hardening.md) | FEAT-001 | done | High | ISSUE-003, 007, 009 | 2026-03-25 |
 | SLC-003 | [Documentation Accuracy](SLC-003-docs-accuracy.md) | — | planned | High | ISSUE-005, 006, 012, 013 | 2026-03-25 |
 | SLC-004 | [DB Integrity Hardening](SLC-004-db-integrity.md) | FEAT-001, 005, 006 | planned | Medium | ISSUE-010, 014, 018 | 2026-03-25 |
 | SLC-005 | [Monitoring & Observability](SLC-005-monitoring-setup.md) | — | planned | High/Medium | ISSUE-004, 011, 015, 016 | 2026-03-25 |
@@ -36,13 +36,13 @@ Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker �
 |-------|----------|-----------------|--------|
 | ISSUE-001 | Blocker | SLC-001 | resolved |
 | ISSUE-002 | High | — (Test-Setup, eigener Future-Slice) | deferred |
-| ISSUE-003 | High | SLC-002 | planned |
+| ISSUE-003 | High | SLC-002 | resolved |
 | ISSUE-004 | High | SLC-005 | planned |
 | ISSUE-005 | High | SLC-003 | planned |
 | ISSUE-006 | High | SLC-003 | planned |
-| ISSUE-007 | High | SLC-002 | planned |
+| ISSUE-007 | High | SLC-002 | resolved |
 | ISSUE-008 | Medium | — (bereits resolved) | resolved |
-| ISSUE-009 | Medium | SLC-002 | planned |
+| ISSUE-009 | Medium | SLC-002 | resolved |
 | ISSUE-010 | Medium | SLC-004 | planned |
 | ISSUE-011 | Medium | SLC-005 | planned |
 | ISSUE-012 | Medium | SLC-003 | planned |

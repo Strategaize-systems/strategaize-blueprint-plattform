@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { setPasswordLimiter } from "@/lib/rate-limit";
 
 export async function setPassword(formData: FormData) {
   const password = formData.get("password") as string;
@@ -13,6 +15,14 @@ export async function setPassword(formData: FormData) {
 
   if (password !== confirmPassword) {
     return { error: "Passwörter stimmen nicht überein" };
+  }
+
+  // Rate limiting by IP
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rateCheck = setPasswordLimiter.check(ip);
+  if (!rateCheck.allowed) {
+    return { error: rateCheck.error };
   }
 
   try {

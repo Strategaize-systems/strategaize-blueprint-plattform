@@ -10,12 +10,12 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: post-launch
-- Current Focus: Fix-Slices nach Post-Launch QA — SLC-001 (Blocker) abgeschlossen, SLC-002 als nächstes
+- Current Focus: Fix-Slices nach Post-Launch QA — SLC-001 + SLC-002 abgeschlossen, SLC-003 als nächstes
 - Current Phase: Post-Launch Stabilisierung (MVP-1)
 
 ## Immediate Next Steps
-1. SLC-002: Security Hardening (Rate-Limiting, RLS Policy Fix, Role Validation)
-2. SLC-003: Documentation Accuracy (ARCHITECTURE.md, Production-Docs, RELEASES.md, MIGRATIONS.md)
+1. SLC-003: Documentation Accuracy (ARCHITECTURE.md, Production-Docs, RELEASES.md, MIGRATIONS.md)
+2. SQL-Fixes (SLC-002) auf Production-DB anwenden (evidence_links Policy + handle_new_user)
 3. SLC-004: DB Integrity Hardening (Append-only Trigger, tenant_id, FK RESTRICT)
 4. SLC-005: Monitoring & Observability (Sentry, N+1 Fix, Logging)
 

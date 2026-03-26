@@ -239,6 +239,20 @@ CREATE POLICY "tenant_insert_evidence_links"
       WHERE ei.tenant_id = auth.user_tenant_id()
         AND r.status != 'locked'
     )
+    -- link_id ownership: prevent cross-tenant linking
+    AND (
+      (link_type = 'run' AND link_id IN (
+        SELECT id FROM runs WHERE tenant_id = auth.user_tenant_id()
+      ))
+      OR
+      (link_type = 'question' AND link_id IN (
+        SELECT q.id FROM questions q
+        WHERE q.catalog_snapshot_id IN (
+          SELECT r.catalog_snapshot_id FROM runs r
+          WHERE r.tenant_id = auth.user_tenant_id()
+        )
+      ))
+    )
   );
 
 -- ============================================================
