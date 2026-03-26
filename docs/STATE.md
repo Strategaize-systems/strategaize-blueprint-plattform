@@ -9,9 +9,9 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: go-live
-- Current Focus: Final-Check abgeschlossen. Go/No-Go Entscheidung steht an.
-- Current Phase: Go-Live Readiness (MVP-1)
+- High-Level State: deploying
+- Current Focus: Go-Live CONDITIONAL GO. Coolify Re-Deploy + Smoke-Test ausstehend.
+- Current Phase: Deploying (MVP-1)
 
 ## Immediate Next Steps
 1. /go-live — Go/No-Go Entscheidung
