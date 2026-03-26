@@ -62,6 +62,12 @@ services:
           - /auth/v1/
     plugins:
       - name: cors
+      - name: request-transformer
+        config:
+          add:
+            headers:
+              - "X-Forwarded-Host:blueprint.strategaizetransition.com"
+              - "X-Forwarded-Proto:https"
       - name: key-auth
         config:
           hide_credentials: false
