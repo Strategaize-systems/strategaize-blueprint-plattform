@@ -14,10 +14,10 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. BL-020: UI-Update mit Style Guide via /frontend — Seite für Seite das Premium-Design anwenden (aktiv)
-2. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
-3. BL-012-016: LLM-Integration (Dify + Ollama/Qwen), Review-Übersicht
-4. Erstes echtes Kunden-Onboarding
+1. Workspace-Redesign: Block-Navigation als Sidebar, mehr Brand/CI, Logo-Icon überall
+2. StrategAIze Logo-Icon in alle Seiten integrieren (Kompass mit grünem Pfeil)
+3. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
+4. BL-012-016: LLM-Integration (Dify + Ollama/Qwen), Review-Übersicht
 
 ## Active Scope
 MVP-1 — Kernplattform implementiert, deployed und E2E getestet (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25. SMTP konfiguriert (IONOS), Invite-Flow komplett funktional seit 2026-03-26.
