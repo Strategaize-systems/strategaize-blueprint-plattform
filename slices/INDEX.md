@@ -12,13 +12,13 @@
 
 Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker → High → Medium.
 
-| ID | Slice | Issues | Priority | Status | Created |
-|----|-------|--------|----------|--------|---------|
-| SLC-001 | [RLS & Grants Fix](SLC-001-rls-grants-fix.md) | ISSUE-001 | Blocker | done | 2026-03-25 |
-| SLC-002 | [Security Hardening](SLC-002-security-hardening.md) | ISSUE-003, 007, 009 | High | planned | 2026-03-25 |
-| SLC-003 | [Documentation Accuracy](SLC-003-docs-accuracy.md) | ISSUE-005, 006, 012, 013 | High | planned | 2026-03-25 |
-| SLC-004 | [DB Integrity Hardening](SLC-004-db-integrity.md) | ISSUE-010, 014, 018 | Medium | planned | 2026-03-25 |
-| SLC-005 | [Monitoring & Observability](SLC-005-monitoring-setup.md) | ISSUE-004, 011, 015, 016 | High/Medium | planned | 2026-03-25 |
+| ID | Slice | Feature | Status | Priority | Issues | Created |
+|----|-------|---------|--------|----------|--------|---------|
+| SLC-001 | [RLS & Grants Fix](SLC-001-rls-grants-fix.md) | FEAT-001 | done | Blocker | ISSUE-001 | 2026-03-25 |
+| SLC-002 | [Security Hardening](SLC-002-security-hardening.md) | FEAT-001 | planned | High | ISSUE-003, 007, 009 | 2026-03-25 |
+| SLC-003 | [Documentation Accuracy](SLC-003-docs-accuracy.md) | — | planned | High | ISSUE-005, 006, 012, 013 | 2026-03-25 |
+| SLC-004 | [DB Integrity Hardening](SLC-004-db-integrity.md) | FEAT-001, 005, 006 | planned | Medium | ISSUE-010, 014, 018 | 2026-03-25 |
+| SLC-005 | [Monitoring & Observability](SLC-005-monitoring-setup.md) | — | planned | High/Medium | ISSUE-004, 011, 015, 016 | 2026-03-25 |
 
 ## Execution Order
 
@@ -34,7 +34,7 @@ Priorisierte Fix-Slices basierend auf systematischer QA. Reihenfolge: Blocker �
 
 | Issue | Severity | Covered by Slice | Status |
 |-------|----------|-----------------|--------|
-| ISSUE-001 | Blocker | SLC-001 | planned |
+| ISSUE-001 | Blocker | SLC-001 | resolved |
 | ISSUE-002 | High | — (Test-Setup, eigener Future-Slice) | deferred |
 | ISSUE-003 | High | SLC-002 | planned |
 | ISSUE-004 | High | SLC-005 | planned |
