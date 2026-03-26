@@ -1,5 +1,7 @@
 # Database Optimization
 
+> **Status: PLANNED — NOT YET IMPLEMENTED.** Diese Maßnahmen sind Best-Practice-Empfehlungen, aber noch nicht im Projekt umgesetzt.
+
 ## 1. Indexing
 
 Create indexes on columns used in WHERE, ORDER BY, or JOIN clauses:

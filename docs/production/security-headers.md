@@ -1,5 +1,7 @@
 # Security Headers Configuration
 
+> **Status: IMPLEMENTED in `next.config.ts`.** X-Frame-Options, X-Content-Type-Options, Referrer-Policy, HSTS, Permissions-Policy sind aktiv.
+
 Protect against XSS, Clickjacking, MIME sniffing, and other common web attacks.
 
 ## Setup

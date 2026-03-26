@@ -1,5 +1,7 @@
 # Performance Monitoring
 
+> **Status: PLANNED — NOT YET IMPLEMENTED.** Diese Maßnahmen sind Best-Practice-Empfehlungen, aber noch nicht umgesetzt.
+
 ## Lighthouse Check (after every deployment)
 
 1. Open Chrome DevTools (F12)

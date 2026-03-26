@@ -43,20 +43,20 @@
 - Next Action: Sentry oder alternatives Error-Tracking aufsetzen
 
 ### ISSUE-005 — ARCHITECTURE.md funktional leer und widersprüchlich
-- Status: open
+- Status: resolved
 - Severity: High
 - Area: Documentation
-- Summary: docs/ARCHITECTURE.md enthält nur Starter-Kit-Defaults. Sagt "Deployment: Vercel" obwohl Projekt Self-Hosted auf Hetzner ist. Keine Beschreibung der tatsächlichen 10-Service Docker-Compose Architektur.
-- Impact: Architektur-Doku irreführend für zukünftige Sessions und Entwickler
-- Next Action: /architecture Skill oder manuell tatsächliche Architektur dokumentieren
+- Summary: ARCHITECTURE.md komplett neu geschrieben mit korrekten Fakten: 10-Service Docker Compose, Hetzner/Coolify, Kong Gateway, Dual-URL-Strategie, Auth-Architektur, Daten-Architektur. Kein "Vercel" mehr.
+- Impact: Architektur-Doku ist jetzt akkurat und nutzbar
+- Next Action: Keine — behoben am 2026-03-26 (SLC-003)
 
 ### ISSUE-006 — Production-Docs beschreiben nicht-implementierte Massnahmen
-- Status: open
+- Status: resolved
 - Severity: High
 - Area: Documentation
-- Summary: 5 Dateien in docs/production/ beschreiben Best-Practices die grösstenteils nicht implementiert sind (database-optimization, error-tracking, performance, rate-limiting). Nur security-headers.md ist tatsächlich in next.config.ts implementiert.
-- Impact: Falsche Sicherheitsannahmen, jemand liest Docs und glaubt System ist gehärtet
-- Next Action: Docs als Planned markieren oder löschen
+- Summary: Alle 5 Production-Docs haben jetzt explizite Status-Header (PLANNED/PARTIALLY IMPLEMENTED/IMPLEMENTED). Keine falschen Annahmen mehr möglich.
+- Impact: Klare Unterscheidung was implementiert ist und was nicht
+- Next Action: Keine — behoben am 2026-03-26 (SLC-003)
 
 ### ISSUE-007 — evidence_links INSERT-Policy validiert link_id Ownership nicht
 - Status: resolved
@@ -102,18 +102,18 @@
 - Next Action: DB-Views oder Joins statt N+1
 
 ### ISSUE-012 — RELEASES.md leer trotz Live-Deployment
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Documentation
-- Summary: Projekt ist live deployed aber docs/RELEASES.md enthält nur Platzhalter.
-- Next Action: MVP-1 Deployment als ersten Release-Record eintragen
+- Summary: REL-001 (MVP-1 Initial Deployment) im Cockpit-kompatiblen Format eingetragen.
+- Next Action: Keine — behoben am 2026-03-26 (SLC-003)
 
 ### ISSUE-013 — MIGRATIONS.md leer trotz vollem Schema
-- Status: open
+- Status: resolved
 - Severity: Medium
 - Area: Documentation
-- Summary: 10 Tabellen, 1 View, 4 Functions, RLS-Policies — aber docs/MIGRATIONS.md ist leer.
-- Next Action: Initiales Schema als Baseline-Migration dokumentieren
+- Summary: 3 Migrationen dokumentiert: MIG-001 (Baseline Schema), MIG-002 (service_role GRANTs), MIG-003 (evidence_links Policy + handle_new_user Fix). Cockpit-kompatibles Format.
+- Next Action: Keine — behoben am 2026-03-26 (SLC-003)
 
 ### ISSUE-014 — evidence_links hat keine tenant_id-Spalte
 - Status: open

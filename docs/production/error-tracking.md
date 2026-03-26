@@ -1,5 +1,7 @@
 # Error Tracking Setup (Sentry)
 
+> **Status: PLANNED — NOT YET IMPLEMENTED.** Sentry ist noch nicht integriert. Siehe ISSUE-004.
+
 Track production errors automatically so you know about issues before your users report them.
 
 ## Setup (5 minutes)

@@ -1,5 +1,7 @@
 # Rate Limiting
 
+> **Status: PARTIALLY IMPLEMENTED.** In-Memory Rate-Limiting für Login + Set-Password Server Actions ist aktiv (SLC-002). Upstash Redis für API-Endpoints ist noch nicht implementiert.
+
 Prevent abuse, DDoS attacks, and excessive API usage.
 
 ## When to Add Rate Limiting
