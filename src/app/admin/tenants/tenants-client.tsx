@@ -130,8 +130,11 @@ export function TenantsClient({ email }: { email: string }) {
   return (
     <div>
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Tenant-Verwaltung</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900">Tenant-Verwaltung</h2>
+            <p className="mt-1 text-sm text-slate-500">Unternehmen und Benutzer verwalten</p>
+          </div>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
               <Button>Neuer Tenant</Button>
@@ -195,12 +198,13 @@ export function TenantsClient({ email }: { email: string }) {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {tenants.map((tenant) => (
-              <Card key={tenant.id}>
-                <CardHeader className="pb-2">
+              <Card key={tenant.id} className="relative overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                <CardHeader className="pb-3 pt-5">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{tenant.name}</CardTitle>
+                    <CardTitle className="text-lg text-brand-primary-dark">{tenant.name}</CardTitle>
                     <Button
                       variant="outline"
                       size="sm"
@@ -211,12 +215,14 @@ export function TenantsClient({ email }: { email: string }) {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-6 text-sm text-muted-foreground">
-                    <span>
-                      Owner: {tenant.owner_email ?? "Kein Owner eingeladen"}
+                  <div className="flex gap-6 text-sm">
+                    <span className="text-slate-600">
+                      Owner: <span className="font-medium text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
                     </span>
-                    <span>{tenant.run_count} Runs</span>
-                    <span>
+                    <span className="text-slate-600">
+                      <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
+                    </span>
+                    <span className="text-slate-500">
                       Erstellt: {new Date(tenant.created_at).toLocaleDateString("de-DE")}
                     </span>
                   </div>

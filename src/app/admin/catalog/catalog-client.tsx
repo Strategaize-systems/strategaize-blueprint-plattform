@@ -153,8 +153,11 @@ export function CatalogClient({ email }: { email: string }) {
   return (
     <div>
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Fragenkatalog</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900">Fragenkatalog</h2>
+            <p className="mt-1 text-sm text-slate-500">Versionierte Fragenkataloge verwalten</p>
+          </div>
           <Dialog open={importOpen} onOpenChange={setImportOpen}>
             <DialogTrigger asChild>
               <Button>Katalog importieren</Button>
@@ -229,39 +232,38 @@ export function CatalogClient({ email }: { email: string }) {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {snapshots.map((snap) => (
               <Collapsible
                 key={snap.id}
                 open={expandedSnapshotId === snap.id}
                 onOpenChange={() => toggleQuestions(snap.id)}
               >
-                <Card>
-                  <CardHeader className="pb-2">
+                <Card className="relative overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                  <CardHeader className="pb-3 pt-5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CardTitle className="text-lg">v{snap.version}</CardTitle>
-                        <Badge variant="secondary">
-                          Blueprint {snap.blueprint_version}
+                        <CardTitle className="text-lg text-brand-primary-dark">v{snap.version}</CardTitle>
+                        <Badge variant="secondary" className="text-xs">
+                          {snap.blueprint_version}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline">
-                          {snap.question_count} Fragen
-                        </Badge>
+                        <span className="text-sm font-bold text-brand-primary">{snap.question_count} Fragen</span>
                         <CollapsibleTrigger asChild>
                           <Button variant="ghost" size="sm">
-                            {expandedSnapshotId === snap.id ? "Zuklappen" : "Fragen anzeigen"}
+                            {expandedSnapshotId === snap.id ? "Zuklappen" : "Aufklappen"}
                           </Button>
                         </CollapsibleTrigger>
                       </div>
                     </div>
-                    <CardDescription className="font-mono text-xs">
+                    <CardDescription className="font-mono text-xs text-slate-400">
                       Hash: {snap.hash.slice(0, 16)}...
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-slate-500">
                       Importiert: {new Date(snap.created_at).toLocaleString("de-DE")}
                     </p>
                   </CardContent>

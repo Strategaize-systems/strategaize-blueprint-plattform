@@ -141,8 +141,11 @@ export function RunsClient({ email }: { email: string }) {
   return (
     <div>
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Alle Runs</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900">Alle Runs</h2>
+            <p className="mt-1 text-sm text-slate-500">Assessment-Runs aller Tenants</p>
+          </div>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
               <Button onClick={openCreateDialog}>Neuer Run</Button>
@@ -233,15 +236,16 @@ export function RunsClient({ email }: { email: string }) {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {runs.map((run) => (
               <Link key={run.id} href={`/admin/runs/${run.id}`}>
-                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
-                  <CardHeader className="pb-2">
+                <Card className="relative overflow-hidden cursor-pointer">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                  <CardHeader className="pb-3 pt-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg">{run.title}</CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <CardTitle className="text-lg text-brand-primary-dark">{run.title}</CardTitle>
+                        <p className="text-sm text-slate-500 mt-1">
                           {run.tenant_name ?? "Unbekannt"} &middot; Katalog v{run.catalog_version}
                         </p>
                       </div>
@@ -253,8 +257,8 @@ export function RunsClient({ email }: { email: string }) {
                       answered={run.answered_count}
                       total={run.question_count}
                     />
-                    <div className="flex gap-4 text-xs text-muted-foreground mt-2">
-                      <span>{run.evidence_count} Evidence-Dokumente</span>
+                    <div className="flex gap-4 text-xs text-slate-500 mt-3">
+                      <span><span className="font-semibold text-brand-primary">{run.evidence_count}</span> Evidence-Dokumente</span>
                       <span>
                         Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}
                       </span>

@@ -167,19 +167,19 @@ export function RunDetailClient({
     <div>
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Link
                 href="/admin/runs"
-                className="text-sm text-muted-foreground hover:underline"
+                className="text-sm text-slate-500 hover:text-brand-primary hover:underline"
               >
                 Alle Runs
               </Link>
-              <span className="text-muted-foreground">/</span>
+              <span className="text-slate-400">/</span>
             </div>
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold">{run.title}</h2>
+              <h2 className="text-3xl font-bold text-slate-900">{run.title}</h2>
               <StatusBadge status={run.status} />
             </div>
             {run.description && (
@@ -231,32 +231,36 @@ export function RunDetailClient({
           </Alert>
         )}
 
-        {/* Stats */}
+        {/* Stats — KPI Cards with Gradient Values */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="pt-4 pb-4">
-              <p className="text-sm text-muted-foreground">Fragen</p>
-              <p className="text-2xl font-bold">{total}</p>
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Fragen</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent">{total}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4 pb-4">
-              <p className="text-sm text-muted-foreground">Beantwortet</p>
-              <p className="text-2xl font-bold">{answered}</p>
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-success-dark to-brand-success" />
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Beantwortet</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-success-dark to-brand-success bg-clip-text text-transparent">{answered}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4 pb-4">
-              <p className="text-sm text-muted-foreground">Evidence</p>
-              <p className="text-2xl font-bold">
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Evidence</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent">
                 {run.questions.reduce((sum, q) => sum + q.evidence_count, 0)}
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4 pb-4">
-              <p className="text-sm text-muted-foreground">Erstellt</p>
-              <p className="text-lg font-medium">
+          <Card className="relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-slate-200" />
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Erstellt</p>
+              <p className="text-lg font-bold text-slate-900">
                 {new Date(run.created_at).toLocaleDateString("de-DE")}
               </p>
             </CardContent>
