@@ -97,10 +97,13 @@ export async function POST(
     );
   }
 
-  // Construct the correct verify URL using the external domain
+  // Construct verify URL pointing directly to OUR callback (not GoTrue's /verify).
+  // GoTrue's /verify consumes the token and redirects without passing it to our
+  // callback, which skips the set-password step. By going directly to /auth/callback,
+  // our route calls verifyOtp() server-side and then redirects to set-password.
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const hashedToken = linkData.properties?.hashed_token;
-  const verifyUrl = `${appUrl}/auth/v1/verify?token=${hashedToken}&type=invite&redirect_to=${encodeURIComponent(redirectTo)}`;
+  const verifyUrl = `${appUrl}/auth/callback?token_hash=${hashedToken}&type=invite`;
 
   // Send invite email via our own SMTP (bypasses GoTrue's broken URL generation)
   try {
