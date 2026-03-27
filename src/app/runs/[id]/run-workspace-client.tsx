@@ -397,13 +397,11 @@ export function RunWorkspaceClient({
   // ─── Sidebar: dark theme matching Figma mockup ─────────────────────────
   const sidebar = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Brand header — matching mockup: logo in lighter container */}
+      {/* Brand header — full logo in lighter container */}
       <div className="mx-3 mt-3 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 pt-6 pb-5 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="mx-auto h-14 w-14 rounded-xl mb-3 ring-2 ring-brand-primary/30" />
-        <div className="text-lg font-bold text-brand-primary tracking-tight">StrategAIze</div>
-        <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.2em] mt-0.5">AI that works</div>
-        <div className="mt-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto h-12 w-auto mb-4" />
+        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <div className="mt-3">
           <div className="text-sm font-bold text-white">Blueprint Assessment</div>
           <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
@@ -551,12 +549,8 @@ export function RunWorkspaceClient({
         {/* Header — Dual Progress */}
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
           <div className="flex items-center justify-between gap-8 px-8 py-5">
-            {/* LEFT: Logo + Title + Breadcrumb */}
-            <div className="flex items-center gap-4 flex-shrink-0 min-w-0 pl-10 lg:pl-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo-full.svg" alt="StrategAIze" className="h-10 w-auto hidden lg:block" />
-              <div className="hidden lg:block h-8 w-px bg-slate-200" />
-              <div>
+            {/* LEFT: Title + Breadcrumb */}
+            <div className="flex-shrink-0 min-w-0 pl-10 lg:pl-0">
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-1 truncate">
                 {run.title}
               </h1>
@@ -570,7 +564,6 @@ export function RunWorkspaceClient({
                 ) : (
                   <span className="text-slate-400">Frage auswählen um zu beginnen</span>
                 )}
-              </div>
               </div>
             </div>
 
@@ -620,15 +613,18 @@ export function RunWorkspaceClient({
               })()}
             </div>
 
-            {/* RIGHT: Status + Action */}
-            <div className="flex flex-col gap-2 flex-shrink-0 items-end">
-              <StatusBadge status={run.status} />
+            {/* RIGHT: Status + Action — same size, horizontal */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-white/80 animate-pulse" />
+                {run.status === "collecting" ? "In Bearbeitung" : run.status === "submitted" ? "Eingereicht" : "Gesperrt"}
+              </div>
               {!isAdmin && !isLocked && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <button
                       disabled={submitting || answered === 0}
-                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white shadow-md text-xs font-bold uppercase tracking-wider disabled:opacity-50 hover:shadow-lg hover:scale-[1.02] transition-all"
+                      className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white shadow-md text-xs font-bold uppercase tracking-wider disabled:opacity-50 hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
                     >
                       {submitting ? "Wird eingereicht..." : "Checkpoint einreichen"}
                     </button>
