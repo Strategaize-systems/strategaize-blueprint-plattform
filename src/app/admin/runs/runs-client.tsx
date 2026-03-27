@@ -239,38 +239,33 @@ export function RunsClient({ email }: { email: string }) {
           <div className="space-y-4">
             {runs.map((run) => (
               <Link key={run.id} href={`/admin/runs/${run.id}`}>
-                <Card className="relative overflow-hidden cursor-pointer">
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                  <CardHeader className="pb-3 pt-5">
+                <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
+                  <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                  <div className="px-6 pt-6 pb-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg text-brand-primary-dark">{run.title}</CardTitle>
+                        <h3 className="text-lg font-bold text-slate-900">{run.title}</h3>
                         <p className="text-sm text-slate-500 mt-1">
                           {run.tenant_name ?? "Unbekannt"} &middot; Katalog v{run.catalog_version}
                         </p>
                       </div>
                       <StatusBadge status={run.status} />
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                  <div className="px-6 pb-5">
                     <ProgressIndicator
                       answered={run.answered_count}
                       total={run.question_count}
                     />
                     <div className="flex gap-4 text-xs text-slate-500 mt-3">
-                      <span><span className="font-semibold text-brand-primary">{run.evidence_count}</span> Evidence-Dokumente</span>
-                      <span>
-                        Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}
-                      </span>
+                      <span><span className="font-bold text-brand-primary">{run.evidence_count}</span> Evidence</span>
+                      <span>Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}</span>
                       {run.submitted_at && (
-                        <span>
-                          Eingereicht:{" "}
-                          {new Date(run.submitted_at).toLocaleDateString("de-DE")}
-                        </span>
+                        <span>Eingereicht: {new Date(run.submitted_at).toLocaleDateString("de-DE")}</span>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

@@ -239,12 +239,12 @@ export function CatalogClient({ email }: { email: string }) {
                 open={expandedSnapshotId === snap.id}
                 onOpenChange={() => toggleQuestions(snap.id)}
               >
-                <Card className="relative overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                  <CardHeader className="pb-3 pt-5">
+                <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+                  <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                  <div className="px-6 pt-6 pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CardTitle className="text-lg text-brand-primary-dark">v{snap.version}</CardTitle>
+                        <span className="text-lg font-bold text-slate-900">v{snap.version}</span>
                         <Badge variant="secondary" className="text-xs">
                           {snap.blueprint_version}
                         </Badge>
@@ -258,17 +258,17 @@ export function CatalogClient({ email }: { email: string }) {
                         </CollapsibleTrigger>
                       </div>
                     </div>
-                    <CardDescription className="font-mono text-xs text-slate-400">
+                    <p className="font-mono text-xs text-slate-400 mt-1">
                       Hash: {snap.hash.slice(0, 16)}...
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-slate-500">
+                    </p>
+                  </div>
+                  <div className="px-6 pb-4">
+                    <p className="text-sm text-slate-400">
                       Importiert: {new Date(snap.created_at).toLocaleString("de-DE")}
                     </p>
-                  </CardContent>
+                  </div>
                   <CollapsibleContent>
-                    <CardContent className="pt-0">
+                    <div className="px-6 pb-5">
                       {questionsLoading ? (
                         <Skeleton className="h-32 w-full" />
                       ) : (
@@ -301,9 +301,9 @@ export function CatalogClient({ email }: { email: string }) {
                           </table>
                         </div>
                       )}
-                    </CardContent>
+                    </div>
                   </CollapsibleContent>
-                </Card>
+                </div>
               </Collapsible>
             ))}
           </div>

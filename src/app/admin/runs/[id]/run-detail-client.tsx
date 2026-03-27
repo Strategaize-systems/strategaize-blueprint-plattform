@@ -231,40 +231,40 @@ export function RunDetailClient({
           </Alert>
         )}
 
-        {/* Stats — KPI Cards with Gradient Values */}
+        {/* Stats — Premium KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-            <CardContent className="pt-5 pb-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Fragen</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent">{total}</p>
-            </CardContent>
-          </Card>
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-success-dark to-brand-success" />
-            <CardContent className="pt-5 pb-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Beantwortet</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-brand-success-dark to-brand-success bg-clip-text text-transparent">{answered}</p>
-            </CardContent>
-          </Card>
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-            <CardContent className="pt-5 pb-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Evidence</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent">
+          <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+            <div className="px-5 pt-5 pb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Fragen</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent mt-1">{total}</p>
+            </div>
+          </div>
+          <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-success-dark to-brand-success" />
+            <div className="px-5 pt-5 pb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Beantwortet</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-success-dark to-brand-success bg-clip-text text-transparent mt-1">{answered}</p>
+            </div>
+          </div>
+          <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+            <div className="px-5 pt-5 pb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Evidence</p>
+              <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent mt-1">
                 {run.questions.reduce((sum, q) => sum + q.evidence_count, 0)}
               </p>
-            </CardContent>
-          </Card>
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-slate-200" />
-            <CardContent className="pt-5 pb-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Erstellt</p>
-              <p className="text-lg font-bold text-slate-900">
+            </div>
+          </div>
+          <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+            <div className="absolute inset-x-0 top-0 h-1.5 bg-slate-300" />
+            <div className="px-5 pt-5 pb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Erstellt</p>
+              <p className="text-lg font-bold text-slate-900 mt-1">
                 {new Date(run.created_at).toLocaleDateString("de-DE")}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Progress */}

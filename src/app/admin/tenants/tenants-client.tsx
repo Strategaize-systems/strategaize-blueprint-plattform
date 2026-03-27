@@ -200,11 +200,11 @@ export function TenantsClient({ email }: { email: string }) {
         ) : (
           <div className="space-y-4">
             {tenants.map((tenant) => (
-              <Card key={tenant.id} className="relative overflow-hidden">
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                <CardHeader className="pb-3 pt-5">
+              <div key={tenant.id} className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                <div className="px-6 pt-6 pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-brand-primary-dark">{tenant.name}</CardTitle>
+                    <h3 className="text-lg font-bold text-slate-900">{tenant.name}</h3>
                     <Button
                       variant="outline"
                       size="sm"
@@ -213,21 +213,21 @@ export function TenantsClient({ email }: { email: string }) {
                       Einladen
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div className="px-6 pb-5">
                   <div className="flex gap-6 text-sm">
-                    <span className="text-slate-600">
-                      Owner: <span className="font-medium text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
-                    </span>
-                    <span className="text-slate-600">
-                      <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
+                    <span className="text-slate-500">
+                      Owner: <span className="font-semibold text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
                     </span>
                     <span className="text-slate-500">
+                      <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
+                    </span>
+                    <span className="text-slate-400">
                       Erstellt: {new Date(tenant.created_at).toLocaleDateString("de-DE")}
                     </span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}
