@@ -47,7 +47,7 @@ export function LoginForm() {
       <Card className="relative w-full max-w-md overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
         <CardHeader className="pt-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary shadow-[var(--shadow-glow-brand)]">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_16px_rgba(68,84,184,0.4)]">
             <LayoutDashboard className="h-6 w-6 text-white" />
           </div>
           <CardTitle className="text-2xl text-slate-900">StrategAIze Login</CardTitle>

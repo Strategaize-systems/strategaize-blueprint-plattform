@@ -64,11 +64,11 @@ export function DashboardClient({ profile }: { profile: Profile }) {
       <header className="bg-white border-b shadow-sm">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_12px_rgba(68,84,184,0.3)]">
               <LayoutDashboard className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900">StrategAIze</h1>
+              <h1 className="text-lg font-bold text-slate-900 tracking-tight">StrategAIze</h1>
               <p className="text-xs text-slate-500">{profile.email}</p>
             </div>
           </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
-import { LayoutDashboard, Users, BookOpen, Play, LogOut, Menu, X } from "lucide-react";
+import { Users, BookOpen, Play, LogOut, Menu, X, LayoutDashboard, Shield } from "lucide-react";
 import { useState } from "react";
 
 const NAV_ITEMS = [
@@ -22,22 +22,29 @@ export function AdminSidebar({ email }: { email?: string }) {
 
   const sidebarContent = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary">
-          <LayoutDashboard className="h-5 w-5 text-white" />
-        </div>
-        <div>
-          <div className="text-sm font-bold text-white">StrategAIze</div>
-          <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-            Admin
+      {/* Brand header */}
+      <div className="px-5 py-5">
+        <div className="flex items-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_12px_rgba(68,84,184,0.4)]">
+            <LayoutDashboard className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
+            <div className="flex items-center gap-1.5">
+              <Shield className="h-3 w-3 text-slate-500" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Administration
+              </span>
+            </div>
           </div>
         </div>
+        {/* Subtle divider with brand gradient */}
+        <div className="mt-4 h-px bg-gradient-to-r from-brand-primary/30 via-brand-primary/10 to-transparent" />
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        <div className="mb-3 px-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+      <nav className="flex-1 space-y-0.5 px-3">
+        <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Verwaltung
         </div>
         {NAV_ITEMS.map((item) => {
@@ -50,11 +57,11 @@ export function AdminSidebar({ email }: { email?: string }) {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white shadow-[0_10px_15px_-3px_rgba(68,84,184,0.25)]"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white shadow-[0_8px_16px_-4px_rgba(68,84,184,0.35)]"
+                  : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
               }`}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className={`h-4 w-4 ${isActive ? "text-white" : ""}`} />
               {item.label}
             </Link>
           );
@@ -62,15 +69,15 @@ export function AdminSidebar({ email }: { email?: string }) {
       </nav>
 
       {/* User info + Logout */}
-      <div className="border-t border-white/10 px-3 py-4">
+      <div className="border-t border-white/[0.06] px-3 py-4">
         {email && (
-          <div className="mb-3 truncate px-2 text-xs text-slate-500" title={email}>
+          <div className="mb-2 truncate px-3 text-xs text-slate-500" title={email}>
             {email}
           </div>
         )}
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-white"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition-all duration-200 hover:bg-white/[0.06] hover:text-slate-300"
         >
           <LogOut className="h-4 w-4" />
           Abmelden
