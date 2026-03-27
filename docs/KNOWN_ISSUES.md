@@ -173,3 +173,16 @@
 - Summary: Identisch mit ISSUE-002. 89 TS-Dateien, 0 Tests. Final-Check bestätigt: Regressionsrisiko bei zukünftigen Änderungen.
 - Impact: Keine automatische Erkennung von Regressionen bei Deployments
 - Next Action: Test-Framework (vitest) als eigenen Slice in V1.1 oder V2 planen
+
+### ISSUE-021 — run_submit Funktions-Signatur Konflikt nach Block-Migration
+- Status: resolved
+- Severity: Blocker
+- Area: Database / Migration
+- Summary: Nach Migration 003 (Block-Checkpoints) findet PostgREST die Funktion run_submit nicht im Schema-Cache, weil die alte 2-Parameter-Signatur nicht gedroppt wurde. Fix: DROP FUNCTION IF EXISTS run_submit(uuid, text) vor CREATE OR REPLACE.
+- Next Action: Migration nochmal auf Hetzner ausfuehren mit DROP FUNCTION zuerst.
+
+### ISSUE-022 — Textarea wird nach Antwort speichern nicht geleert
+- Status: resolved
+- Severity: Low
+- Area: Frontend / UX
+- Summary: Nach erfolgreichem Speichern einer Antwort blieb der Text in der Textarea stehen. Fix: setAnswerText("") nach erfolgreichem Save.

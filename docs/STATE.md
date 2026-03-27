@@ -10,7 +10,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: stable
-- Current Focus: UI-Update komplett (SLC-007 bis SLC-014). Alle Seiten auf Premium v2.1 Level. Nächster Schritt: Checkpoint-Backend oder LLM-Integration.
+- Current Focus: SLC-015 Block-Checkpoints done (DB-Migration nötig). SLC-016 Chat + Antwort generieren geplant. Nächster Schritt: SLC-016 implementieren, dann Dify-Anbindung.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps

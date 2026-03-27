@@ -14,7 +14,10 @@ ALTER TABLE run_submissions ADD CONSTRAINT run_submissions_run_id_block_snapshot
 -- 3. Index for block-filtered queries
 CREATE INDEX IF NOT EXISTS idx_submissions_run_block ON run_submissions (run_id, block);
 
--- 4. Replace run_submit() function with block-aware version
+-- 4. Drop old function signature (2 params) before creating new one (3 params)
+DROP FUNCTION IF EXISTS run_submit(uuid, text);
+
+-- 5. Create new run_submit() function with block parameter
 CREATE OR REPLACE FUNCTION run_submit(
   p_run_id uuid,
   p_block  text,

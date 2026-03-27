@@ -247,6 +247,7 @@ export function RunWorkspaceClient({
       );
       if (res.ok) {
         setMessage({ text: "Antwort gespeichert", type: "success" });
+        setAnswerText("");
         setEventKey((k) => k + 1);
         await loadRun();
       } else {
