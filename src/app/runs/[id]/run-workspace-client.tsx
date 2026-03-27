@@ -376,109 +376,144 @@ export function RunWorkspaceClient({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
-  // ─── Sidebar: compact question navigation ─────────────────────────────
+  // Group questions by unterbereich within a block
+  function groupByUnterbereich(questions: Question[]) {
+    const groups: { label: string; questions: Question[] }[] = [];
+    let currentLabel = "";
+    let currentGroup: Question[] = [];
+    for (const q of questions) {
+      if (q.unterbereich !== currentLabel) {
+        if (currentGroup.length > 0) groups.push({ label: currentLabel, questions: currentGroup });
+        currentLabel = q.unterbereich;
+        currentGroup = [q];
+      } else {
+        currentGroup.push(q);
+      }
+    }
+    if (currentGroup.length > 0) groups.push({ label: currentLabel, questions: currentGroup });
+    return groups;
+  }
+
+  // ─── Sidebar: dark theme with block descriptions + categories ─────────
   const sidebar = (
-    <div className="flex h-full flex-col bg-white border-r">
-      {/* Sidebar header */}
-      <div className="border-b px-4 py-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Fragennavigation
-          </span>
-          <span className="text-xs font-bold text-brand-primary">
-            {answered}/{total}
-          </span>
+    <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
+      {/* Brand header */}
+      <div className="px-5 py-5">
+        <div className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
+          <div>
+            <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
+            <div className="text-[10px] font-medium text-slate-500">Blueprint Assessment</div>
+          </div>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${total > 0 ? Math.round((answered / total) * 100) : 0}%`,
-              background: answered === total && total > 0
-                ? "linear-gradient(to right, #00a84f, #4dcb8b)"
-                : "linear-gradient(to right, #120774, #4454b8)",
-            }}
-          />
-        </div>
+        <div className="mt-2 text-[10px] text-slate-600">Strategische Unternehmensanalyse</div>
+        <div className="mt-3 h-px bg-gradient-to-r from-brand-primary/30 via-brand-primary/10 to-transparent" />
       </div>
 
       {/* Block groups */}
-      <div className="flex-1 overflow-y-auto py-1">
+      <div className="flex-1 overflow-y-auto px-3 py-1">
         {blocks.map((block) => {
           const questions = questionsByBlock.get(block) ?? [];
           const blockAnswered = questions.filter((q) => q.latest_answer).length;
           const isOpen = openBlocks.has(block);
+          const hasActiveQuestion = questions.some((q) => q.id === activeQuestion);
+          const untergruppen = groupByUnterbereich(questions);
 
           return (
-            <div key={block}>
+            <div key={block} className="mb-1">
               <button
                 onClick={() => toggleBlock(block)}
-                className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-slate-50 transition-colors"
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all duration-200 ${
+                  isOpen || hasActiveQuestion
+                    ? "bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white shadow-[0_8px_16px_-4px_rgba(68,84,184,0.35)]"
+                    : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
+                }`}
               >
-                <div className="flex items-center gap-2">
-                  {isOpen ? (
-                    <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-                  ) : (
-                    <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-                  )}
-                  <span className="text-sm font-semibold text-slate-700">
-                    Block {block}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    {BLOCK_NAMES[block] ?? ""}
-                  </span>
+                <div
+                  className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                    blockAnswered === questions.length && questions.length > 0
+                      ? "bg-gradient-to-br from-brand-success-dark to-brand-success shadow-[0_0_6px_rgba(0,168,79,0.4)]"
+                      : blockAnswered > 0
+                        ? "bg-gradient-to-br from-brand-warning-dark to-brand-warning shadow-[0_0_6px_rgba(242,183,5,0.4)]"
+                        : "bg-slate-600"
+                  }`}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">Block {block}: {BLOCK_NAMES[block] ?? ""}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${isOpen || hasActiveQuestion ? "text-white/60" : "text-slate-600"}`}>
+                      Analyse
+                    </span>
+                    <span className={`text-[10px] ${isOpen || hasActiveQuestion ? "text-white/40" : "text-slate-600"}`}>&bull;</span>
+                    <span className={`text-[10px] tabular-nums font-semibold ${isOpen || hasActiveQuestion ? "text-white/60" : "text-slate-600"}`}>
+                      {blockAnswered}/{questions.length}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-xs tabular-nums text-slate-400">
-                  {blockAnswered}/{questions.length}
-                </span>
+                {isOpen ? (
+                  <ChevronDown className={`h-4 w-4 flex-shrink-0 ${isOpen ? "text-white/60" : "text-slate-600"}`} />
+                ) : (
+                  <ChevronRight className={`h-4 w-4 flex-shrink-0 ${hasActiveQuestion ? "text-white/60" : "text-slate-600"}`} />
+                )}
               </button>
 
               {isOpen && (
-                <div className="pb-1">
-                  {questions.map((q) => {
-                    const isActive = activeQuestion === q.id;
-                    const hasAnswer = !!q.latest_answer;
-                    return (
-                      <button
-                        key={q.id}
-                        onClick={() => selectQuestion(q)}
-                        className={`group flex w-full items-center gap-2.5 px-4 py-2 text-left transition-all ${
-                          isActive
-                            ? "bg-brand-primary/5 border-l-2 border-brand-primary"
-                            : "border-l-2 border-transparent hover:bg-slate-50"
-                        }`}
-                      >
-                        {/* Status dot */}
-                        <div
-                          className={`h-2 w-2 flex-shrink-0 rounded-full ${
-                            hasAnswer
-                              ? "bg-gradient-to-br from-brand-success-dark to-brand-success shadow-[0_0_4px_rgba(0,168,79,0.3)]"
-                              : "bg-slate-300"
-                          }`}
-                        />
-                        {/* Question text */}
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-[11px] font-mono ${isActive ? "text-brand-primary" : "text-slate-400"}`}>
-                            {q.frage_id}
-                          </span>
-                          <p className={`text-xs leading-snug line-clamp-1 ${isActive ? "text-brand-primary-dark font-medium" : "text-slate-600"}`}>
-                            {q.fragetext}
-                          </p>
-                        </div>
-                        {/* Evidence indicator */}
-                        {q.evidence_count > 0 && (
-                          <span className="flex-shrink-0 text-[10px] font-semibold text-brand-primary">
-                            {q.evidence_count}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                <div className="py-1 pl-2">
+                  {untergruppen.map((group) => (
+                    <div key={group.label} className="mb-1">
+                      {/* Category label */}
+                      <div className="px-3 py-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          {group.label}
+                        </span>
+                      </div>
+                      {/* Questions */}
+                      {group.questions.map((q) => {
+                        const isActive = activeQuestion === q.id;
+                        const hasAnswer = !!q.latest_answer;
+                        return (
+                          <button
+                            key={q.id}
+                            onClick={() => selectQuestion(q)}
+                            className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all duration-150 ${
+                              isActive
+                                ? "bg-white/10 text-white"
+                                : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-300"
+                            }`}
+                          >
+                            <div
+                              className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${
+                                hasAnswer
+                                  ? "bg-brand-success shadow-[0_0_4px_rgba(0,168,79,0.4)]"
+                                  : "bg-slate-600"
+                              }`}
+                            />
+                            <p className="text-xs leading-snug line-clamp-1 flex-1">
+                              {q.fragetext}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           );
         })}
+      </div>
+
+      {/* Abmelden */}
+      <div className="border-t border-white/[0.06] px-5 py-4">
+        <Link
+          href="/dashboard"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/[0.1] hover:text-slate-200"
+        >
+          Abmelden
+        </Link>
       </div>
     </div>
   );
