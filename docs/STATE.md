@@ -10,14 +10,14 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: stable
-- Current Focus: Workspace Redesign abgeschlossen (SLC-012). Nächster Schritt: User-Feedback-Runde + Feinschliff.
+- Current Focus: Workspace Premium geplant (SLC-013, 5 MTs). Style Guide v2.1 Assessment Patterns. Nächster Schritt: SLC-013/MT-1 Header Dual Progress.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. Workspace-Redesign: Block-Navigation als Sidebar, mehr Brand/CI, Logo-Icon überall
-2. StrategAIze Logo-Icon in alle Seiten integrieren (Kompass mit grünem Pfeil)
-3. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
-4. BL-012-016: LLM-Integration (Dify + Ollama/Qwen), Review-Übersicht
+1. SLC-013: Workspace Premium — Dual Progress Header, Dark Sidebar, Markante Fragekarte, History Panel, Evidence Modal
+2. SLC-014: Admin Pages Premium — Konsistente Card-Styles, Sidebar-Polish
+3. Logo-Asset: Hochauflösendes SVG/PNG für alle Seiten (noch offen)
+4. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
 
 ## Active Scope
 MVP-1 — Kernplattform implementiert, deployed und E2E getestet (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25. SMTP konfiguriert (IONOS), Invite-Flow komplett funktional seit 2026-03-26.
