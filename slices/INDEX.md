@@ -33,8 +33,8 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-010 | [Tenant Pages: Dashboard + Workspace](SLC-010-tenant-pages.md) | BL-020 | done | High | 2026-03-26 |
 | SLC-011 | [Auth Pages + Shared Components](SLC-011-auth-shared.md) | BL-020 | done | Medium | 2026-03-26 |
 | SLC-012 | [Workspace Redesign](SLC-012-workspace-redesign.md) | BL-020 | done | High | 2026-03-27 |
-| SLC-013 | [Workspace Premium](SLC-013-workspace-premium.md) | BL-020 | planned | High | 2026-03-27 |
-| SLC-014 | [Admin Pages Premium](SLC-014-admin-premium.md) | BL-020 | planned | Medium | 2026-03-27 |
+| SLC-013 | [Workspace Premium](SLC-013-workspace-premium.md) | BL-020 | done | High | 2026-03-27 |
+| SLC-014 | [Admin Pages Premium](SLC-014-admin-premium.md) | BL-020 | in_progress | Medium | 2026-03-27 |
 
 ## Execution Order
 
