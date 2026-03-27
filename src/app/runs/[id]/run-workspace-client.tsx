@@ -756,80 +756,111 @@ export function RunWorkspaceClient({
                 )}
               </div>
 
-              {/* ── Evidence / Nachweise ── */}
-              {!isAdmin && (
-                <Card className="border-0 shadow-md">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-brand-primary" />
-                      <CardTitle className="text-base">Nachweise &amp; Evidence</CardTitle>
+              {/* ── History Panel (Style Guide 14.5) ── */}
+              {!isAdmin && activeQuestion && (
+                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                  <div className="px-8 py-5 border-b border-slate-200 bg-slate-50/50">
+                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center shadow-md">
+                        <FileText className="h-4 w-4 text-white" />
+                      </div>
+                      Antwort-Verlauf
+                    </h3>
+                  </div>
+                  <div className="overflow-y-auto" style={{ maxHeight: "400px" }}>
+                    <div className="p-6">
+                      <EventHistory
+                        key={`${activeQuestion}-${eventKey}`}
+                        runId={runId}
+                        questionId={activeQuestion}
+                      />
                     </div>
-                    <CardDescription>
-                      Dokumente und Notizen zur Untermauerung Ihrer Antwort
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Evidence list */}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Evidence / Nachweise (Style Guide 14.6) ── */}
+              {!isAdmin && (
+                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                  <div className="px-8 py-5 border-b border-slate-200 bg-slate-50/50">
+                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center shadow-md">
+                        <FileText className="h-4 w-4 text-white" />
+                      </div>
+                      Hochgeladene Nachweise
+                      {evidenceItems.length > 0 && (
+                        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
+                          {evidenceItems.length}
+                        </span>
+                      )}
+                    </h3>
+                  </div>
+                  <div className="p-6 space-y-3">
                     {evidenceLoading ? (
-                      <Skeleton className="h-16 w-full rounded-lg" />
+                      <Skeleton className="h-16 w-full rounded-xl" />
                     ) : evidenceItems.length > 0 ? (
-                      <div className="space-y-2">
-                        {evidenceItems.map((item) => (
+                      evidenceItems.map((item) => {
+                        const ext = item.file_name?.split(".").pop()?.toUpperCase() ?? "TXT";
+                        return (
                           <div
                             key={item.id}
-                            className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/50 p-3"
+                            className="group flex items-center justify-between p-5 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
                           >
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="neutral" className="text-[10px]">
-                                  {item.label}
-                                </Badge>
-                                {item.relation && (
-                                  <Badge variant="secondary" className="text-[10px]">
-                                    {item.relation}
-                                  </Badge>
+                            <div className="flex items-center gap-4">
+                              {item.item_type === "file" ? (
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                                  {ext}
+                                </div>
+                              ) : (
+                                <div className="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                  TXT
+                                </div>
+                              )}
+                              <div>
+                                <div className="text-sm font-semibold text-slate-900 mb-0.5">
+                                  {item.item_type === "file" ? item.file_name : "Textnotiz"}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                  {item.item_type === "file" && (
+                                    <>
+                                      <span>{formatFileSize(item.file_size_bytes)}</span>
+                                      <span>&bull;</span>
+                                    </>
+                                  )}
+                                  <span>{new Date(item.created_at).toLocaleDateString("de-DE")}</span>
+                                  <span>&bull;</span>
+                                  <span className="font-medium">{item.label}</span>
+                                </div>
+                                {item.item_type === "note" && item.note_text && (
+                                  <p className="mt-1 text-xs text-slate-500 line-clamp-2">{item.note_text}</p>
                                 )}
                               </div>
-                              {item.item_type === "file" ? (
-                                <p className="mt-1 text-sm truncate text-slate-700">
-                                  {item.file_name}{" "}
-                                  <span className="text-slate-400">
-                                    ({formatFileSize(item.file_size_bytes)})
-                                  </span>
-                                </p>
-                              ) : (
-                                <p className="mt-1 text-sm text-slate-500 line-clamp-2">
-                                  {item.note_text}
-                                </p>
-                              )}
-                              <p className="text-[11px] text-slate-400 mt-1">
-                                {new Date(item.created_at).toLocaleString("de-DE")}
-                              </p>
                             </div>
                             {item.item_type === "file" && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => downloadEvidence(item.id)}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
                               >
                                 Download
                               </Button>
                             )}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })
                     ) : (
-                      <p className="text-sm text-slate-400 py-2">
+                      <p className="text-sm text-slate-400 py-4 text-center">
                         Noch keine Nachweise verknüpft.
                       </p>
                     )}
 
+                    {/* Upload section */}
                     {!isLocked && (
                       <>
-                        <Separator />
-                        {/* File upload — compact */}
+                        <Separator className="my-4" />
                         <div className="space-y-3">
-                          <Label className="text-sm font-medium text-slate-600">Datei hochladen</Label>
+                          <Label className="text-sm font-bold text-slate-700 uppercase tracking-wide">Datei hochladen</Label>
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div>
                               <Input
@@ -844,9 +875,7 @@ export function RunWorkspaceClient({
                             </div>
                             <div className="space-y-2">
                               <Select value={uploadLabel} onValueChange={setUploadLabel}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Label wählen" />
-                                </SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Kategorie wählen" /></SelectTrigger>
                                 <SelectContent>
                                   {EVIDENCE_LABELS.map((l) => (
                                     <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
@@ -854,9 +883,7 @@ export function RunWorkspaceClient({
                                 </SelectContent>
                               </Select>
                               <Select value={uploadRelation} onValueChange={setUploadRelation}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Relation" />
-                                </SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Relation" /></SelectTrigger>
                                 <SelectContent>
                                   {EVIDENCE_RELATIONS.map((r) => (
                                     <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
@@ -873,12 +900,9 @@ export function RunWorkspaceClient({
                             {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
                           </Button>
                         </div>
-
-                        <Separator />
-
-                        {/* Note — compact */}
+                        <Separator className="my-4" />
                         <div className="space-y-3">
-                          <Label className="text-sm font-medium text-slate-600">Textnotiz hinzufügen</Label>
+                          <Label className="text-sm font-bold text-slate-700 uppercase tracking-wide">Textnotiz hinzufügen</Label>
                           <Textarea
                             value={noteText}
                             onChange={(e) => setNoteText(e.target.value)}
@@ -888,9 +912,7 @@ export function RunWorkspaceClient({
                           />
                           <div className="flex gap-2">
                             <Select value={noteLabel} onValueChange={setNoteLabel}>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Label" />
-                              </SelectTrigger>
+                              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Kategorie" /></SelectTrigger>
                               <SelectContent>
                                 {EVIDENCE_LABELS.map((l) => (
                                   <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
@@ -898,9 +920,7 @@ export function RunWorkspaceClient({
                               </SelectContent>
                             </Select>
                             <Select value={noteRelation} onValueChange={setNoteRelation}>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Relation" />
-                              </SelectTrigger>
+                              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Relation" /></SelectTrigger>
                               <SelectContent>
                                 {EVIDENCE_RELATIONS.map((r) => (
                                   <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
@@ -919,29 +939,8 @@ export function RunWorkspaceClient({
                         </div>
                       </>
                     )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* ── History — collapsible utility ── */}
-              {!isAdmin && activeQuestion && (
-                <Collapsible>
-                  <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 transition-colors">
-                    <span>Verlauf &amp; Änderungshistorie</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-2">
-                    <Card className="border-0 shadow-sm">
-                      <CardContent className="pt-4">
-                        <EventHistory
-                          key={`${activeQuestion}-${eventKey}`}
-                          runId={runId}
-                          questionId={activeQuestion}
-                        />
-                      </CardContent>
-                    </Card>
-                  </CollapsibleContent>
-                </Collapsible>
+                  </div>
+                </div>
               )}
             </div>
           ) : (
