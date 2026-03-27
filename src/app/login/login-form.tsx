@@ -47,7 +47,7 @@ export function LoginForm() {
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
         <CardHeader className="pt-8 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
+          <img src="/brand/logo-full.png" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
           <CardTitle className="text-2xl text-slate-900">Login</CardTitle>
           <CardDescription>
             Melden Sie sich mit Ihren Zugangsdaten an.

@@ -26,7 +26,7 @@ export function AdminSidebar({ email }: { email?: string }) {
       <div className="px-5 py-5">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
+          <img src="/brand/logo-symbol.png" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
           <div>
             <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
             <div className="flex items-center gap-1.5">

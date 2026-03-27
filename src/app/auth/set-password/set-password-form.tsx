@@ -42,7 +42,7 @@ export function SetPasswordForm() {
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-success-dark to-brand-success" />
         <CardHeader className="pt-8 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
+          <img src="/brand/logo-full.png" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
           <CardTitle className="text-2xl text-slate-900">Passwort setzen</CardTitle>
           <CardDescription>
             Willkommen bei StrategAIze. Bitte setzen Sie Ihr Passwort.
