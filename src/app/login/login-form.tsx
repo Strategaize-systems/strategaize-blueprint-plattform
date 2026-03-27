@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LayoutDashboard } from "lucide-react";
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -47,10 +46,9 @@ export function LoginForm() {
       <Card className="relative w-full max-w-md overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
         <CardHeader className="pt-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_16px_rgba(68,84,184,0.4)]">
-            <LayoutDashboard className="h-6 w-6 text-white" />
-          </div>
-          <CardTitle className="text-2xl text-slate-900">StrategAIze Login</CardTitle>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
+          <CardTitle className="text-2xl text-slate-900">Login</CardTitle>
           <CardDescription>
             Melden Sie sich mit Ihren Zugangsdaten an.
           </CardDescription>

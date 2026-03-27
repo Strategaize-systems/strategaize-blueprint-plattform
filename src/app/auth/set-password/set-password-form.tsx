@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LayoutDashboard } from "lucide-react";
 
 export function SetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -42,9 +41,8 @@ export function SetPasswordForm() {
       <Card className="relative w-full max-w-md overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-success-dark to-brand-success" />
         <CardHeader className="pt-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-brand-success-dark to-brand-success shadow-[var(--shadow-glow-success)]">
-            <LayoutDashboard className="h-6 w-6 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
           <CardTitle className="text-2xl text-slate-900">Passwort setzen</CardTitle>
           <CardDescription>
             Willkommen bei StrategAIze. Bitte setzen Sie Ihr Passwort.

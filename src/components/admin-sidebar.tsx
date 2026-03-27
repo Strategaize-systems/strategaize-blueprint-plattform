@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
-import { Users, BookOpen, Play, LogOut, Menu, X, LayoutDashboard, Shield } from "lucide-react";
+import { Users, BookOpen, Play, LogOut, Menu, X, Shield } from "lucide-react";
 import { useState } from "react";
 
 const NAV_ITEMS = [
@@ -25,9 +25,8 @@ export function AdminSidebar({ email }: { email?: string }) {
       {/* Brand header */}
       <div className="px-5 py-5">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_12px_rgba(68,84,184,0.4)]">
-            <LayoutDashboard className="h-5 w-5 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
           <div>
             <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
             <div className="flex items-center gap-1.5">

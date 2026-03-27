@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LogOut, FileText } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -64,9 +64,8 @@ export function DashboardClient({ profile }: { profile: Profile }) {
       <header className="bg-white border-b shadow-sm">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-dark shadow-[0_4px_12px_rgba(68,84,184,0.3)]">
-              <LayoutDashboard className="h-5 w-5 text-white" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-9 w-9 rounded-lg" />
             <div>
               <h1 className="text-lg font-bold text-slate-900 tracking-tight">StrategAIze</h1>
               <p className="text-xs text-slate-500">{profile.email}</p>
@@ -98,7 +97,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-                <LayoutDashboard className="h-8 w-8 text-slate-400" />
+                <FileText className="h-8 w-8 text-slate-400" />
               </div>
               <p className="text-lg font-semibold text-slate-900">Noch keine Runs zugewiesen</p>
               <p className="mt-1 text-sm text-slate-500">

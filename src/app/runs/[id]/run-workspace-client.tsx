@@ -43,7 +43,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { LayoutDashboard, ChevronDown, ChevronRight, FileText, Menu, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X } from "lucide-react";
 
 const EVIDENCE_LABELS = [
   { value: "policy", label: "Policy" },
@@ -517,9 +517,8 @@ export function RunWorkspaceClient({
         <header className="flex-shrink-0 bg-white border-b shadow-sm">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center gap-3 pl-10 lg:pl-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary">
-                <LayoutDashboard className="h-4 w-4 text-white" />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-8 w-8 rounded-lg" />
               <div>
                 <div className="flex items-center gap-2">
                   <Link
