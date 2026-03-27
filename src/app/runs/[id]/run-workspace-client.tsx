@@ -513,38 +513,85 @@ export function RunWorkspaceClient({
 
       {/* Main area */}
       <div className="flex flex-1 flex-col overflow-hidden lg:ml-0">
-        {/* Header */}
-        <header className="flex-shrink-0 bg-white border-b shadow-sm">
-          <div className="flex items-center justify-between px-6 py-3">
-            <div className="flex items-center gap-3 pl-10 lg:pl-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-8 w-8 rounded-lg" />
-              <div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/dashboard"
-                    className="text-xs text-slate-400 hover:text-brand-primary"
-                  >
-                    Dashboard
-                  </Link>
-                  <span className="text-xs text-slate-300">/</span>
-                  <h1 className="text-sm font-bold text-slate-900">{run.title}</h1>
+        {/* Header — Dual Progress */}
+        <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
+          <div className="flex items-center justify-between gap-8 px-8 py-5">
+            {/* LEFT: Title + Breadcrumb */}
+            <div className="flex-shrink-0 min-w-0 pl-10 lg:pl-0">
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-1 truncate">
+                {run.title}
+              </h1>
+              <div className="flex items-center gap-2.5 text-sm text-slate-600">
+                {activeQ ? (
+                  <>
+                    <span className="font-semibold truncate">Block {activeQ.block}: {BLOCK_NAMES[activeQ.block] ?? ""}</span>
+                    <span className="text-slate-300">&bull;</span>
+                    <span className="font-medium truncate">{activeQ.unterbereich}</span>
+                  </>
+                ) : (
+                  <span className="text-slate-400">Frage auswählen um zu beginnen</span>
+                )}
+              </div>
+            </div>
+
+            {/* CENTER: Dual Progress */}
+            <div className="flex-1 max-w-sm space-y-2.5 hidden md:block">
+              {/* Gesamt */}
+              <div className="flex items-center gap-4">
+                <div className="w-16 text-right">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gesamt</span>
                 </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <StatusBadge status={run.status} />
-                  <span className="text-xs text-slate-400">
-                    {answered}/{total} beantwortet
+                <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-brand-success-dark to-brand-success transition-all duration-700 ease-out"
+                    style={{ width: `${total > 0 ? Math.round((answered / total) * 100) : 0}%` }}
+                  />
+                </div>
+                <div className="w-12 text-right">
+                  <span className="text-sm font-bold text-slate-900 tabular-nums">
+                    {total > 0 ? Math.round((answered / total) * 100) : 0}%
                   </span>
                 </div>
               </div>
+              {/* Block */}
+              {(() => {
+                const currentBlock = activeQ?.block;
+                if (!currentBlock) return null;
+                const blockQuestions = questionsByBlock.get(currentBlock) ?? [];
+                const blockAnswered = blockQuestions.filter((q) => q.latest_answer).length;
+                const blockTotal = blockQuestions.length;
+                const blockPercent = blockTotal > 0 ? Math.round((blockAnswered / blockTotal) * 100) : 0;
+                return (
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 text-right">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Block</span>
+                    </div>
+                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-brand-primary to-brand-primary-dark transition-all duration-700 ease-out"
+                        style={{ width: `${blockPercent}%` }}
+                      />
+                    </div>
+                    <div className="w-12 text-right">
+                      <span className="text-sm font-bold text-slate-900 tabular-nums">{blockPercent}%</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* RIGHT: Status + Action */}
+            <div className="flex flex-col gap-2 flex-shrink-0 items-end">
+              <StatusBadge status={run.status} />
               {!isAdmin && !isLocked && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button size="sm" disabled={submitting || answered === 0}>
+                    <button
+                      disabled={submitting || answered === 0}
+                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white shadow-md text-xs font-bold uppercase tracking-wider disabled:opacity-50 hover:shadow-lg hover:scale-[1.02] transition-all"
+                    >
                       {submitting ? "Wird eingereicht..." : "Checkpoint einreichen"}
-                    </Button>
+                    </button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
