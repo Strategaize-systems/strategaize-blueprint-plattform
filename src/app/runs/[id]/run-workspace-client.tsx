@@ -100,6 +100,14 @@ interface EvidenceItem {
   relation?: string | null;
 }
 
+interface Submission {
+  id: string;
+  run_id: string;
+  snapshot_version: number;
+  submitted_at: string;
+  note: string | null;
+}
+
 const BLOCK_NAMES: Record<string, string> = {
   A: "Grundverständnis",
   B: "Markt & Wettbewerb",
@@ -140,6 +148,7 @@ export function RunWorkspaceClient({
   const [noteLabel, setNoteLabel] = useState("");
   const [noteRelation, setNoteRelation] = useState("supports");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [eventKey, setEventKey] = useState(0);
 
   const loadRun = useCallback(async () => {
@@ -162,6 +171,17 @@ export function RunWorkspaceClient({
     }
   }, [runId, isAdmin]);
 
+  const loadSubmissions = useCallback(async () => {
+    if (isAdmin) return;
+    try {
+      const res = await fetch(`/api/tenant/runs/${runId}/submissions`);
+      if (res.ok) {
+        const data = await res.json();
+        setSubmissions(data.submissions ?? []);
+      }
+    } catch { /* ignore */ }
+  }, [runId, isAdmin]);
+
   const loadEvidence = useCallback(async (questionId: string) => {
     setEvidenceLoading(true);
     try {
@@ -177,7 +197,7 @@ export function RunWorkspaceClient({
     }
   }, [runId]);
 
-  useEffect(() => { loadRun(); }, [loadRun]);
+  useEffect(() => { loadRun(); loadSubmissions(); }, [loadRun, loadSubmissions]);
 
   useEffect(() => {
     if (activeQuestion && !isAdmin) {
@@ -329,6 +349,7 @@ export function RunWorkspaceClient({
         setMessage({ text: "Checkpoint erfolgreich eingereicht", type: "success" });
         setSubmitNote("");
         await loadRun();
+        await loadSubmissions();
       } else {
         const data = await res.json();
         setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
@@ -894,7 +915,7 @@ export function RunWorkspaceClient({
                     </div>
                   </div>
 
-                  {/* RIGHT: Eingereichte Checkpoints */}
+                  {/* RIGHT: Eingereichte Checkpoints — real data from API */}
                   <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
                     <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
                       <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
@@ -903,26 +924,32 @@ export function RunWorkspaceClient({
                         </div>
                         Eingereichte Checkpoints
                         <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
-                          {run.submitted_at ? "1" : "0"}
+                          {submissions.length}
                         </span>
                       </h3>
                     </div>
                     <div className="p-5 space-y-3">
-                      {run.submitted_at ? (
-                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-xs font-bold text-slate-600">
-                              {new Date(run.submitted_at).toLocaleString("de-DE")}
-                            </span>
-                            <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">v1</span>
-                            <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                              Eingereicht
-                            </span>
+                      {submissions.length > 0 ? (
+                        submissions.map((sub, idx) => (
+                          <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="text-xs font-bold text-slate-600">
+                                {new Date(sub.submitted_at).toLocaleString("de-DE")}
+                              </span>
+                              <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                                v{sub.snapshot_version}
+                              </span>
+                              {idx === 0 && (
+                                <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                                  Aktuell
+                                </span>
+                              )}
+                            </div>
+                            {sub.note && (
+                              <p className="text-xs text-slate-500 line-clamp-2">{sub.note}</p>
+                            )}
                           </div>
-                          <div className="text-xs text-slate-500">
-                            {answered}/{total} Fragen beantwortet
-                          </div>
-                        </div>
+                        ))
                       ) : (
                         <div className="py-6 text-center">
                           <p className="text-sm text-slate-400">Noch kein Checkpoint eingereicht.</p>
