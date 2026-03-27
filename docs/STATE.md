@@ -10,7 +10,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: stable
-- Current Focus: UI-Update mit Style Guide komplett (5/5 done, BL-020). Nächster Schritt: Feedback-Runde + weitere V1.1 Items.
+- Current Focus: Workspace Redesign abgeschlossen (SLC-012). Nächster Schritt: User-Feedback-Runde + Feinschliff.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
