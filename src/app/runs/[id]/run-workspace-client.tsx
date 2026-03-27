@@ -397,18 +397,19 @@ export function RunWorkspaceClient({
   // ─── Sidebar: dark theme matching Figma mockup ─────────────────────────
   const sidebar = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Brand header — large, centered like mockup */}
-      <div className="px-6 pt-8 pb-6 text-center">
+      {/* Brand header — matching mockup: logo in lighter container */}
+      <div className="mx-3 mt-3 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 pt-6 pb-5 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="mx-auto h-16 w-16 rounded-2xl mb-3" />
+        <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="mx-auto h-14 w-14 rounded-xl mb-3 ring-2 ring-brand-primary/30" />
         <div className="text-lg font-bold text-brand-primary tracking-tight">StrategAIze</div>
-        <div className="text-[10px] font-medium text-slate-500 uppercase tracking-widest mt-0.5">AI that works</div>
-        <div className="mt-4 h-px bg-gradient-to-r from-transparent via-brand-primary/30 to-transparent" />
-        <div className="mt-4">
+        <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.2em] mt-0.5">AI that works</div>
+        <div className="mt-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="mt-3">
           <div className="text-sm font-bold text-white">Blueprint Assessment</div>
           <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
         </div>
       </div>
+      <div className="h-4" />
 
       {/* Block groups */}
       <div className="flex-1 overflow-y-auto px-3 py-1">
@@ -550,8 +551,12 @@ export function RunWorkspaceClient({
         {/* Header — Dual Progress */}
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
           <div className="flex items-center justify-between gap-8 px-8 py-5">
-            {/* LEFT: Title + Breadcrumb */}
-            <div className="flex-shrink-0 min-w-0 pl-10 lg:pl-0">
+            {/* LEFT: Logo + Title + Breadcrumb */}
+            <div className="flex items-center gap-4 flex-shrink-0 min-w-0 pl-10 lg:pl-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-full.svg" alt="StrategAIze" className="h-10 w-auto hidden lg:block" />
+              <div className="hidden lg:block h-8 w-px bg-slate-200" />
+              <div>
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-1 truncate">
                 {run.title}
               </h1>
@@ -565,6 +570,7 @@ export function RunWorkspaceClient({
                 ) : (
                   <span className="text-slate-400">Frage auswählen um zu beginnen</span>
                 )}
+              </div>
               </div>
             </div>
 
