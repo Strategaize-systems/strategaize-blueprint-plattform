@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireTenant, errorResponse } from "@/lib/api-utils";
 
-// GET /api/tenant/runs/[runId]/submissions — List checkpoint history
+// GET /api/tenant/runs/[runId]/submissions?block=A — List checkpoint history
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ runId: string }> }
 ) {
   const auth = await requireTenant();
@@ -11,12 +11,20 @@ export async function GET(
 
   const { supabase } = auth;
   const { runId } = await params;
+  const { searchParams } = new URL(request.url);
+  const block = searchParams.get("block");
 
-  const { data: submissions, error } = await supabase
+  let query = supabase
     .from("run_submissions")
-    .select("id, run_id, snapshot_version, submitted_at, note")
+    .select("id, run_id, block, snapshot_version, submitted_at, note")
     .eq("run_id", runId)
     .order("snapshot_version", { ascending: false });
+
+  if (block) {
+    query = query.eq("block", block);
+  }
+
+  const { data: submissions, error } = await query;
 
   if (error) {
     return errorResponse("INTERNAL_ERROR", error.message, 500);

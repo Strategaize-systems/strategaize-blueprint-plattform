@@ -103,6 +103,7 @@ interface EvidenceItem {
 interface Submission {
   id: string;
   run_id: string;
+  block: string;
   snapshot_version: number;
   submitted_at: string;
   note: string | null;
@@ -171,10 +172,13 @@ export function RunWorkspaceClient({
     }
   }, [runId, isAdmin]);
 
-  const loadSubmissions = useCallback(async () => {
+  const loadSubmissions = useCallback(async (block?: string) => {
     if (isAdmin) return;
     try {
-      const res = await fetch(`/api/tenant/runs/${runId}/submissions`);
+      const url = block
+        ? `/api/tenant/runs/${runId}/submissions?block=${block}`
+        : `/api/tenant/runs/${runId}/submissions`;
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setSubmissions(data.submissions ?? []);
@@ -212,6 +216,7 @@ export function RunWorkspaceClient({
     setAnswerText(q.latest_answer ?? "");
     setMessage(null);
     setSidebarOpen(false);
+    loadSubmissions(q.block);
   }
 
   function toggleBlock(block: string) {
@@ -343,13 +348,16 @@ export function RunWorkspaceClient({
       const res = await fetch(`/api/tenant/runs/${runId}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submitNote.trim() ? { note: submitNote.trim() } : {}),
+        body: JSON.stringify({
+          block: activeQ?.block,
+          ...(submitNote.trim() ? { note: submitNote.trim() } : {}),
+        }),
       });
       if (res.ok) {
-        setMessage({ text: "Checkpoint erfolgreich eingereicht", type: "success" });
+        setMessage({ text: `Checkpoint für Block ${activeQ?.block} eingereicht`, type: "success" });
         setSubmitNote("");
         await loadRun();
-        await loadSubmissions();
+        await loadSubmissions(activeQ?.block);
       } else {
         const data = await res.json();
         setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
@@ -649,12 +657,12 @@ export function RunWorkspaceClient({
                       disabled={submitting || answered === 0}
                       className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white shadow-md text-xs font-bold uppercase tracking-wider disabled:opacity-50 hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
                     >
-                      {submitting ? "Wird eingereicht..." : "Checkpoint einreichen"}
+                      {submitting ? "Wird eingereicht..." : `Block ${activeQ?.block ?? ""} einreichen`}
                     </button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Checkpoint einreichen?</AlertDialogTitle>
+                      <AlertDialogTitle>Block {activeQ?.block} einreichen?</AlertDialogTitle>
                       <AlertDialogDescription>
                         Sie haben {answered} von {total} Fragen beantwortet.
                         {total - answered > 0 && (
@@ -930,26 +938,39 @@ export function RunWorkspaceClient({
                     </div>
                     <div className="p-5 space-y-3">
                       {submissions.length > 0 ? (
-                        submissions.map((sub, idx) => (
-                          <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="text-xs font-bold text-slate-600">
-                                {new Date(sub.submitted_at).toLocaleString("de-DE")}
-                              </span>
-                              <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                                v{sub.snapshot_version}
-                              </span>
-                              {idx === 0 && (
-                                <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                                  Aktuell
+                        submissions.map((sub, idx) => {
+                          const subBlock = sub.block ?? activeQ?.block;
+                          const blockQs = subBlock ? (questionsByBlock.get(subBlock) ?? []) : [];
+                          const blockAns = blockQs.filter((q) => q.latest_answer).length;
+                          return (
+                            <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all">
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                <span className="text-xs font-bold text-slate-600">
+                                  {new Date(sub.submitted_at).toLocaleString("de-DE")}
                                 </span>
+                                <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                                  v{sub.snapshot_version}
+                                </span>
+                                {sub.block && sub.block !== "ALL" && (
+                                  <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-sm">
+                                    Block {sub.block}
+                                  </span>
+                                )}
+                                {idx === 0 && (
+                                  <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                                    Aktuell
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-500">
+                                {blockAns}/{blockQs.length} Fragen in Block {subBlock} beantwortet
+                              </div>
+                              {sub.note && (
+                                <p className="text-xs text-slate-500 mt-1 line-clamp-2 italic">{sub.note}</p>
                               )}
                             </div>
-                            {sub.note && (
-                              <p className="text-xs text-slate-500 line-clamp-2">{sub.note}</p>
-                            )}
-                          </div>
-                        ))
+                          );
+                        })
                       ) : (
                         <div className="py-6 text-center">
                           <p className="text-sm text-slate-400">Noch kein Checkpoint eingereicht.</p>

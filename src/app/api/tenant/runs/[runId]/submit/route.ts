@@ -23,11 +23,12 @@ export async function POST(
   const parsed = runSubmitSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { note } = parsed.data;
+  const { block, note } = parsed.data;
 
-  // Call SECURITY DEFINER function (validates tenant ownership, run status, events exist)
+  // Call SECURITY DEFINER function (validates tenant ownership, run status, block events exist)
   const { data, error } = await supabase.rpc("run_submit", {
     p_run_id: runId,
+    p_block: block,
     p_note: note ?? null,
   });
 
@@ -56,6 +57,7 @@ export async function POST(
       submission: {
         id: data.id,
         run_id: data.run_id,
+        block: data.block,
         snapshot_version: data.snapshot_version,
         submitted_at: data.submitted_at,
       },

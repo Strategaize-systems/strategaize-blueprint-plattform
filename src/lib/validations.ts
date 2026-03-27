@@ -153,6 +153,7 @@ export const createEvidenceLinkSchema = z.object({
 // === Tenant: Run Submit ===
 
 export const runSubmitSchema = z.object({
+  block: z.string().min(1).max(10),
   note: z.string().max(2000).optional().nullable(),
 });
 
