@@ -394,21 +394,20 @@ export function RunWorkspaceClient({
     return groups;
   }
 
-  // ─── Sidebar: dark theme with block descriptions + categories ─────────
+  // ─── Sidebar: dark theme matching Figma mockup ─────────────────────────
   const sidebar = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Brand header */}
-      <div className="px-5 py-5">
-        <div className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
-          <div>
-            <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
-            <div className="text-[10px] font-medium text-slate-500">Blueprint Assessment</div>
-          </div>
+      {/* Brand header — large, centered like mockup */}
+      <div className="px-6 pt-8 pb-6 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo-symbol.svg" alt="StrategAIze" className="mx-auto h-16 w-16 rounded-2xl mb-3" />
+        <div className="text-lg font-bold text-brand-primary tracking-tight">StrategAIze</div>
+        <div className="text-[10px] font-medium text-slate-500 uppercase tracking-widest mt-0.5">AI that works</div>
+        <div className="mt-4 h-px bg-gradient-to-r from-transparent via-brand-primary/30 to-transparent" />
+        <div className="mt-4">
+          <div className="text-sm font-bold text-white">Blueprint Assessment</div>
+          <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
         </div>
-        <div className="mt-2 text-[10px] text-slate-600">Strategische Unternehmensanalyse</div>
-        <div className="mt-3 h-px bg-gradient-to-r from-brand-primary/30 via-brand-primary/10 to-transparent" />
       </div>
 
       {/* Block groups */}
@@ -421,52 +420,52 @@ export function RunWorkspaceClient({
           const untergruppen = groupByUnterbereich(questions);
 
           return (
-            <div key={block} className="mb-1">
+            <div key={block} className="mb-1.5">
               <button
                 onClick={() => toggleBlock(block)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all duration-200 ${
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-all duration-200 ${
                   isOpen || hasActiveQuestion
                     ? "bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white shadow-[0_8px_16px_-4px_rgba(68,84,184,0.35)]"
-                    : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
+                    : "text-slate-300 hover:bg-white/[0.06]"
                 }`}
               >
                 <div
-                  className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                  className={`h-2.5 w-2.5 flex-shrink-0 rounded-full ${
                     blockAnswered === questions.length && questions.length > 0
-                      ? "bg-gradient-to-br from-brand-success-dark to-brand-success shadow-[0_0_6px_rgba(0,168,79,0.4)]"
+                      ? "bg-gradient-to-br from-brand-success-dark to-brand-success shadow-[0_0_8px_rgba(0,168,79,0.5)]"
                       : blockAnswered > 0
-                        ? "bg-gradient-to-br from-brand-warning-dark to-brand-warning shadow-[0_0_6px_rgba(242,183,5,0.4)]"
+                        ? "bg-gradient-to-br from-brand-warning-dark to-brand-warning shadow-[0_0_8px_rgba(242,183,5,0.5)]"
                         : "bg-slate-600"
                   }`}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold">Block {block}: {BLOCK_NAMES[block] ?? ""}</span>
+                  <div className="text-sm font-bold leading-snug">
+                    Block {block}: {BLOCK_NAMES[block] ?? ""}
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${isOpen || hasActiveQuestion ? "text-white/60" : "text-slate-600"}`}>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${isOpen || hasActiveQuestion ? "text-white/50" : "text-slate-500"}`}>
                       Analyse
                     </span>
-                    <span className={`text-[10px] ${isOpen || hasActiveQuestion ? "text-white/40" : "text-slate-600"}`}>&bull;</span>
-                    <span className={`text-[10px] tabular-nums font-semibold ${isOpen || hasActiveQuestion ? "text-white/60" : "text-slate-600"}`}>
+                    <span className={`text-[10px] ${isOpen || hasActiveQuestion ? "text-white/30" : "text-slate-600"}`}>&bull;</span>
+                    <span className={`text-[10px] tabular-nums font-bold ${isOpen || hasActiveQuestion ? "text-white/50" : "text-slate-500"}`}>
                       {blockAnswered}/{questions.length}
                     </span>
                   </div>
                 </div>
                 {isOpen ? (
-                  <ChevronDown className={`h-4 w-4 flex-shrink-0 ${isOpen ? "text-white/60" : "text-slate-600"}`} />
+                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-white/40" />
                 ) : (
-                  <ChevronRight className={`h-4 w-4 flex-shrink-0 ${hasActiveQuestion ? "text-white/60" : "text-slate-600"}`} />
+                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-600" />
                 )}
               </button>
 
               {isOpen && (
-                <div className="py-1 pl-2">
+                <div className="py-2 pl-3">
                   {untergruppen.map((group) => (
-                    <div key={group.label} className="mb-1">
-                      {/* Category label */}
+                    <div key={group.label} className="mb-2">
+                      {/* Category label — colored like mockup */}
                       <div className="px-3 py-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-brand-primary">
                           {group.label}
                         </span>
                       </div>
@@ -480,18 +479,18 @@ export function RunWorkspaceClient({
                             onClick={() => selectQuestion(q)}
                             className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all duration-150 ${
                               isActive
-                                ? "bg-white/10 text-white"
+                                ? "bg-brand-primary/20 text-white"
                                 : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-300"
                             }`}
                           >
                             <div
-                              className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${
+                              className={`h-2 w-2 flex-shrink-0 rounded-full ${
                                 hasAnswer
-                                  ? "bg-brand-success shadow-[0_0_4px_rgba(0,168,79,0.4)]"
+                                  ? "bg-brand-success shadow-[0_0_6px_rgba(0,168,79,0.5)]"
                                   : "bg-slate-600"
                               }`}
                             />
-                            <p className="text-xs leading-snug line-clamp-1 flex-1">
+                            <p className={`text-xs leading-snug line-clamp-2 flex-1 ${isActive ? "font-medium" : ""}`}>
                               {q.fragetext}
                             </p>
                           </button>
@@ -507,10 +506,10 @@ export function RunWorkspaceClient({
       </div>
 
       {/* Abmelden */}
-      <div className="border-t border-white/[0.06] px-5 py-4">
+      <div className="border-t border-white/[0.06] px-4 py-4">
         <Link
           href="/dashboard"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/[0.1] hover:text-slate-200"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/20 to-brand-primary-dark/20 px-3 py-3 text-sm font-semibold text-slate-300 transition-all hover:from-brand-primary/30 hover:to-brand-primary-dark/30 hover:text-white"
         >
           Abmelden
         </Link>
@@ -779,166 +778,154 @@ export function RunWorkspaceClient({
                 </div>
               )}
 
-              {/* ── Evidence / Nachweise (Style Guide 14.6) ── */}
+              {/* ── Evidence + Checkpoints Grid (Style Guide 14.6) ── */}
               {!isAdmin && (
-                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
-                  <div className="px-8 py-5 border-b border-slate-200 bg-slate-50/50">
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center shadow-md">
-                        <FileText className="h-4 w-4 text-white" />
-                      </div>
-                      Hochgeladene Nachweise
-                      {evidenceItems.length > 0 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* LEFT: Evidence / Nachweise */}
+                  <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center shadow-md">
+                          <FileText className="h-4 w-4 text-white" />
+                        </div>
+                        Hochgeladene Nachweise
                         <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
-                          {evidenceItems.length}
+                          {evidenceItems.filter((e) => e.item_type === "file").length}
                         </span>
-                      )}
-                    </h3>
-                  </div>
-                  <div className="p-6 space-y-3">
-                    {evidenceLoading ? (
-                      <Skeleton className="h-16 w-full rounded-xl" />
-                    ) : evidenceItems.length > 0 ? (
-                      evidenceItems.map((item) => {
-                        const ext = item.file_name?.split(".").pop()?.toUpperCase() ?? "TXT";
-                        return (
-                          <div
-                            key={item.id}
-                            className="group flex items-center justify-between p-5 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
-                          >
-                            <div className="flex items-center gap-4">
-                              {item.item_type === "file" ? (
+                      </h3>
+                    </div>
+                    <div className="p-5 space-y-3">
+                      {evidenceLoading ? (
+                        <Skeleton className="h-16 w-full rounded-xl" />
+                      ) : evidenceItems.filter((e) => e.item_type === "file").length > 0 ? (
+                        evidenceItems.filter((e) => e.item_type === "file").map((item) => {
+                          const ext = item.file_name?.split(".").pop()?.toUpperCase() ?? "FILE";
+                          return (
+                            <div
+                              key={item.id}
+                              className="group flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
+                            >
+                              <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center text-white text-xs font-bold shadow-lg">
                                   {ext}
                                 </div>
-                              ) : (
-                                <div className="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold">
-                                  TXT
+                                <div>
+                                  <div className="text-sm font-semibold text-slate-900">{item.file_name}</div>
+                                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                                    <span>{formatFileSize(item.file_size_bytes)}</span>
+                                    <span>&bull;</span>
+                                    <span>{new Date(item.created_at).toLocaleDateString("de-DE")}</span>
+                                    <span>&bull;</span>
+                                    <span className="font-medium">{item.label}</span>
+                                  </div>
                                 </div>
-                              )}
-                              <div>
-                                <div className="text-sm font-semibold text-slate-900 mb-0.5">
-                                  {item.item_type === "file" ? item.file_name : "Textnotiz"}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-slate-500">
-                                  {item.item_type === "file" && (
-                                    <>
-                                      <span>{formatFileSize(item.file_size_bytes)}</span>
-                                      <span>&bull;</span>
-                                    </>
-                                  )}
-                                  <span>{new Date(item.created_at).toLocaleDateString("de-DE")}</span>
-                                  <span>&bull;</span>
-                                  <span className="font-medium">{item.label}</span>
-                                </div>
-                                {item.item_type === "note" && item.note_text && (
-                                  <p className="mt-1 text-xs text-slate-500 line-clamp-2">{item.note_text}</p>
-                                )}
                               </div>
                             </div>
-                            {item.item_type === "file" && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => downloadEvidence(item.id)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                Download
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <p className="text-sm text-slate-400 py-4 text-center">
-                        Noch keine Nachweise verknüpft.
-                      </p>
-                    )}
+                          );
+                        })
+                      ) : (
+                        <p className="text-sm text-slate-400 py-3 text-center">Keine Dateien hochgeladen.</p>
+                      )}
 
-                    {/* Upload section */}
-                    {!isLocked && (
-                      <>
-                        <Separator className="my-4" />
-                        <div className="space-y-3">
-                          <Label className="text-sm font-bold text-slate-700 uppercase tracking-wide">Datei hochladen</Label>
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <div>
+                      {/* Upload — compact */}
+                      {!isLocked && (
+                        <>
+                          <Separator className="my-3" />
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-1 gap-2">
                               <Input
                                 ref={fileInputRef}
                                 type="file"
                                 accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg"
                                 disabled={uploading}
                               />
-                              <p className="mt-1 text-[11px] text-slate-400">
-                                PDF, DOCX, Excel, PNG, JPG (max 200 MB)
-                              </p>
-                            </div>
-                            <div className="space-y-2">
                               <Select value={uploadLabel} onValueChange={setUploadLabel}>
-                                <SelectTrigger><SelectValue placeholder="Kategorie wählen" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Kategorie" /></SelectTrigger>
                                 <SelectContent>
                                   {EVIDENCE_LABELS.map((l) => (
                                     <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <Select value={uploadRelation} onValueChange={setUploadRelation}>
-                                <SelectTrigger><SelectValue placeholder="Relation" /></SelectTrigger>
+                            </div>
+                            <Button
+                              onClick={handleFileUpload}
+                              disabled={uploading || !uploadLabel || !fileInputRef.current?.files?.length}
+                              size="sm"
+                              className="w-full"
+                            >
+                              {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
+                            </Button>
+                          </div>
+                          <Separator className="my-3" />
+                          <div className="space-y-2">
+                            <Textarea
+                              value={noteText}
+                              onChange={(e) => setNoteText(e.target.value)}
+                              placeholder="Textnotiz eingeben..."
+                              rows={2}
+                              disabled={uploading}
+                            />
+                            <div className="flex gap-2">
+                              <Select value={noteLabel} onValueChange={setNoteLabel}>
+                                <SelectTrigger><SelectValue placeholder="Kategorie" /></SelectTrigger>
                                 <SelectContent>
-                                  {EVIDENCE_RELATIONS.map((r) => (
-                                    <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                                  {EVIDENCE_LABELS.map((l) => (
+                                    <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
+                              <Button
+                                onClick={handleNoteSubmit}
+                                disabled={uploading || !noteText.trim() || !noteLabel}
+                                size="sm"
+                                variant="outline"
+                              >
+                                Notiz speichern
+                              </Button>
                             </div>
                           </div>
-                          <Button
-                            onClick={handleFileUpload}
-                            disabled={uploading || !uploadLabel || !fileInputRef.current?.files?.length}
-                            size="sm"
-                          >
-                            {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
-                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* RIGHT: Eingereichte Checkpoints */}
+                  <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-success-dark to-brand-success flex items-center justify-center shadow-md">
+                          <FileText className="h-4 w-4 text-white" />
                         </div>
-                        <Separator className="my-4" />
-                        <div className="space-y-3">
-                          <Label className="text-sm font-bold text-slate-700 uppercase tracking-wide">Textnotiz hinzufügen</Label>
-                          <Textarea
-                            value={noteText}
-                            onChange={(e) => setNoteText(e.target.value)}
-                            placeholder="Ergänzende Notiz eingeben..."
-                            rows={3}
-                            disabled={uploading}
-                          />
-                          <div className="flex gap-2">
-                            <Select value={noteLabel} onValueChange={setNoteLabel}>
-                              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Kategorie" /></SelectTrigger>
-                              <SelectContent>
-                                {EVIDENCE_LABELS.map((l) => (
-                                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Select value={noteRelation} onValueChange={setNoteRelation}>
-                              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Relation" /></SelectTrigger>
-                              <SelectContent>
-                                {EVIDENCE_RELATIONS.map((r) => (
-                                  <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        Eingereichte Checkpoints
+                        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
+                          {run.submitted_at ? "1" : "0"}
+                        </span>
+                      </h3>
+                    </div>
+                    <div className="p-5 space-y-3">
+                      {run.submitted_at ? (
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs font-bold text-slate-600">
+                              {new Date(run.submitted_at).toLocaleString("de-DE")}
+                            </span>
+                            <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">v1</span>
+                            <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                              Eingereicht
+                            </span>
                           </div>
-                          <Button
-                            onClick={handleNoteSubmit}
-                            disabled={uploading || !noteText.trim() || !noteLabel}
-                            size="sm"
-                            variant="outline"
-                          >
-                            {uploading ? "Wird gespeichert..." : "Notiz speichern"}
-                          </Button>
+                          <div className="text-xs text-slate-500">
+                            {answered}/{total} Fragen beantwortet
+                          </div>
                         </div>
-                      </>
-                    )}
+                      ) : (
+                        <div className="py-6 text-center">
+                          <p className="text-sm text-slate-400">Noch kein Checkpoint eingereicht.</p>
+                          <p className="text-xs text-slate-400 mt-1">Beantworten Sie Fragen und reichen Sie einen Checkpoint ein.</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
