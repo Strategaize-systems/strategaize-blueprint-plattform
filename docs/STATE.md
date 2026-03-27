@@ -10,14 +10,14 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: stable
-- Current Focus: SLC-013 Workspace Premium done. Sidebar-Design konsistent auf allen Seiten (Workspace, Dashboard, Admin). Nächster Schritt: SLC-014 Admin Pages Premium (MT-1 Run-Detail).
+- Current Focus: UI-Update komplett (SLC-007 bis SLC-014). Alle Seiten auf Premium v2.1 Level. Nächster Schritt: Checkpoint-Backend oder LLM-Integration.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. SLC-014: Admin Pages Premium — Run-Detail KPIs, konsistente Cards, Sidebar done
-2. Checkpoint-Historie mit Block-Zuordnung (Backend-Erweiterung für V1.1)
-3. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
-4. BL-012-016: LLM-Integration (Dify + Ollama/Qwen)
+1. Checkpoint-Historie mit Block-Zuordnung (Backend-Erweiterung)
+2. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
+3. BL-012-016: LLM-Integration (Dify + Ollama/Qwen)
+4. Erstes echtes Kunden-Onboarding
 
 ## Active Scope
 MVP-1 — Kernplattform implementiert, deployed und E2E getestet (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25. SMTP konfiguriert (IONOS), Invite-Flow komplett funktional seit 2026-03-26.
