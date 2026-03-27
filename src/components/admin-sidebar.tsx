@@ -22,24 +22,22 @@ export function AdminSidebar({ email }: { email?: string }) {
 
   const sidebarContent = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Brand header */}
-      <div className="px-5 py-5">
-        <div className="flex items-center gap-3">
+      {/* Logo block */}
+      <div className="mx-3 mt-3 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-5 text-center">
+        <div className="mx-auto w-fit rounded-2xl bg-white p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-symbol.png" alt="StrategAIze" className="h-10 w-10 rounded-xl" />
-          <div>
-            <div className="text-base font-bold text-white tracking-tight">StrategAIze</div>
-            <div className="flex items-center gap-1.5">
-              <Shield className="h-3 w-3 text-slate-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                Administration
-              </span>
-            </div>
-          </div>
+          <img src="/brand/logo-full.png" alt="StrategAIze" className="h-12 w-auto" />
         </div>
-        {/* Subtle divider with brand gradient */}
-        <div className="mt-4 h-px bg-gradient-to-r from-brand-primary/30 via-brand-primary/10 to-transparent" />
       </div>
+      {/* Administration block */}
+      <div className="mx-3 mt-2 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-4 text-center">
+        <div className="flex items-center justify-center gap-1.5">
+          <Shield className="h-3 w-3 text-slate-400" />
+          <span className="text-sm font-bold text-white">Administration</span>
+        </div>
+        <div className="text-[11px] text-slate-500 mt-0.5">Projekt-Verwaltung</div>
+      </div>
+      <div className="h-3" />
 
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 px-3">
