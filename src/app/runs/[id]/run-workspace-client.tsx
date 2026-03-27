@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +38,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { LayoutDashboard, ChevronDown, ChevronRight, FileText, Menu, X } from "lucide-react";
 
 const EVIDENCE_LABELS = [
   { value: "policy", label: "Policy" },
@@ -95,6 +100,18 @@ interface EvidenceItem {
   relation?: string | null;
 }
 
+const BLOCK_NAMES: Record<string, string> = {
+  A: "Grundverständnis",
+  B: "Markt & Wettbewerb",
+  C: "Finanzen",
+  D: "Organisation",
+  E: "Prozesse",
+  F: "IT & Systeme",
+  G: "Recht & Compliance",
+  H: "Strategie",
+  I: "Exit-Readiness",
+};
+
 export function RunWorkspaceClient({
   runId,
   isAdmin,
@@ -110,6 +127,8 @@ export function RunWorkspaceClient({
   const [submitting, setSubmitting] = useState(false);
   const [submitNote, setSubmitNote] = useState("");
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [openBlocks, setOpenBlocks] = useState<Set<string>>(new Set());
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Evidence state
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
@@ -121,8 +140,6 @@ export function RunWorkspaceClient({
   const [noteLabel, setNoteLabel] = useState("");
   const [noteRelation, setNoteRelation] = useState("supports");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Event history refresh key
   const [eventKey, setEventKey] = useState(0);
 
   const loadRun = useCallback(async () => {
@@ -134,6 +151,11 @@ export function RunWorkspaceClient({
       if (res.ok) {
         const data = await res.json();
         setRun(data.run);
+        // Auto-open the first block
+        if (data.run?.questions?.length > 0) {
+          const firstBlock = data.run.questions[0].block;
+          setOpenBlocks(new Set([firstBlock]));
+        }
       }
     } finally {
       setLoading(false);
@@ -155,9 +177,7 @@ export function RunWorkspaceClient({
     }
   }, [runId]);
 
-  useEffect(() => {
-    loadRun();
-  }, [loadRun]);
+  useEffect(() => { loadRun(); }, [loadRun]);
 
   useEffect(() => {
     if (activeQuestion && !isAdmin) {
@@ -171,14 +191,22 @@ export function RunWorkspaceClient({
     setActiveQuestion(q.id);
     setAnswerText(q.latest_answer ?? "");
     setMessage(null);
+    setSidebarOpen(false);
+  }
+
+  function toggleBlock(block: string) {
+    setOpenBlocks((prev) => {
+      const next = new Set(prev);
+      if (next.has(block)) next.delete(block);
+      else next.add(block);
+      return next;
+    });
   }
 
   async function saveAnswer() {
     if (!activeQuestion || !answerText.trim() || !run) return;
-
     setSaving(true);
     setMessage(null);
-
     try {
       const res = await fetch(
         `/api/tenant/runs/${runId}/questions/${activeQuestion}/events`,
@@ -192,7 +220,6 @@ export function RunWorkspaceClient({
           }),
         }
       );
-
       if (res.ok) {
         setMessage({ text: "Antwort gespeichert", type: "success" });
         setEventKey((k) => k + 1);
@@ -211,22 +238,18 @@ export function RunWorkspaceClient({
   async function handleFileUpload() {
     const file = fileInputRef.current?.files?.[0];
     if (!file || !activeQuestion || !uploadLabel) return;
-
     setUploading(true);
     setMessage(null);
-
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("label", uploadLabel);
       formData.append("question_id", activeQuestion);
       formData.append("relation", uploadRelation);
-
       const res = await fetch(`/api/tenant/runs/${runId}/evidence`, {
         method: "POST",
         body: formData,
       });
-
       if (res.ok) {
         setMessage({ text: "Datei hochgeladen", type: "success" });
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -247,10 +270,8 @@ export function RunWorkspaceClient({
 
   async function handleNoteSubmit() {
     if (!noteText.trim() || !activeQuestion || !noteLabel) return;
-
     setUploading(true);
     setMessage(null);
-
     try {
       const res = await fetch(`/api/tenant/runs/${runId}/evidence`, {
         method: "POST",
@@ -263,7 +284,6 @@ export function RunWorkspaceClient({
           relation: noteRelation,
         }),
       });
-
       if (res.ok) {
         setMessage({ text: "Notiz hinzugefügt", type: "success" });
         setNoteText("");
@@ -299,14 +319,12 @@ export function RunWorkspaceClient({
   async function submitRun() {
     setSubmitting(true);
     setMessage(null);
-
     try {
       const res = await fetch(`/api/tenant/runs/${runId}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitNote.trim() ? { note: submitNote.trim() } : {}),
       });
-
       if (res.ok) {
         setMessage({ text: "Checkpoint erfolgreich eingereicht", type: "success" });
         setSubmitNote("");
@@ -333,8 +351,8 @@ export function RunWorkspaceClient({
 
   if (!run) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground">Run nicht gefunden.</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-slate-500">Run nicht gefunden.</p>
       </div>
     );
   }
@@ -343,16 +361,12 @@ export function RunWorkspaceClient({
   const blocks = Array.from(new Set(run.questions.map((q) => q.block))).sort();
   const questionsByBlock = new Map<string, Question[]>();
   blocks.forEach((b) => {
-    questionsByBlock.set(
-      b,
-      run.questions.filter((q) => q.block === b)
-    );
+    questionsByBlock.set(b, run.questions.filter((q) => q.block === b));
   });
 
   const answered = run.questions.filter((q) => q.latest_answer).length;
   const total = run.questions.length;
   const isLocked = run.status === "locked";
-
   const activeQ = run.questions.find((q) => q.id === activeQuestion);
 
   function formatFileSize(bytes: number | null) {
@@ -362,383 +376,484 @@ export function RunWorkspaceClient({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Premium Header */}
-      <header className="bg-white border-b shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-sm text-slate-500 hover:text-brand-primary hover:underline"
-            >
-              Dashboard
-            </Link>
-            <span className="text-slate-300">/</span>
-            <h1 className="text-lg font-bold text-slate-900">{run.title}</h1>
-            <StatusBadge status={run.status} />
-          </div>
-          <div className="flex items-center gap-2">
-            {!isAdmin && !isLocked && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button disabled={submitting || answered === 0}>
-                    {submitting ? "Wird eingereicht..." : "Checkpoint einreichen"}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Checkpoint einreichen?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Sie haben {answered} von {total} Fragen beantwortet.
-                      {total - answered > 0 && (
-                        <> Es sind noch {total - answered} Fragen offen.</>
-                      )}
-                      {" "}Nach dem Einreichen können Sie weiterhin Antworten und
-                      Evidence ergänzen, bis der Run gesperrt wird.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <div className="py-2">
-                    <Label htmlFor="submit-note">Optionale Notiz</Label>
-                    <Textarea
-                      id="submit-note"
-                      value={submitNote}
-                      onChange={(e) => setSubmitNote(e.target.value)}
-                      placeholder="Hinweis zum Einreichungsstatus (optional)..."
-                      rows={3}
-                      className="mt-1"
-                    />
-                  </div>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                    <AlertDialogAction onClick={submitRun}>
-                      Ja, einreichen
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
+  // ─── Sidebar: compact question navigation ─────────────────────────────
+  const sidebar = (
+    <div className="flex h-full flex-col bg-white border-r">
+      {/* Sidebar header */}
+      <div className="border-b px-4 py-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Fragennavigation
+          </span>
+          <span className="text-xs font-bold text-brand-primary">
+            {answered}/{total}
+          </span>
         </div>
-      </header>
-
-      {/* Progress bar */}
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        <ProgressIndicator answered={answered} total={total} />
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${total > 0 ? Math.round((answered / total) * 100) : 0}%`,
+              background: answered === total && total > 0
+                ? "linear-gradient(to right, #00a84f, #4dcb8b)"
+                : "linear-gradient(to right, #120774, #4454b8)",
+            }}
+          />
+        </div>
       </div>
 
-      {message && (
-        <div className="mx-auto max-w-7xl px-6">
-          <Alert
-            variant={message.type === "error" ? "destructive" : "default"}
-            className="mb-2"
-          >
-            <AlertDescription>{message.text}</AlertDescription>
-          </Alert>
-        </div>
+      {/* Block groups */}
+      <div className="flex-1 overflow-y-auto py-1">
+        {blocks.map((block) => {
+          const questions = questionsByBlock.get(block) ?? [];
+          const blockAnswered = questions.filter((q) => q.latest_answer).length;
+          const isOpen = openBlocks.has(block);
+
+          return (
+            <div key={block}>
+              <button
+                onClick={() => toggleBlock(block)}
+                className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-slate-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  {isOpen ? (
+                    <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+                  )}
+                  <span className="text-sm font-semibold text-slate-700">
+                    Block {block}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    {BLOCK_NAMES[block] ?? ""}
+                  </span>
+                </div>
+                <span className="text-xs tabular-nums text-slate-400">
+                  {blockAnswered}/{questions.length}
+                </span>
+              </button>
+
+              {isOpen && (
+                <div className="pb-1">
+                  {questions.map((q) => {
+                    const isActive = activeQuestion === q.id;
+                    const hasAnswer = !!q.latest_answer;
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => selectQuestion(q)}
+                        className={`group flex w-full items-center gap-2.5 px-4 py-2 text-left transition-all ${
+                          isActive
+                            ? "bg-brand-primary/5 border-l-2 border-brand-primary"
+                            : "border-l-2 border-transparent hover:bg-slate-50"
+                        }`}
+                      >
+                        {/* Status dot */}
+                        <div
+                          className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                            hasAnswer
+                              ? "bg-gradient-to-br from-brand-success-dark to-brand-success shadow-[0_0_4px_rgba(0,168,79,0.3)]"
+                              : "bg-slate-300"
+                          }`}
+                        />
+                        {/* Question text */}
+                        <div className="min-w-0 flex-1">
+                          <span className={`text-[11px] font-mono ${isActive ? "text-brand-primary" : "text-slate-400"}`}>
+                            {q.frage_id}
+                          </span>
+                          <p className={`text-xs leading-snug line-clamp-1 ${isActive ? "text-brand-primary-dark font-medium" : "text-slate-600"}`}>
+                            {q.fragetext}
+                          </p>
+                        </div>
+                        {/* Evidence indicator */}
+                        {q.evidence_count > 0 && (
+                          <span className="flex-shrink-0 text-[10px] font-semibold text-brand-primary">
+                            {q.evidence_count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // ─── Main layout ──────────────────────────────────────────────────────
+  return (
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Mobile sidebar toggle */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md lg:hidden"
+      >
+        {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </button>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
-      {/* Main content */}
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left: Question list by block */}
-          <div className="lg:col-span-1">
-            <Tabs defaultValue={blocks[0]} className="w-full">
-              <TabsList className="flex flex-wrap h-auto">
-                {blocks.map((b) => (
-                  <TabsTrigger key={b} value={b} className="text-xs">
-                    Block {b}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              {blocks.map((b) => (
-                <TabsContent key={b} value={b} className="space-y-2 mt-2">
-                  {(questionsByBlock.get(b) ?? []).map((q) => (
-                    <Card
-                      key={q.id}
-                      className={`cursor-pointer transition-colors ${
-                        activeQuestion === q.id
-                          ? "border-primary"
-                          : "hover:bg-muted/50"
-                      }`}
-                      onClick={() => selectQuestion(q)}
-                    >
-                      <CardContent className="p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-mono text-muted-foreground">
-                              {q.frage_id}
-                            </p>
-                            <p className="text-sm line-clamp-2">
-                              {q.fragetext}
-                            </p>
-                          </div>
-                          <div className="flex flex-shrink-0 items-center gap-1">
-                            {q.evidence_count > 0 && (
-                              <Badge variant="secondary" className="text-xs">
-                                {q.evidence_count}
-                              </Badge>
-                            )}
-                            {q.latest_answer ? (
-                              <Badge variant="default" className="text-xs">
-                                Beantwortet
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-xs">
-                                Offen
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </TabsContent>
-              ))}
-            </Tabs>
-          </div>
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-[280px] transform transition-transform duration-300 lg:relative lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {sidebar}
+      </aside>
 
-          {/* Right: Question detail + answer + evidence + history */}
-          <div className="lg:col-span-2 space-y-4">
-            {activeQ ? (
-              <>
-                {/* Answer Section */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="font-mono">{activeQ.frage_id}</span>
-                      <span>Block {activeQ.block}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {activeQ.ebene}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">
-                      {activeQ.fragetext}
-                    </CardTitle>
-                    <CardDescription>{activeQ.unterbereich}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="answer">Ihre Antwort</Label>
+      {/* Main area */}
+      <div className="flex flex-1 flex-col overflow-hidden lg:ml-0">
+        {/* Header */}
+        <header className="flex-shrink-0 bg-white border-b shadow-sm">
+          <div className="flex items-center justify-between px-6 py-3">
+            <div className="flex items-center gap-3 pl-10 lg:pl-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary">
+                <LayoutDashboard className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/dashboard"
+                    className="text-xs text-slate-400 hover:text-brand-primary"
+                  >
+                    Dashboard
+                  </Link>
+                  <span className="text-xs text-slate-300">/</span>
+                  <h1 className="text-sm font-bold text-slate-900">{run.title}</h1>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <StatusBadge status={run.status} />
+                  <span className="text-xs text-slate-400">
+                    {answered}/{total} beantwortet
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {!isAdmin && !isLocked && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" disabled={submitting || answered === 0}>
+                      {submitting ? "Wird eingereicht..." : "Checkpoint einreichen"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Checkpoint einreichen?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Sie haben {answered} von {total} Fragen beantwortet.
+                        {total - answered > 0 && (
+                          <> Es sind noch {total - answered} Fragen offen.</>
+                        )}
+                        {" "}Nach dem Einreichen können Sie weiterhin Antworten und
+                        Evidence ergänzen, bis der Run gesperrt wird.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="py-2">
+                      <Label htmlFor="submit-note">Optionale Notiz</Label>
                       <Textarea
-                        id="answer"
-                        value={answerText}
-                        onChange={(e) => setAnswerText(e.target.value)}
-                        placeholder="Geben Sie Ihre Antwort ein..."
-                        rows={8}
-                        disabled={isLocked || isAdmin}
-                        className="resize-y"
+                        id="submit-note"
+                        value={submitNote}
+                        onChange={(e) => setSubmitNote(e.target.value)}
+                        placeholder="Hinweis zum Einreichungsstatus (optional)..."
+                        rows={3}
+                        className="mt-1"
                       />
                     </div>
-                    {!isAdmin && !isLocked && (
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                      <AlertDialogAction onClick={submitRun}>
+                        Ja, einreichen
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Message bar */}
+        {message && (
+          <div className="flex-shrink-0 px-6 pt-3">
+            <Alert
+              variant={message.type === "error" ? "destructive" : "default"}
+            >
+              <AlertDescription>{message.text}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {/* Content: scrollable main workspace */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          {activeQ ? (
+            <div className="mx-auto max-w-3xl space-y-6">
+              {/* ── Active question ── */}
+              <div>
+                <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
+                  <span className="font-mono">{activeQ.frage_id}</span>
+                  <span>&middot;</span>
+                  <span>Block {activeQ.block}</span>
+                  <span>&middot;</span>
+                  <Badge variant="neutral" className="text-[10px] py-0">
+                    {activeQ.ebene}
+                  </Badge>
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 leading-snug">
+                  {activeQ.fragetext}
+                </h2>
+                <p className="mt-1 text-sm text-slate-400">
+                  {activeQ.unterbereich}
+                </p>
+              </div>
+
+              {/* ── Answer area ── */}
+              <Card className="relative overflow-hidden border-0 shadow-md">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                <CardContent className="pt-6">
+                  <Label htmlFor="answer" className="text-sm font-semibold text-slate-700">
+                    Ihre Antwort
+                  </Label>
+                  <Textarea
+                    id="answer"
+                    value={answerText}
+                    onChange={(e) => setAnswerText(e.target.value)}
+                    placeholder="Geben Sie Ihre Antwort ein..."
+                    rows={10}
+                    disabled={isLocked || isAdmin}
+                    className="mt-2 resize-y text-base leading-relaxed"
+                  />
+                  {!isAdmin && !isLocked && (
+                    <div className="mt-3 flex items-center justify-between">
                       <Button
                         onClick={saveAnswer}
                         disabled={saving || !answerText.trim()}
                       >
                         {saving ? "Wird gespeichert..." : "Antwort speichern"}
                       </Button>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Event History */}
-                {!isAdmin && activeQuestion && (
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base">Verlauf</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <EventHistory
-                        key={`${activeQuestion}-${eventKey}`}
-                        runId={runId}
-                        questionId={activeQuestion}
-                      />
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Evidence Section */}
-                {!isAdmin && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">Evidence / Nachweise</CardTitle>
-                      <CardDescription>
-                        Dateien oder Notizen als Nachweis verknüpfen
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* Evidence list */}
-                      {evidenceLoading ? (
-                        <Skeleton className="h-16 w-full" />
-                      ) : evidenceItems.length > 0 ? (
-                        <div className="space-y-2">
-                          {evidenceItems.map((item) => (
-                            <div
-                              key={item.id}
-                              className="flex items-center justify-between rounded-md border p-3"
-                            >
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="text-xs">
-                                    {item.label}
-                                  </Badge>
-                                  {item.relation && (
-                                    <Badge variant="secondary" className="text-xs">
-                                      {item.relation}
-                                    </Badge>
-                                  )}
-                                </div>
-                                {item.item_type === "file" ? (
-                                  <p className="mt-1 text-sm truncate">
-                                    {item.file_name}{" "}
-                                    <span className="text-muted-foreground">
-                                      ({formatFileSize(item.file_size_bytes)})
-                                    </span>
-                                  </p>
-                                ) : (
-                                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                                    {item.note_text}
-                                  </p>
-                                )}
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {new Date(item.created_at).toLocaleString("de-DE")}
-                                </p>
-                              </div>
-                              {item.item_type === "file" && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => downloadEvidence(item.id)}
-                                >
-                                  Download
-                                </Button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">
-                          Noch keine Nachweise verknüpft.
-                        </p>
+                      {message?.type === "success" && (
+                        <span className="text-sm text-brand-success-dark font-medium">
+                          &#10003; Gespeichert
+                        </span>
                       )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-                      {!isLocked && (
-                        <>
-                          <Separator />
-
-                          {/* File upload */}
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Datei hochladen</Label>
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                              <div>
-                                <Input
-                                  ref={fileInputRef}
-                                  type="file"
-                                  accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg"
-                                  disabled={uploading}
-                                />
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                  PDF, DOCX, Excel, PNG, JPG (max 200 MB)
+              {/* ── Evidence / Nachweise ── */}
+              {!isAdmin && (
+                <Card className="border-0 shadow-md">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-brand-primary" />
+                      <CardTitle className="text-base">Nachweise &amp; Evidence</CardTitle>
+                    </div>
+                    <CardDescription>
+                      Dokumente und Notizen zur Untermauerung Ihrer Antwort
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Evidence list */}
+                    {evidenceLoading ? (
+                      <Skeleton className="h-16 w-full rounded-lg" />
+                    ) : evidenceItems.length > 0 ? (
+                      <div className="space-y-2">
+                        {evidenceItems.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/50 p-3"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="neutral" className="text-[10px]">
+                                  {item.label}
+                                </Badge>
+                                {item.relation && (
+                                  <Badge variant="secondary" className="text-[10px]">
+                                    {item.relation}
+                                  </Badge>
+                                )}
+                              </div>
+                              {item.item_type === "file" ? (
+                                <p className="mt-1 text-sm truncate text-slate-700">
+                                  {item.file_name}{" "}
+                                  <span className="text-slate-400">
+                                    ({formatFileSize(item.file_size_bytes)})
+                                  </span>
                                 </p>
-                              </div>
-                              <div className="space-y-2">
-                                <Select value={uploadLabel} onValueChange={setUploadLabel}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Label wählen" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {EVIDENCE_LABELS.map((l) => (
-                                      <SelectItem key={l.value} value={l.value}>
-                                        {l.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <Select value={uploadRelation} onValueChange={setUploadRelation}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Relation wählen" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {EVIDENCE_RELATIONS.map((r) => (
-                                      <SelectItem key={r.value} value={r.value}>
-                                        {r.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                              ) : (
+                                <p className="mt-1 text-sm text-slate-500 line-clamp-2">
+                                  {item.note_text}
+                                </p>
+                              )}
+                              <p className="text-[11px] text-slate-400 mt-1">
+                                {new Date(item.created_at).toLocaleString("de-DE")}
+                              </p>
                             </div>
-                            <Button
-                              onClick={handleFileUpload}
-                              disabled={uploading || !uploadLabel || !fileInputRef.current?.files?.length}
-                              size="sm"
-                            >
-                              {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
-                            </Button>
+                            {item.item_type === "file" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadEvidence(item.id)}
+                              >
+                                Download
+                              </Button>
+                            )}
                           </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-400 py-2">
+                        Noch keine Nachweise verknüpft.
+                      </p>
+                    )}
 
-                          <Separator />
-
-                          {/* Text note */}
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium">Textnotiz hinzufügen</Label>
-                            <Textarea
-                              value={noteText}
-                              onChange={(e) => setNoteText(e.target.value)}
-                              placeholder="Ergänzende Notiz eingeben..."
-                              rows={3}
-                              disabled={uploading}
-                            />
-                            <div className="flex gap-2">
-                              <Select value={noteLabel} onValueChange={setNoteLabel}>
-                                <SelectTrigger className="w-[200px]">
+                    {!isLocked && (
+                      <>
+                        <Separator />
+                        {/* File upload — compact */}
+                        <div className="space-y-3">
+                          <Label className="text-sm font-medium text-slate-600">Datei hochladen</Label>
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div>
+                              <Input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg"
+                                disabled={uploading}
+                              />
+                              <p className="mt-1 text-[11px] text-slate-400">
+                                PDF, DOCX, Excel, PNG, JPG (max 200 MB)
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <Select value={uploadLabel} onValueChange={setUploadLabel}>
+                                <SelectTrigger>
                                   <SelectValue placeholder="Label wählen" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {EVIDENCE_LABELS.map((l) => (
-                                    <SelectItem key={l.value} value={l.value}>
-                                      {l.label}
-                                    </SelectItem>
+                                    <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <Select value={noteRelation} onValueChange={setNoteRelation}>
-                                <SelectTrigger className="w-[200px]">
-                                  <SelectValue placeholder="Relation wählen" />
+                              <Select value={uploadRelation} onValueChange={setUploadRelation}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Relation" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {EVIDENCE_RELATIONS.map((r) => (
-                                    <SelectItem key={r.value} value={r.value}>
-                                      {r.label}
-                                    </SelectItem>
+                                    <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             </div>
-                            <Button
-                              onClick={handleNoteSubmit}
-                              disabled={uploading || !noteText.trim() || !noteLabel}
-                              size="sm"
-                              variant="outline"
-                            >
-                              {uploading ? "Wird gespeichert..." : "Notiz speichern"}
-                            </Button>
                           </div>
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            ) : (
-              <Card>
-                <CardContent className="py-16 text-center text-muted-foreground">
-                  Wählen Sie eine Frage aus der Liste aus, um sie zu
-                  beantworten.
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                          <Button
+                            onClick={handleFileUpload}
+                            disabled={uploading || !uploadLabel || !fileInputRef.current?.files?.length}
+                            size="sm"
+                          >
+                            {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
+                          </Button>
+                        </div>
+
+                        <Separator />
+
+                        {/* Note — compact */}
+                        <div className="space-y-3">
+                          <Label className="text-sm font-medium text-slate-600">Textnotiz hinzufügen</Label>
+                          <Textarea
+                            value={noteText}
+                            onChange={(e) => setNoteText(e.target.value)}
+                            placeholder="Ergänzende Notiz eingeben..."
+                            rows={3}
+                            disabled={uploading}
+                          />
+                          <div className="flex gap-2">
+                            <Select value={noteLabel} onValueChange={setNoteLabel}>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Label" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {EVIDENCE_LABELS.map((l) => (
+                                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select value={noteRelation} onValueChange={setNoteRelation}>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Relation" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {EVIDENCE_RELATIONS.map((r) => (
+                                  <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <Button
+                            onClick={handleNoteSubmit}
+                            disabled={uploading || !noteText.trim() || !noteLabel}
+                            size="sm"
+                            variant="outline"
+                          >
+                            {uploading ? "Wird gespeichert..." : "Notiz speichern"}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* ── History — collapsible utility ── */}
+              {!isAdmin && activeQuestion && (
+                <Collapsible>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 transition-colors">
+                    <span>Verlauf &amp; Änderungshistorie</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-2">
+                    <Card className="border-0 shadow-sm">
+                      <CardContent className="pt-4">
+                        <EventHistory
+                          key={`${activeQuestion}-${eventKey}`}
+                          runId={runId}
+                          questionId={activeQuestion}
+                        />
+                      </CardContent>
+                    </Card>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                  <FileText className="h-8 w-8 text-slate-300" />
+                </div>
+                <p className="text-lg font-semibold text-slate-400">
+                  Frage auswählen
+                </p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Wählen Sie eine Frage aus der Navigation links.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
