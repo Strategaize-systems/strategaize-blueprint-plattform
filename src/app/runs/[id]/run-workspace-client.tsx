@@ -679,58 +679,82 @@ export function RunWorkspaceClient({
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {activeQ ? (
             <div className="mx-auto max-w-3xl space-y-6">
-              {/* ── Active question ── */}
-              <div>
-                <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
-                  <span className="font-mono">{activeQ.frage_id}</span>
-                  <span>&middot;</span>
-                  <span>Block {activeQ.block}</span>
-                  <span>&middot;</span>
-                  <Badge variant="neutral" className="text-[10px] py-0">
-                    {activeQ.ebene}
-                  </Badge>
+              {/* ── Markante Fragekarte (Style Guide 14.2) ── */}
+              <div className="relative bg-white rounded-3xl border-2 border-slate-300 shadow-2xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/20 pointer-events-none" />
+                <div className="relative p-8 lg:p-12">
+                  {/* Meta row */}
+                  <div className="mb-6 flex items-center gap-4">
+                    <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white shadow-xl shadow-brand-primary/40">
+                      <span className="text-sm font-bold tracking-tight">{activeQ.frage_id}</span>
+                    </div>
+                    <div className="h-1 w-1 rounded-full bg-slate-300" />
+                    <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">
+                      {activeQ.unterbereich}
+                    </span>
+                    <div className="ml-auto flex items-center gap-2">
+                      <div className="h-6 w-px bg-slate-200" />
+                      <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 uppercase tracking-wide">
+                        {activeQ.ebene}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Question text */}
+                  <h2 className="text-2xl font-bold text-slate-900 leading-[1.4] tracking-tight">
+                    {activeQ.fragetext}
+                  </h2>
                 </div>
-                <h2 className="text-xl font-bold text-slate-900 leading-snug">
-                  {activeQ.fragetext}
-                </h2>
-                <p className="mt-1 text-sm text-slate-400">
-                  {activeQ.unterbereich}
-                </p>
               </div>
 
-              {/* ── Answer area ── */}
-              <Card className="relative overflow-hidden border-0 shadow-md">
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                <CardContent className="pt-6">
-                  <Label htmlFor="answer" className="text-sm font-semibold text-slate-700">
+              {/* ── Answer Editor with Action Bar (Style Guide 14.4) ── */}
+              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                {/* Header */}
+                <div className="px-8 py-4 border-b border-slate-200 bg-slate-50/50">
+                  <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
                     Ihre Antwort
-                  </Label>
-                  <Textarea
+                  </label>
+                </div>
+                {/* Textarea */}
+                <div className="p-8 max-h-80 overflow-y-auto">
+                  <textarea
                     id="answer"
                     value={answerText}
                     onChange={(e) => setAnswerText(e.target.value)}
-                    placeholder="Geben Sie Ihre Antwort ein..."
-                    rows={10}
+                    placeholder="Beschreiben Sie hier Ihre Antwort ausführlich und konkret."
                     disabled={isLocked || isAdmin}
-                    className="mt-2 resize-y text-base leading-relaxed"
+                    className="w-full min-h-[20rem] px-0 py-0 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 border-0 outline-none resize-none bg-transparent focus:ring-0"
                   />
-                  {!isAdmin && !isLocked && (
-                    <div className="mt-3 flex items-center justify-between">
-                      <Button
-                        onClick={saveAnswer}
-                        disabled={saving || !answerText.trim()}
-                      >
-                        {saving ? "Wird gespeichert..." : "Antwort speichern"}
-                      </Button>
-                      {message?.type === "success" && (
-                        <span className="text-sm text-brand-success-dark font-medium">
-                          &#10003; Gespeichert
-                        </span>
-                      )}
+                </div>
+                {/* Action bar */}
+                {!isAdmin && !isLocked && (
+                  <div className="px-8 py-5 border-t-2 border-slate-100 bg-slate-50/30">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-500 tabular-nums">
+                        {answerText.length} Zeichen
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          disabled
+                          className="px-5 py-3 rounded-xl bg-white border-2 border-slate-200 text-sm font-semibold text-slate-400 cursor-not-allowed"
+                          title="Spracheingabe (V2)"
+                        >
+                          Sprechen
+                        </button>
+                        <button
+                          onClick={saveAnswer}
+                          disabled={saving || !answerText.trim()}
+                          className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white font-bold shadow-xl shadow-brand-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                        >
+                          {saving ? "Wird gespeichert..." : "Antwort speichern"}
+                          {!saving && <span>&#10003;</span>}
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </div>
+                )}
+              </div>
 
               {/* ── Evidence / Nachweise ── */}
               {!isAdmin && (
