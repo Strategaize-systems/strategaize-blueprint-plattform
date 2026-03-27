@@ -399,7 +399,7 @@ export function RunWorkspaceClient({
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
       {/* Logo block — with rounded frame like Cockpit */}
       <div className="mx-3 mt-3 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-5 text-center">
-        <div className="mx-auto w-fit rounded-2xl bg-white/[0.08] p-4">
+        <div className="mx-auto w-fit rounded-2xl bg-white p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-full.png" alt="StrategAIze" className="h-12 w-auto" />
         </div>
