@@ -397,17 +397,17 @@ export function RunWorkspaceClient({
   // ─── Sidebar: dark theme matching Figma mockup ─────────────────────────
   const sidebar = (
     <div className="flex h-full flex-col" style={{ background: "var(--gradient-sidebar)" }}>
-      {/* Brand header — full logo in lighter container */}
-      <div className="mx-3 mt-3 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 pt-6 pb-5 text-center">
+      {/* Logo block */}
+      <div className="mx-3 mt-3 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-6 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto h-12 w-auto mb-4" />
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <div className="mt-3">
-          <div className="text-sm font-bold text-white">Blueprint Assessment</div>
-          <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
-        </div>
+        <img src="/brand/logo-full.svg" alt="StrategAIze" className="mx-auto h-14 w-auto" />
       </div>
-      <div className="h-4" />
+      {/* Blueprint Assessment block */}
+      <div className="mx-3 mt-2 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-4 text-center">
+        <div className="text-sm font-bold text-white">Blueprint Assessment</div>
+        <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
+      </div>
+      <div className="h-3" />
 
       {/* Block groups */}
       <div className="flex-1 overflow-y-auto px-3 py-1">
