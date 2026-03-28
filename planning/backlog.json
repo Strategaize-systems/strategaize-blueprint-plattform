@@ -112,22 +112,22 @@
     },
     {
       "id": "BL-012",
-      "title": "Dify.ai Integration und LLM-Rückfrage-Workflow",
+      "title": "LLM-Chat-Integration (Ollama direkt, ohne Dify)",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "in_progress",
       "version": "V1.1",
-      "description": "Integration von Dify.ai für LLM-orchestrierte Rückfragen bei Antworten",
+      "description": "Chat-Placeholder durch echte LLM-Antworten ersetzen. Ollama REST API direkt aufrufen. Dify entfernt aus Stack (DEC-005). Drei Prompt-Varianten: Rückfragen, Zusammenfassung, Bewertung.",
       "createdAt": "2026-03-24"
     },
     {
       "id": "BL-013",
-      "title": "Ollama/Qwen 2.5 Setup auf Hetzner",
+      "title": "Ollama + Qwen 2.5 14B auf Hetzner deployen",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "in_progress",
       "version": "V1.1",
-      "description": "Lokales LLM-Setup mit Ollama und Qwen 2.5 auf Hetzner-Server",
+      "description": "Ollama Container auf Hetzner. Qwen 2.5 14B Modell. DSGVO-konform, alle Daten bleiben auf EU-Server. Kein externer API-Call. ~12GB RAM.",
       "createdAt": "2026-03-24"
     },
     {
@@ -137,7 +137,7 @@
       "priority": "medium",
       "status": "open",
       "version": "V1.1",
-      "description": "Prompts und Regelwerke für kontextbezogene LLM-Rückfragen in Dify konfigurieren",
+      "description": "System-Prompts für kontextbezogene LLM-Rückfragen, Zusammenfassung und Qualitätsbewertung. Im Code verwaltet (kein Dify).",
       "createdAt": "2026-03-24"
     },
     {

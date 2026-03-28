@@ -11,7 +11,7 @@
       "id": "v1-1",
       "name": "V1.1",
       "status": "active",
-      "summary": "LLM-Integration — Rückfragen via Dify + Ollama/Qwen, Antwort-Review Übersichtsseite",
+      "summary": "LLM-Integration — Rückfragen via Ollama/Qwen (lokal, DSGVO), Chat-Workflow, Block-Checkpoints, Premium UI",
       "order": 2
     },
     {
