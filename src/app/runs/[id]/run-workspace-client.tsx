@@ -153,7 +153,7 @@ export function RunWorkspaceClient({
   const [eventKey, setEventKey] = useState(0);
 
   // Chat state
-  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant" | "summary"; text: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -274,8 +274,8 @@ export function RunWorkspaceClient({
       );
       if (res.ok) {
         const data = await res.json();
-        setAnswerText(data.generatedAnswer);
-        setMessage({ text: "Antwort wurde generiert — bitte prüfen und ggf. bearbeiten", type: "success" });
+        setChatMessages((prev) => [...prev, { role: "summary" as const, text: data.generatedAnswer }]);
+        setMessage({ text: "Zusammenfassung erstellt — prüfen und als Antwort übernehmen", type: "success" });
       } else {
         setMessage({ text: "Fehler beim Generieren der Antwort", type: "error" });
       }
@@ -798,42 +798,56 @@ export function RunWorkspaceClient({
                 </div>
               </div>
 
-              {/* ── Chat-Bereich (LLM Konversation) ── */}
-              {!isAdmin && !isLocked && (
-                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
-                  {/* Chat Header — collapsible */}
-                  <button
-                    onClick={() => setChatOpen(!chatOpen)}
-                    className="w-full px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between hover:bg-slate-50 transition-colors"
-                  >
-                    <span className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4 text-brand-primary" />
-                      Gespräch zur Frage
-                      {chatMessages.length > 0 && (
-                        <span className="ml-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary">
-                          {chatMessages.length}
-                        </span>
-                      )}
-                    </span>
-                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${chatOpen ? "rotate-180" : ""}`} />
-                  </button>
+              {/* ── Integrierter Chat + Antwort-Bereich ── */}
+              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+                  <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+                    Ihre Antwort
+                    {chatMessages.length > 0 && (
+                      <span className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary">
+                        {chatMessages.length} Nachrichten
+                      </span>
+                    )}
+                  </label>
+                </div>
 
-                  {chatOpen && (
-                    <div>
-                      {/* Chat Messages */}
-                      <div className="px-6 py-4 max-h-80 overflow-y-auto space-y-3">
-                        {chatMessages.length === 0 ? (
-                          <div className="py-6 text-center">
-                            <MessageCircle className="mx-auto h-8 w-8 text-slate-300 mb-2" />
-                            <p className="text-sm text-slate-400">Stellen Sie Fragen oder beschreiben Sie Ihre Situation.</p>
-                            <p className="text-xs text-slate-400 mt-1">Der KI-Assistent hilft Ihnen, eine vollständige Antwort zu erarbeiten.</p>
-                          </div>
-                        ) : (
-                          chatMessages.map((msg, i) => (
-                            <div
-                              key={i}
-                              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                            >
+                {/* Chat messages + Input area */}
+                <div className="max-h-[32rem] overflow-y-auto">
+                  {/* Existing chat messages */}
+                  {chatMessages.length > 0 && (
+                    <div className="px-6 py-4 space-y-3">
+                      {chatMessages.map((msg, i) => (
+                        <div key={i}>
+                          {msg.role === "summary" ? (
+                            /* Summary message — special styling with save button */
+                            <div className="rounded-2xl border-2 border-brand-success/30 bg-gradient-to-br from-emerald-50 to-white p-5">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Sparkles className="h-4 w-4 text-brand-success-dark" />
+                                <span className="text-xs font-bold uppercase tracking-wider text-brand-success-dark">Zusammenfassung</span>
+                              </div>
+                              <p className="text-sm leading-relaxed text-slate-800 whitespace-pre-wrap">{msg.text}</p>
+                              <div className="mt-4 flex items-center gap-3">
+                                <button
+                                  onClick={() => { setAnswerText(msg.text); }}
+                                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
+                                >
+                                  <span>&#10003;</span>
+                                  Als Antwort übernehmen
+                                </button>
+                                <button
+                                  onClick={generateAnswer}
+                                  disabled={generating}
+                                  className="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 hover:border-brand-primary hover:text-brand-primary transition-all"
+                                >
+                                  Neu generieren
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            /* Regular chat message */
+                            <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                               <div
                                 className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                                   msg.role === "user"
@@ -844,91 +858,85 @@ export function RunWorkspaceClient({
                                 {msg.text}
                               </div>
                             </div>
-                          ))
-                        )}
-                        <div ref={chatEndRef} />
-                      </div>
-
-                      {/* Chat Input */}
-                      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50/30">
-                        <div className="flex items-center gap-3">
-                          <input
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendChatMessage()}
-                            placeholder="Ihre Nachricht..."
-                            className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:border-brand-primary focus:outline-none transition-colors"
-                          />
-                          <button
-                            onClick={sendChatMessage}
-                            disabled={!chatInput.trim()}
-                            className="p-3 rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-md disabled:opacity-50 hover:shadow-lg transition-all"
-                          >
-                            <Send className="h-4 w-4" />
-                          </button>
+                          )}
                         </div>
-                        {chatMessages.length > 0 && (
-                          <div className="mt-3 flex justify-end">
-                            <button
-                              onClick={generateAnswer}
-                              disabled={generating}
-                              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50"
-                            >
-                              <Sparkles className="h-4 w-4" />
-                              {generating ? "Wird generiert..." : "Antwort generieren"}
-                            </button>
-                          </div>
-                        )}
+                      ))}
+                      <div ref={chatEndRef} />
+                    </div>
+                  )}
+
+                  {/* Text input area — always visible */}
+                  {!isAdmin && !isLocked && (
+                    <div className={`px-6 ${chatMessages.length > 0 ? "pb-4" : "py-6"}`}>
+                      {chatMessages.length === 0 && (
+                        <div className="mb-4 text-center py-4">
+                          <MessageCircle className="mx-auto h-6 w-6 text-slate-300 mb-2" />
+                          <p className="text-sm text-slate-400">Beschreiben Sie Ihre Situation oder stellen Sie direkt Ihre Antwort ein.</p>
+                        </div>
+                      )}
+                      <div className="flex items-end gap-3">
+                        <textarea
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              sendChatMessage();
+                            }
+                          }}
+                          placeholder={chatMessages.length === 0 ? "Antwort eingeben oder mit KI-Assistent erarbeiten..." : "Ihre Nachricht..."}
+                          rows={chatMessages.length === 0 ? 4 : 2}
+                          className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
+                        />
+                        <button
+                          onClick={sendChatMessage}
+                          disabled={!chatInput.trim()}
+                          className="p-3 rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-md disabled:opacity-50 hover:shadow-lg transition-all flex-shrink-0"
+                        >
+                          <Send className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* ── Answer Editor with Action Bar (Style Guide 14.4) ── */}
-              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
-                {/* Header */}
-                <div className="px-8 py-4 border-b border-slate-200 bg-slate-50/50">
-                  <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                    Ihre Antwort
-                  </label>
-                </div>
-                {/* Textarea */}
-                <div className="p-8 max-h-80 overflow-y-auto">
-                  <textarea
-                    id="answer"
-                    value={answerText}
-                    onChange={(e) => setAnswerText(e.target.value)}
-                    placeholder="Beschreiben Sie hier Ihre Antwort ausführlich und konkret."
-                    disabled={isLocked || isAdmin}
-                    className="w-full min-h-[20rem] px-0 py-0 text-base leading-relaxed text-slate-900 placeholder:text-slate-400 border-0 outline-none resize-none bg-transparent focus:ring-0"
-                  />
-                </div>
                 {/* Action bar */}
                 {!isAdmin && !isLocked && (
-                  <div className="px-8 py-5 border-t-2 border-slate-100 bg-slate-50/30">
+                  <div className="px-6 py-4 border-t-2 border-slate-100 bg-slate-50/30">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-500 tabular-nums">
-                        {answerText.length} Zeichen
+                        {answerText ? `Antwort: ${answerText.length} Zeichen` : "Noch keine Antwort"}
                       </span>
                       <div className="flex items-center gap-3">
-                        <button
-                          disabled
-                          className="px-5 py-3 rounded-xl bg-white border-2 border-slate-200 text-sm font-semibold text-slate-400 cursor-not-allowed"
-                          title="Spracheingabe (V2)"
-                        >
-                          Sprechen
-                        </button>
+                        {chatMessages.length >= 2 && (
+                          <button
+                            onClick={generateAnswer}
+                            disabled={generating}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand-success/30 text-sm font-bold text-brand-success-dark hover:bg-brand-success/5 transition-all disabled:opacity-50"
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            {generating ? "Wird generiert..." : "Zusammenfassung erstellen"}
+                          </button>
+                        )}
                         <button
                           onClick={saveAnswer}
                           disabled={saving || !answerText.trim()}
-                          className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white font-bold shadow-xl shadow-brand-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white font-bold shadow-xl shadow-brand-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                         >
                           {saving ? "Wird gespeichert..." : "Antwort speichern"}
                           {!saving && <span>&#10003;</span>}
                         </button>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Saved answer indicator */}
+                {answerText && !isAdmin && !isLocked && (
+                  <div className="px-6 py-3 border-t border-slate-100 bg-emerald-50/50">
+                    <div className="flex items-center gap-2 text-xs text-brand-success-dark font-medium">
+                      <span>&#10003;</span>
+                      <span>Antwort bereit zum Speichern ({answerText.length} Zeichen)</span>
                     </div>
                   </div>
                 )}
