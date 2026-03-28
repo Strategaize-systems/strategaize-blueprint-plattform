@@ -21,13 +21,13 @@ export async function GET() {
   // Batch-fetch owner emails and run counts (avoids N+1 queries)
   const tenantIds = (tenants ?? []).map((t) => t.id);
 
-  // Single query: all tenant_owner profiles
+  // Single query: all tenant_admin/owner profiles
   const { data: owners } = tenantIds.length > 0
     ? await adminClient!
         .from("profiles")
         .select("tenant_id, email")
         .in("tenant_id", tenantIds)
-        .eq("role", "tenant_owner")
+        .in("role", ["tenant_admin", "tenant_owner"])
     : { data: [] };
 
   const ownerByTenant = new Map<string, string>();

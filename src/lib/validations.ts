@@ -11,6 +11,8 @@ export const createTenantSchema = z.object({
 
 export const inviteTenantUserSchema = z.object({
   email: z.string().email("Ungültige E-Mail-Adresse"),
+  role: z.enum(["tenant_admin", "tenant_member"]).optional().default("tenant_member"),
+  allowedBlocks: z.array(z.enum(["A", "B", "C", "D", "E", "F", "G", "H", "I"])).optional(),
 });
 
 // === Admin: Runs ===

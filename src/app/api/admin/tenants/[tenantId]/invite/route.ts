@@ -35,7 +35,7 @@ export async function POST(
   const parsed = inviteTenantUserSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { email } = parsed.data;
+  const { email, role: inviteRole, allowedBlocks } = parsed.data;
   const emailLower = email.toLowerCase();
   let isReinvite = false;
 
@@ -63,15 +63,19 @@ export async function POST(
     await adminClient!.auth.admin.deleteUser(existingProfile.id);
   }
 
-  // Check if tenant already has an owner
-  const { data: existingOwner } = await adminClient!
-    .from("profiles")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .eq("role", "tenant_owner")
-    .single();
-
-  const role = existingOwner ? "tenant_member" : "tenant_owner";
+  // Determine role: use provided role, or auto-detect (first user = tenant_admin)
+  let role: string;
+  if (inviteRole) {
+    role = inviteRole;
+  } else {
+    const { data: existingAdmin } = await adminClient!
+      .from("profiles")
+      .select("id")
+      .eq("tenant_id", tenantId)
+      .in("role", ["tenant_admin", "tenant_owner"])
+      .single();
+    role = existingAdmin ? "tenant_member" : "tenant_admin";
+  }
 
   // Create user via GoTrue Admin API and get the invite token.
   // We use generateLink instead of inviteUserByEmail because GoTrue
@@ -84,7 +88,11 @@ export async function POST(
       type: "invite",
       email,
       options: {
-        data: { tenant_id: tenantId, role },
+        data: {
+          tenant_id: tenantId,
+          role,
+          ...(allowedBlocks && allowedBlocks.length > 0 ? { allowed_blocks: allowedBlocks } : {}),
+        },
         redirectTo,
       },
     });
