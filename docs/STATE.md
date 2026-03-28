@@ -14,11 +14,11 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. BL-014: Prompt-Feintuning (Rückfragen-Qualität, Zusammenfassungs-Struktur)
-2. BL-023: Rollen-System (Sub-Admin / Tenant-Admin für ersten Kunden)
+1. SLC-018 MT-3-5: Frontend — Invite-Dialog mit Rollen + Block-Filter im Workspace
+2. BL-025: Admin Run-Detail — alle Antworten + Verlauf sichtbar (nicht nur letzte)
 3. BL-022: Mehrsprachigkeit (DE/EN/NL)
 4. BL-017/018: Sentry Error-Tracking
-5. BL-021: Voice Input (RAM-Situation prüfen)
+5. BL-021: Voice Input (Whisper)
 6. Erstes echtes Kunden-Onboarding
 
 ## Active Scope
