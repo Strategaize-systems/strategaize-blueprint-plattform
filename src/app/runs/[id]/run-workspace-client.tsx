@@ -220,7 +220,8 @@ export function RunWorkspaceClient({
 
   function selectQuestion(q: Question) {
     setActiveQuestion(q.id);
-    setAnswerText(q.latest_answer ?? "");
+    setAnswerText("");
+    setChatInput("");
     setMessage(null);
     setSidebarOpen(false);
     setChatMessages([]);
@@ -287,8 +288,8 @@ export function RunWorkspaceClient({
   }
 
   async function saveAnswer() {
-    // Save answerText (from summary) or chatInput (direct typing) — whichever has content
-    const textToSave = answerText.trim() || chatInput.trim();
+    // Save chatInput (direct typing) or answerText (from summary) — chatInput has priority
+    const textToSave = chatInput.trim() || answerText.trim();
     if (!activeQuestion || !textToSave || !run) return;
     setSaving(true);
     setMessage(null);
