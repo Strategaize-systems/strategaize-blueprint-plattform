@@ -69,7 +69,7 @@ BEGIN
   -- Mindestens ein Event im Block muss existieren
   IF NOT EXISTS (
     SELECT 1 FROM question_events qe
-    JOIN run_questions rq ON rq.id = qe.question_id
+    JOIN questions rq ON rq.id = qe.question_id
     WHERE rq.run_id = p_run_id
     AND rq.block = p_block
   ) THEN
