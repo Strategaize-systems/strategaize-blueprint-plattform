@@ -10,14 +10,13 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: stable
-- Current Focus: SLC-016 Chat + Antwort generieren done (Placeholder). Nächster Schritt: Dify/LLM-Anbindung (BL-012) für echte KI-Antworten.
+- Current Focus: SLC-015 Block-Checkpoints + SLC-016 Chat/Generate live. Nächster Schritt: Dify/LLM-Anbindung (BL-012) für echte KI-Antworten.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. Checkpoint-Historie mit Block-Zuordnung (Backend-Erweiterung)
+1. BL-012: Dify/LLM-Anbindung — Chat-Placeholder durch echte KI ersetzen
 2. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
-3. BL-012-016: LLM-Integration (Dify + Ollama/Qwen)
-4. Erstes echtes Kunden-Onboarding
+3. Erstes echtes Kunden-Onboarding
 
 ## Active Scope
 MVP-1 — Kernplattform implementiert, deployed und E2E getestet (8 Features, FEAT-001 bis FEAT-008). Auth, Admin-Dashboard, Tenant-Workspace, Event-Sourcing, Evidence-Upload, Submission-Checkpoints, ZIP-Export. Live auf https://blueprint.strategaizetransition.com seit 2026-03-25. SMTP konfiguriert (IONOS), Invite-Flow komplett funktional seit 2026-03-26.
