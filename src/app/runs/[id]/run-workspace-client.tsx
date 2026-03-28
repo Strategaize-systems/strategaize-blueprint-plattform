@@ -43,7 +43,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles } from "lucide-react";
 
 const EVIDENCE_LABELS = [
   { value: "policy", label: "Policy" },
@@ -152,6 +152,13 @@ export function RunWorkspaceClient({
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [eventKey, setEventKey] = useState(0);
 
+  // Chat state
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   const loadRun = useCallback(async () => {
     try {
       const endpoint = isAdmin
@@ -216,6 +223,8 @@ export function RunWorkspaceClient({
     setAnswerText(q.latest_answer ?? "");
     setMessage(null);
     setSidebarOpen(false);
+    setChatMessages([]);
+    setChatOpen(false);
     loadSubmissions(q.block);
   }
 
@@ -226,6 +235,55 @@ export function RunWorkspaceClient({
       else next.add(block);
       return next;
     });
+  }
+
+  function sendChatMessage() {
+    if (!chatInput.trim()) return;
+    const userMsg = { role: "user" as const, text: chatInput.trim() };
+    setChatMessages((prev) => [...prev, userMsg]);
+    setChatInput("");
+
+    // TODO: When Dify is connected, this will call the LLM API
+    // and add the assistant response. For now, placeholder response.
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant" as const,
+          text: "Danke für Ihre Angaben. Können Sie das noch etwas konkretisieren? [Platzhalter — LLM-Anbindung via Dify ausstehend]",
+        },
+      ]);
+    }, 800);
+  }
+
+  async function generateAnswer() {
+    if (!activeQuestion || !run) return;
+    setGenerating(true);
+    setMessage(null);
+    try {
+      const res = await fetch(
+        `/api/tenant/runs/${runId}/questions/${activeQuestion}/generate-answer`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chatMessages,
+            currentDraft: answerText || undefined,
+          }),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAnswerText(data.generatedAnswer);
+        setMessage({ text: "Antwort wurde generiert — bitte prüfen und ggf. bearbeiten", type: "success" });
+      } else {
+        setMessage({ text: "Fehler beim Generieren der Antwort", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Netzwerkfehler", type: "error" });
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function saveAnswer() {
@@ -739,6 +797,93 @@ export function RunWorkspaceClient({
                   </h2>
                 </div>
               </div>
+
+              {/* ── Chat-Bereich (LLM Konversation) ── */}
+              {!isAdmin && !isLocked && (
+                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                  {/* Chat Header — collapsible */}
+                  <button
+                    onClick={() => setChatOpen(!chatOpen)}
+                    className="w-full px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                  >
+                    <span className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4 text-brand-primary" />
+                      Gespräch zur Frage
+                      {chatMessages.length > 0 && (
+                        <span className="ml-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary">
+                          {chatMessages.length}
+                        </span>
+                      )}
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${chatOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {chatOpen && (
+                    <div>
+                      {/* Chat Messages */}
+                      <div className="px-6 py-4 max-h-80 overflow-y-auto space-y-3">
+                        {chatMessages.length === 0 ? (
+                          <div className="py-6 text-center">
+                            <MessageCircle className="mx-auto h-8 w-8 text-slate-300 mb-2" />
+                            <p className="text-sm text-slate-400">Stellen Sie Fragen oder beschreiben Sie Ihre Situation.</p>
+                            <p className="text-xs text-slate-400 mt-1">Der KI-Assistent hilft Ihnen, eine vollständige Antwort zu erarbeiten.</p>
+                          </div>
+                        ) : (
+                          chatMessages.map((msg, i) => (
+                            <div
+                              key={i}
+                              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                            >
+                              <div
+                                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                                  msg.role === "user"
+                                    ? "bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white rounded-br-md"
+                                    : "bg-slate-100 text-slate-800 rounded-bl-md"
+                                }`}
+                              >
+                                {msg.text}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                        <div ref={chatEndRef} />
+                      </div>
+
+                      {/* Chat Input */}
+                      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50/30">
+                        <div className="flex items-center gap-3">
+                          <input
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendChatMessage()}
+                            placeholder="Ihre Nachricht..."
+                            className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:border-brand-primary focus:outline-none transition-colors"
+                          />
+                          <button
+                            onClick={sendChatMessage}
+                            disabled={!chatInput.trim()}
+                            className="p-3 rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-md disabled:opacity-50 hover:shadow-lg transition-all"
+                          >
+                            <Send className="h-4 w-4" />
+                          </button>
+                        </div>
+                        {chatMessages.length > 0 && (
+                          <div className="mt-3 flex justify-end">
+                            <button
+                              onClick={generateAnswer}
+                              disabled={generating}
+                              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50"
+                            >
+                              <Sparkles className="h-4 w-4" />
+                              {generating ? "Wird generiert..." : "Antwort generieren"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ── Answer Editor with Action Bar (Style Guide 14.4) ── */}
               <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
