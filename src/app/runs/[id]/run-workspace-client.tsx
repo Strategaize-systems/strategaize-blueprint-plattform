@@ -766,10 +766,10 @@ export function RunWorkspaceClient({
           </div>
         )}
 
-        {/* Content: scrollable main workspace */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        {/* Content: main workspace — scrollable page, answer area fills viewport */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
           {activeQ ? (
-            <div className="mx-auto max-w-6xl space-y-4">
+            <div className="mx-auto max-w-6xl w-full space-y-3">
               {/* ── Kompakte Fragekarte ── */}
               <div className="relative bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
@@ -790,11 +790,11 @@ export function RunWorkspaceClient({
                 </div>
               </div>
 
-              {/* ── Side-by-side: Antwort (2/3) + Verlauf (1/3) ── */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+              {/* ── Side-by-side: Antwort (2/3) + Verlauf (1/3) — tall to fill viewport ── */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-3" style={{ minHeight: "calc(100vh - 220px)" }}>
 
               {/* ── Integrierter Chat + Antwort-Bereich (2/3 Breite) ── */}
-              <div className="xl:col-span-2 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+              <div className="xl:col-span-2 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
                   <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
@@ -808,10 +808,10 @@ export function RunWorkspaceClient({
                   </label>
                 </div>
 
-                {/* Chat messages — scrollable with fixed max height */}
-                <div>
+                {/* Chat messages — scrollable, fills available space */}
+                <div className="flex-1 overflow-y-auto">
                   {chatMessages.length > 0 && (
-                    <div className="px-5 py-3 space-y-2 max-h-64 overflow-y-auto">
+                    <div className="px-5 py-3 space-y-2">
                       {chatMessages.map((msg, i) => (
                         <div key={i}>
                           {msg.role === "summary" ? (
@@ -935,10 +935,10 @@ export function RunWorkspaceClient({
                 )}
               </div>
 
-              {/* ── Antwort-Verlauf (1/3 Breite, rechte Spalte) ── */}
+              {/* ── Antwort-Verlauf (1/3 Breite, rechte Spalte) — fills height ── */}
               {!isAdmin && activeQuestion && (
-                <div className="xl:col-span-1 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
-                  <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/50">
+                <div className="xl:col-span-1 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden flex flex-col">
+                  <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/50 flex-shrink-0">
                     <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
                         <FileText className="h-3 w-3 text-white" />
@@ -946,7 +946,7 @@ export function RunWorkspaceClient({
                       Verlauf
                     </h3>
                   </div>
-                  <div className="overflow-y-auto" style={{ maxHeight: "500px" }}>
+                  <div className="flex-1 overflow-y-auto">
                     <div className="p-4">
                       <EventHistory
                         key={`${activeQuestion}-${eventKey}`}
