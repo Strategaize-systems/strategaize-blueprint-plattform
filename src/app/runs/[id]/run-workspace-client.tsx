@@ -808,14 +808,13 @@ export function RunWorkspaceClient({
                   </label>
                 </div>
 
-                {/* Chat messages — scrollable, fills available space */}
+                {/* Chat messages — scrollable area above fixed input */}
                 <div className="flex-1 overflow-y-auto">
-                  {chatMessages.length > 0 && (
+                  {chatMessages.length > 0 ? (
                     <div className="px-5 py-3 space-y-2">
                       {chatMessages.map((msg, i) => (
                         <div key={i}>
                           {msg.role === "summary" ? (
-                            /* Summary message — compact with save button */
                             <div className="rounded-xl border border-brand-success/30 bg-emerald-50/50 px-4 py-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="h-3.5 w-3.5 text-brand-success-dark" />
@@ -840,7 +839,6 @@ export function RunWorkspaceClient({
                               </div>
                             </div>
                           ) : (
-                            /* Regular chat message — compact */
                             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                               <div
                                 className={`max-w-[75%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
@@ -857,41 +855,40 @@ export function RunWorkspaceClient({
                       ))}
                       <div ref={chatEndRef} />
                     </div>
-                  )}
-
-                  {/* Text input area — always visible */}
-                  {!isAdmin && !isLocked && (
-                    <div className={`px-5 ${chatMessages.length > 0 ? "pb-3 pt-1" : "py-4"}`}>
-                      {chatMessages.length === 0 && (
-                        <div className="mb-3 text-center py-2">
-                          <p className="text-xs text-slate-400">Antwort eingeben oder mit KI-Assistent erarbeiten</p>
-                        </div>
-                      )}
-                      <div className="flex items-end gap-2">
-                        <textarea
-                          value={chatInput}
-                          onChange={(e) => setChatInput(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                              e.preventDefault();
-                              sendChatMessage();
-                            }
-                          }}
-                          placeholder={chatMessages.length === 0 ? "Ihre Antwort oder Nachricht..." : "Nachricht..."}
-                          rows={chatMessages.length === 0 ? 3 : 1}
-                          className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
-                        />
-                        <button
-                          onClick={sendChatMessage}
-                          disabled={!chatInput.trim()}
-                          className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all flex-shrink-0"
-                        >
-                          <Send className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center py-8">
+                      <p className="text-xs text-slate-400">Antwort eingeben oder mit KI-Assistent erarbeiten</p>
                     </div>
                   )}
                 </div>
+
+                {/* Fixed input area — always at bottom, 4 rows */}
+                {!isAdmin && !isLocked && (
+                  <div className="flex-shrink-0 px-5 py-3 border-t border-slate-200 bg-white">
+                    <div className="flex items-end gap-2">
+                      <textarea
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            sendChatMessage();
+                          }
+                        }}
+                        placeholder="Ihre Nachricht oder Antwort eingeben..."
+                        rows={4}
+                        className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
+                      />
+                      <button
+                        onClick={sendChatMessage}
+                        disabled={!chatInput.trim()}
+                        className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all flex-shrink-0 self-end"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Action bar */}
                 {!isAdmin && !isLocked && (
