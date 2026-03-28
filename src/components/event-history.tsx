@@ -92,7 +92,14 @@ export function EventHistory({
         </AccordionTrigger>
         <AccordionContent>
           <div className="space-y-2 overflow-y-auto pr-1">
-            {events.map((event) => {
+            {(() => {
+              // Number answers in reverse (oldest=1, newest=N)
+              const answerEvents = events.filter((e) => e.event_type === "answer_submitted");
+              const answerNumberMap = new Map<string, number>();
+              answerEvents.forEach((e, idx) => {
+                answerNumberMap.set(e.id, answerEvents.length - idx);
+              });
+              return events.map((event) => {
               const text =
                 (event.event_type === "answer_submitted" || event.event_type === "note_added") &&
                 typeof event.payload?.text === "string"
@@ -100,6 +107,7 @@ export function EventHistory({
                   : null;
               const isLong = text ? text.length > 120 : false;
               const isExpanded = expandedEvents.has(event.id);
+              const answerNum = answerNumberMap.get(event.id);
 
               return (
                 <div
@@ -107,12 +115,17 @@ export function EventHistory({
                   className="rounded-lg border border-slate-200 p-2.5 text-xs"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <Badge
-                      variant={EVENT_TYPE_VARIANTS[event.event_type] ?? "outline"}
-                      className="text-[10px]"
-                    >
-                      {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                      <Badge
+                        variant={EVENT_TYPE_VARIANTS[event.event_type] ?? "outline"}
+                        className="text-[10px]"
+                      >
+                        {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
+                      </Badge>
+                      {answerNum && (
+                        <span className="text-[10px] font-bold text-slate-500">#{answerNum}</span>
+                      )}
+                    </div>
                     <span className="text-[10px] text-slate-400 tabular-nums">
                       {new Date(event.created_at).toLocaleString("de-DE")}
                     </span>
@@ -144,7 +157,8 @@ export function EventHistory({
                   )}
                 </div>
               );
-            })}
+            });
+            })()}
           </div>
         </AccordionContent>
       </AccordionItem>
