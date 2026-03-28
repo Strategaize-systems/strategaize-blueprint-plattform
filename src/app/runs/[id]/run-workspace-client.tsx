@@ -769,37 +769,32 @@ export function RunWorkspaceClient({
         {/* Content: scrollable main workspace */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {activeQ ? (
-            <div className="mx-auto max-w-3xl space-y-6">
-              {/* ── Markante Fragekarte (Style Guide 14.2) ── */}
-              <div className="relative bg-white rounded-3xl border-2 border-slate-300 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/20 pointer-events-none" />
-                <div className="relative p-8 lg:p-12">
-                  {/* Meta row */}
-                  <div className="mb-6 flex items-center gap-4">
-                    <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white shadow-xl shadow-brand-primary/40">
-                      <span className="text-sm font-bold tracking-tight">{activeQ.frage_id}</span>
-                    </div>
-                    <div className="h-1 w-1 rounded-full bg-slate-300" />
-                    <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">
-                      {activeQ.unterbereich}
-                    </span>
-                    <div className="ml-auto flex items-center gap-2">
-                      <div className="h-6 w-px bg-slate-200" />
-                      <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 uppercase tracking-wide">
-                        {activeQ.ebene}
-                      </span>
+            <div className="mx-auto max-w-6xl space-y-4">
+              {/* ── Kompakte Fragekarte ── */}
+              <div className="relative bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                <div className="relative px-6 py-4 flex items-center gap-4">
+                  <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-md">
+                    <span className="text-xs font-bold">{activeQ.frage_id}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-base font-bold text-slate-900 leading-snug">
+                      {activeQ.fragetext}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
+                      <span>{activeQ.unterbereich}</span>
+                      <span>&bull;</span>
+                      <span className="font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 uppercase text-[10px]">{activeQ.ebene}</span>
                     </div>
                   </div>
-                  {/* Question text */}
-                  <h2 className="text-2xl font-bold text-slate-900 leading-[1.4] tracking-tight">
-                    {activeQ.fragetext}
-                  </h2>
                 </div>
               </div>
 
-              {/* ── Integrierter Chat + Antwort-Bereich ── */}
-              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+              {/* ── Side-by-side: Antwort (2/3) + Verlauf (1/3) ── */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+
+              {/* ── Integrierter Chat + Antwort-Bereich (2/3 Breite) ── */}
+              <div className="xl:col-span-2 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
                   <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
@@ -940,19 +935,19 @@ export function RunWorkspaceClient({
                 )}
               </div>
 
-              {/* ── History Panel (Style Guide 14.5) ── */}
+              {/* ── Antwort-Verlauf (1/3 Breite, rechte Spalte) ── */}
               {!isAdmin && activeQuestion && (
-                <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
-                  <div className="px-8 py-5 border-b border-slate-200 bg-slate-50/50">
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center shadow-md">
-                        <FileText className="h-4 w-4 text-white" />
+                <div className="xl:col-span-1 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/50">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-md bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                        <FileText className="h-3 w-3 text-white" />
                       </div>
-                      Antwort-Verlauf
+                      Verlauf
                     </h3>
                   </div>
-                  <div className="overflow-y-auto" style={{ maxHeight: "400px" }}>
-                    <div className="p-6">
+                  <div className="overflow-y-auto" style={{ maxHeight: "500px" }}>
+                    <div className="p-4">
                       <EventHistory
                         key={`${activeQuestion}-${eventKey}`}
                         runId={runId}
@@ -962,6 +957,7 @@ export function RunWorkspaceClient({
                   </div>
                 </div>
               )}
+              </div> {/* end grid */}
 
               {/* ── Evidence + Checkpoints Grid (Style Guide 14.6) ── */}
               {!isAdmin && (
