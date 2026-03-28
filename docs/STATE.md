@@ -10,7 +10,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: LLM live (Ollama + Qwen 2.5 14B). Chat + Zusammenfassung funktional. Nächster Schritt: Prompt-Feintuning + weitere Features.
+- Current Focus: LLM live + Rollen-System Backend done. MT-3-5 (Frontend Block-Filter + Invite-Dialog) ausstehend.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
