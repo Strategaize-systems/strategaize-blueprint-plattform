@@ -287,7 +287,9 @@ export function RunWorkspaceClient({
   }
 
   async function saveAnswer() {
-    if (!activeQuestion || !answerText.trim() || !run) return;
+    // Save answerText (from summary) or chatInput (direct typing) — whichever has content
+    const textToSave = answerText.trim() || chatInput.trim();
+    if (!activeQuestion || !textToSave || !run) return;
     setSaving(true);
     setMessage(null);
     try {
@@ -299,15 +301,18 @@ export function RunWorkspaceClient({
           body: JSON.stringify({
             client_event_id: crypto.randomUUID(),
             event_type: "answer_submitted",
-            payload: { text: answerText },
+            payload: { text: textToSave },
           }),
         }
       );
       if (res.ok) {
-        setMessage({ text: "Antwort gespeichert", type: "success" });
         setAnswerText("");
+        setChatInput("");
         setEventKey((k) => k + 1);
         await loadRun();
+        // Auto-dismiss success message after 3 seconds
+        setMessage({ text: "Antwort gespeichert", type: "success" });
+        setTimeout(() => setMessage(null), 3000);
       } else {
         const data = await res.json();
         setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
@@ -895,7 +900,7 @@ export function RunWorkspaceClient({
                   <div className="px-6 py-4 border-t-2 border-slate-100 bg-slate-50/30">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-500 tabular-nums">
-                        {answerText ? `Antwort: ${answerText.length} Zeichen` : "Noch keine Antwort"}
+                        {answerText ? `Antwort: ${answerText.length} Zeichen` : chatInput.trim() ? `Text: ${chatInput.trim().length} Zeichen` : "Noch keine Antwort"}
                       </span>
                       <div className="flex items-center gap-3">
                         {chatMessages.length >= 2 && (
@@ -910,7 +915,7 @@ export function RunWorkspaceClient({
                         )}
                         <button
                           onClick={saveAnswer}
-                          disabled={saving || !answerText.trim()}
+                          disabled={saving || (!answerText.trim() && !chatInput.trim())}
                           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white font-bold shadow-xl shadow-brand-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                         >
                           {saving ? "Wird gespeichert..." : "Antwort speichern"}
@@ -921,15 +926,6 @@ export function RunWorkspaceClient({
                   </div>
                 )}
 
-                {/* Saved answer indicator */}
-                {answerText && !isAdmin && !isLocked && (
-                  <div className="px-6 py-3 border-t border-slate-100 bg-emerald-50/50">
-                    <div className="flex items-center gap-2 text-xs text-brand-success-dark font-medium">
-                      <span>&#10003;</span>
-                      <span>Antwort bereit zum Speichern ({answerText.length} Zeichen)</span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* ── Antwort-Verlauf (1/3 Breite, rechte Spalte) — fills height ── */}
