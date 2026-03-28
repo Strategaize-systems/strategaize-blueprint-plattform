@@ -69,9 +69,9 @@ BEGIN
   -- Mindestens ein Event im Block muss existieren
   IF NOT EXISTS (
     SELECT 1 FROM question_events qe
-    JOIN questions rq ON rq.id = qe.question_id
-    WHERE rq.run_id = p_run_id
-    AND rq.block = p_block
+    JOIN questions q ON q.id = qe.question_id
+    WHERE q.catalog_snapshot_id = (SELECT catalog_snapshot_id FROM runs WHERE id = p_run_id)
+    AND q.block = p_block
   ) THEN
     RAISE EXCEPTION 'UNPROCESSABLE: No question events in block %', p_block;
   END IF;
