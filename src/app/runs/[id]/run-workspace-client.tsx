@@ -43,7 +43,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2 } from "lucide-react";
 
 const EVIDENCE_LABELS = [
   { value: "policy", label: "Policy" },
@@ -156,6 +156,7 @@ export function RunWorkspaceClient({
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant" | "summary"; text: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -239,11 +240,12 @@ export function RunWorkspaceClient({
   }
 
   async function sendChatMessage() {
-    if (!chatInput.trim() || !activeQuestion) return;
+    if (!chatInput.trim() || !activeQuestion || chatLoading) return;
     const messageText = chatInput.trim();
     const userMsg = { role: "user" as const, text: messageText };
     setChatMessages((prev) => [...prev, userMsg]);
     setChatInput("");
+    setChatLoading(true);
 
     // Call local LLM via Ollama for follow-up response
     try {
@@ -275,6 +277,8 @@ export function RunWorkspaceClient({
         ...prev,
         { role: "assistant" as const, text: "[Verbindungsfehler zum LLM]" },
       ]);
+    } finally {
+      setChatLoading(false);
     }
   }
 
@@ -850,7 +854,11 @@ export function RunWorkspaceClient({
                               <p className="text-xs leading-relaxed text-slate-800 whitespace-pre-wrap">{msg.text}</p>
                               <div className="mt-3 flex items-center gap-2">
                                 <button
-                                  onClick={() => { setAnswerText(msg.text); }}
+                                  onClick={() => {
+                                    setAnswerText(msg.text);
+                                    setMessage({ text: "Zusammenfassung übernommen — jetzt 'Antwort speichern' klicken", type: "success" });
+                                    setTimeout(() => setMessage(null), 4000);
+                                  }}
                                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-xs font-bold shadow-sm hover:shadow-md transition-all"
                                 >
                                   <span>&#10003;</span>
@@ -880,6 +888,15 @@ export function RunWorkspaceClient({
                           )}
                         </div>
                       ))}
+                      {/* Loading indicator while LLM responds */}
+                      {chatLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-slate-100 rounded-xl px-4 py-3 flex items-center gap-2">
+                            <Loader2 className="h-3.5 w-3.5 text-brand-primary animate-spin" />
+                            <span className="text-xs text-slate-500">KI denkt nach...</span>
+                          </div>
+                        </div>
+                      )}
                       <div ref={chatEndRef} />
                     </div>
                   ) : (
@@ -908,10 +925,10 @@ export function RunWorkspaceClient({
                       />
                       <button
                         onClick={sendChatMessage}
-                        disabled={!chatInput.trim()}
+                        disabled={!chatInput.trim() || chatLoading}
                         className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all flex-shrink-0 self-end"
                       >
-                        <Send className="h-3.5 w-3.5" />
+                        {chatLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                       </button>
                     </div>
                   </div>
@@ -931,8 +948,8 @@ export function RunWorkspaceClient({
                             disabled={generating}
                             className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand-success/30 text-sm font-bold text-brand-success-dark hover:bg-brand-success/5 transition-all disabled:opacity-50"
                           >
-                            <Sparkles className="h-4 w-4" />
-                            {generating ? "Wird generiert..." : "Zusammenfassung erstellen"}
+                            {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                            {generating ? "KI arbeitet..." : "Zusammenfassung erstellen"}
                           </button>
                         )}
                         <button
