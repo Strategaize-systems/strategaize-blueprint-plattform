@@ -249,6 +249,16 @@
       "version": "V1.1",
       "description": "Admin sieht aktuell nur die letzte Antwort pro Frage. Soll alle Antworten sehen (nummeriert #1-#N, mit Mehr/Weniger anzeigen). Zeigt auch wer geantwortet hat (relevant bei mehreren Usern pro Tenant). Gleicher Verlauf-Stil wie im Tenant-Workspace.",
       "createdAt": "2026-03-28"
+    },
+    {
+      "id": "BL-026",
+      "title": "Admin Run-Detail UI Premium — KPI Cards + Fragenliste Feinschliff",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Admin Run-Detail Seite hat noch altes Layout (Block-Tabs statt Sidebar, KPI Cards nicht auf Style Guide v2.1 Niveau). Angleichen an Workspace-Premium-Design: kompaktere KPI Cards, bessere Fragenliste mit Kategorien, konsistenter Look.",
+      "createdAt": "2026-03-28"
     }
   ]
 }
