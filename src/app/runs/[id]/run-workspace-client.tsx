@@ -813,46 +813,45 @@ export function RunWorkspaceClient({
                   </label>
                 </div>
 
-                {/* Chat messages + Input area */}
-                <div className="max-h-[32rem] overflow-y-auto">
-                  {/* Existing chat messages */}
+                {/* Chat messages — scrollable with fixed max height */}
+                <div>
                   {chatMessages.length > 0 && (
-                    <div className="px-6 py-4 space-y-3">
+                    <div className="px-5 py-3 space-y-2 max-h-64 overflow-y-auto">
                       {chatMessages.map((msg, i) => (
                         <div key={i}>
                           {msg.role === "summary" ? (
-                            /* Summary message — special styling with save button */
-                            <div className="rounded-2xl border-2 border-brand-success/30 bg-gradient-to-br from-emerald-50 to-white p-5">
-                              <div className="flex items-center gap-2 mb-3">
-                                <Sparkles className="h-4 w-4 text-brand-success-dark" />
-                                <span className="text-xs font-bold uppercase tracking-wider text-brand-success-dark">Zusammenfassung</span>
+                            /* Summary message — compact with save button */
+                            <div className="rounded-xl border border-brand-success/30 bg-emerald-50/50 px-4 py-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="h-3.5 w-3.5 text-brand-success-dark" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-success-dark">Zusammenfassung</span>
                               </div>
-                              <p className="text-sm leading-relaxed text-slate-800 whitespace-pre-wrap">{msg.text}</p>
-                              <div className="mt-4 flex items-center gap-3">
+                              <p className="text-xs leading-relaxed text-slate-800 whitespace-pre-wrap">{msg.text}</p>
+                              <div className="mt-3 flex items-center gap-2">
                                 <button
                                   onClick={() => { setAnswerText(msg.text); }}
-                                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
+                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-xs font-bold shadow-sm hover:shadow-md transition-all"
                                 >
                                   <span>&#10003;</span>
-                                  Als Antwort übernehmen
+                                  Übernehmen
                                 </button>
                                 <button
                                   onClick={generateAnswer}
                                   disabled={generating}
-                                  className="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 hover:border-brand-primary hover:text-brand-primary transition-all"
+                                  className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-500 hover:text-brand-primary transition-all"
                                 >
                                   Neu generieren
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            /* Regular chat message */
+                            /* Regular chat message — compact */
                             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                               <div
-                                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                                className={`max-w-[75%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
                                   msg.role === "user"
-                                    ? "bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white rounded-br-md"
-                                    : "bg-slate-100 text-slate-800 rounded-bl-md"
+                                    ? "bg-brand-primary text-white rounded-br-sm"
+                                    : "bg-slate-100 text-slate-700 rounded-bl-sm"
                                 }`}
                               >
                                 {msg.text}
@@ -867,14 +866,13 @@ export function RunWorkspaceClient({
 
                   {/* Text input area — always visible */}
                   {!isAdmin && !isLocked && (
-                    <div className={`px-6 ${chatMessages.length > 0 ? "pb-4" : "py-6"}`}>
+                    <div className={`px-5 ${chatMessages.length > 0 ? "pb-3 pt-1" : "py-4"}`}>
                       {chatMessages.length === 0 && (
-                        <div className="mb-4 text-center py-4">
-                          <MessageCircle className="mx-auto h-6 w-6 text-slate-300 mb-2" />
-                          <p className="text-sm text-slate-400">Beschreiben Sie Ihre Situation oder stellen Sie direkt Ihre Antwort ein.</p>
+                        <div className="mb-3 text-center py-2">
+                          <p className="text-xs text-slate-400">Antwort eingeben oder mit KI-Assistent erarbeiten</p>
                         </div>
                       )}
-                      <div className="flex items-end gap-3">
+                      <div className="flex items-end gap-2">
                         <textarea
                           value={chatInput}
                           onChange={(e) => setChatInput(e.target.value)}
@@ -884,16 +882,16 @@ export function RunWorkspaceClient({
                               sendChatMessage();
                             }
                           }}
-                          placeholder={chatMessages.length === 0 ? "Antwort eingeben oder mit KI-Assistent erarbeiten..." : "Ihre Nachricht..."}
-                          rows={chatMessages.length === 0 ? 4 : 2}
-                          className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
+                          placeholder={chatMessages.length === 0 ? "Ihre Antwort oder Nachricht..." : "Nachricht..."}
+                          rows={chatMessages.length === 0 ? 3 : 1}
+                          className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
                         />
                         <button
                           onClick={sendChatMessage}
                           disabled={!chatInput.trim()}
-                          className="p-3 rounded-xl bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-md disabled:opacity-50 hover:shadow-lg transition-all flex-shrink-0"
+                          className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all flex-shrink-0"
                         >
-                          <Send className="h-4 w-4" />
+                          <Send className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </div>
