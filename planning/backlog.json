@@ -115,7 +115,7 @@
       "title": "LLM-Chat-Integration (Ollama direkt, ohne Dify)",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V1.1",
       "description": "Chat-Placeholder durch echte LLM-Antworten ersetzen. Ollama REST API direkt aufrufen. Dify entfernt aus Stack (DEC-005). Drei Prompt-Varianten: Rückfragen, Zusammenfassung, Bewertung.",
       "createdAt": "2026-03-24"
@@ -125,7 +125,7 @@
       "title": "Ollama + Qwen 2.5 14B auf Hetzner deployen",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V1.1",
       "description": "Ollama Container auf Hetzner. Qwen 2.5 14B Modell. DSGVO-konform, alle Daten bleiben auf EU-Server. Kein externer API-Call. ~12GB RAM.",
       "createdAt": "2026-03-24"

@@ -10,13 +10,13 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: Ollama + Qwen 2.5 14B Deployment auf Hetzner + Anbindung an Chat-UI. Dify entfernt aus Stack (DEC-005).
-- Current Phase: V1.1 Implementation — LLM-Integration
+- Current Focus: LLM live (Ollama + Qwen 2.5 14B). Chat + Zusammenfassung funktional. Nächster Schritt: Prompt-Feintuning + weitere Features.
+- Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. Ollama + Qwen 2.5 14B auf Hetzner deployen
-2. Chat-Placeholder durch echte LLM-Antworten ersetzen
-3. Zusammenfassung-Generierung via LLM implementieren
+1. BL-014: Prompt-Feintuning (Rückfragen-Qualität, Zusammenfassungs-Struktur)
+2. BL-015: Antwort-Review Übersichtsseite
+3. BL-016: PDF/TXT-Parsing für LLM-Dokumentenkontext
 4. BL-017/018: Sentry Error-Tracking
 5. Erstes echtes Kunden-Onboarding
 
