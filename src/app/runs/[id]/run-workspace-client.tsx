@@ -797,7 +797,7 @@ export function RunWorkspaceClient({
               </div>
 
               {/* ── Side-by-side: Antwort (2/3) + Verlauf (1/3) — tall to fill viewport ── */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-3" style={{ minHeight: "calc(100vh - 280px)", maxHeight: "calc(100vh - 280px)" }}>
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-3" style={{ height: "calc(100vh - 260px)" }}>
 
               {/* ── Integrierter Chat + Antwort-Bereich (2/3 Breite) ── */}
               <div className="xl:col-span-2 bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden flex flex-col">
