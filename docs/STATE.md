@@ -15,10 +15,11 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Immediate Next Steps
 1. BL-014: Prompt-Feintuning (Rückfragen-Qualität, Zusammenfassungs-Struktur)
-2. BL-015: Antwort-Review Übersichtsseite
-3. BL-016: PDF/TXT-Parsing für LLM-Dokumentenkontext
+2. BL-023: Rollen-System (Sub-Admin / Tenant-Admin für ersten Kunden)
+3. BL-022: Mehrsprachigkeit (DE/EN/NL)
 4. BL-017/018: Sentry Error-Tracking
-5. Erstes echtes Kunden-Onboarding
+5. BL-021: Voice Input (RAM-Situation prüfen)
+6. Erstes echtes Kunden-Onboarding
 
 ## Active Scope
 MVP-1 — Kernplattform deployed und stabil. 8 Features, Auth, Admin, Tenant-Workspace, Event-Sourcing, Evidence, Checkpoints, ZIP-Export. Premium UI mit Style Guide v2.1.

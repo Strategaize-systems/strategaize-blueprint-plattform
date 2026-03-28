@@ -199,6 +199,46 @@
       "version": "V1.1",
       "description": "Alle Seiten (Admin + Tenant) mit dem Strategaize Style Guide überarbeiten: Brand-Farben, Typografie, Spacing, Premium-Cards, Navigation. Seite für Seite via /frontend.",
       "createdAt": "2026-03-26"
+    },
+    {
+      "id": "BL-021",
+      "title": "Spracheingabe / Voice Input (Whisper oder Browser Speech API)",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2",
+      "description": "Spracheingabe im Chat-Bereich. Option A: Whisper lokal auf Hetzner (braucht 2-5GB RAM). Option B: Browser Web Speech API (kein Server-RAM, weniger genau). RAM-Situation auf Server pruefen bevor Entscheidung.",
+      "createdAt": "2026-03-28"
+    },
+    {
+      "id": "BL-022",
+      "title": "Mehrsprachigkeit (DE/EN/NL)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Dreisprachige Plattform: Deutsch, Englisch, Niederlaendisch. Betrifft: alle UI-Texte (next-intl), LLM System-Prompts pro Sprache, E-Mail-Templates, Fragenkataloge (3 Versionen). Sprachauswahl auf Tenant-Ebene.",
+      "createdAt": "2026-03-28"
+    },
+    {
+      "id": "BL-023",
+      "title": "Rollen-System: Sub-Admin (Tenant-Admin / Geschaeftsfuehrer)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Neue Rolle tenant_admin zwischen strategaize_admin und tenant_member. Geschaeftsfuehrer kann Mitarbeiter einladen, Bloecke zuweisen, Fortschritt sehen. Block-Level Zugriffskontrolle: Vertrieb=Block A, Finanzen=Block C etc. RLS-Erweiterung noetig.",
+      "createdAt": "2026-03-28"
+    },
+    {
+      "id": "BL-024",
+      "title": "Dedizierte Server pro Kunde (Single-Tenant Deployment)",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2",
+      "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Deployment-Automatisierung, Coolify-Template, vorkonfigurierte Env-Vars. Teil der Dienstleistung.",
+      "createdAt": "2026-03-28"
     }
   ]
 }
