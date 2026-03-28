@@ -238,23 +238,44 @@ export function RunWorkspaceClient({
     });
   }
 
-  function sendChatMessage() {
-    if (!chatInput.trim()) return;
-    const userMsg = { role: "user" as const, text: chatInput.trim() };
+  async function sendChatMessage() {
+    if (!chatInput.trim() || !activeQuestion) return;
+    const messageText = chatInput.trim();
+    const userMsg = { role: "user" as const, text: messageText };
     setChatMessages((prev) => [...prev, userMsg]);
     setChatInput("");
 
-    // TODO: When Dify is connected, this will call the LLM API
-    // and add the assistant response. For now, placeholder response.
-    setTimeout(() => {
+    // Call local LLM via Ollama for follow-up response
+    try {
+      const res = await fetch(
+        `/api/tenant/runs/${runId}/questions/${activeQuestion}/chat`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: messageText,
+            chatHistory: chatMessages,
+          }),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant" as const, text: data.response },
+        ]);
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant" as const, text: "[LLM nicht erreichbar — bitte später erneut versuchen]" },
+        ]);
+      }
+    } catch {
       setChatMessages((prev) => [
         ...prev,
-        {
-          role: "assistant" as const,
-          text: "Danke für Ihre Angaben. Können Sie das noch etwas konkretisieren? [Platzhalter — LLM-Anbindung via Dify ausstehend]",
-        },
+        { role: "assistant" as const, text: "[Verbindungsfehler zum LLM]" },
       ]);
-    }, 800);
+    }
   }
 
   async function generateAnswer() {

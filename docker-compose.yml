@@ -17,7 +17,8 @@ volumes:
     driver: local
   storage-data:
     driver: local
-  # ollama-models:  # Aktivieren wenn Ollama genutzt wird
+  ollama-models:
+    driver: local
 
 services:
 
@@ -284,18 +285,19 @@ services:
   #     - strategaize-net
 
   # ============================================================
-  # OPTIONAL: OLLAMA (deaktiviert in MVP-1)
-  # Zum Aktivieren: Kommentierung entfernen + ollama-models Volume einkommentieren
+  # OLLAMA — Lokales LLM (Qwen 2.5 14B, DSGVO-konform)
   # ============================================================
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   restart: unless-stopped
-  #   expose:
-  #     - "11434"
-  #   volumes:
-  #     - ollama-models:/root/.ollama
-  #   networks:
-  #     - strategaize-net
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    expose:
+      - "11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - strategaize-net
+    environment:
+      - OLLAMA_HOST=0.0.0.0
 
   # ============================================================
   # MVP-2: WHISPER (Transkription — nicht Teil von MVP-1)

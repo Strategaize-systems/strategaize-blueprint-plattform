@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { requireTenant, errorResponse } from "@/lib/api-utils";
 import { chatWithLLM, SYSTEM_PROMPTS } from "@/lib/llm";
 
-// POST /api/tenant/runs/[runId]/questions/[questionId]/generate-answer
-// Takes chat history, generates a summary via local LLM (Ollama/Qwen)
+// POST /api/tenant/runs/[runId]/questions/[questionId]/chat
+// Send a user message and get an LLM follow-up response
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ runId: string; questionId: string }> }
@@ -12,16 +12,18 @@ export async function POST(
   if (auth.errorResponse) return auth.errorResponse;
 
   const { supabase } = auth;
-  const { runId, questionId } = await params;
+  const { questionId } = await params;
 
-  let body: { chatMessages?: { role: string; text: string }[]; currentDraft?: string } = {};
+  let body: { message: string; chatHistory?: { role: string; text: string }[] } = { message: "" };
   try {
     body = await request.json();
   } catch {
     return errorResponse("VALIDATION_ERROR", "Invalid JSON body", 400);
   }
 
-  const { chatMessages, currentDraft } = body;
+  if (!body.message?.trim()) {
+    return errorResponse("VALIDATION_ERROR", "Message is required", 400);
+  }
 
   // Fetch the question text for context
   const { data: question } = await supabase
@@ -34,42 +36,36 @@ export async function POST(
     return errorResponse("NOT_FOUND", "Question not found", 404);
   }
 
-  // Build LLM messages for summary generation
+  // Build LLM messages
   const messages = [
     {
       role: "system" as const,
-      content: `${SYSTEM_PROMPTS.zusammenfassung}\n\nOriginalfrage: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}`,
+      content: `${SYSTEM_PROMPTS.rückfrage}\n\nDie aktuelle Frage lautet: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}`,
     },
-    ...((chatMessages ?? []).map((m) => ({
+    // Include chat history for context
+    ...((body.chatHistory ?? []).map((m) => ({
       role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
       content: m.text,
     }))),
+    // Add the new user message
+    {
+      role: "user" as const,
+      content: body.message,
+    },
   ];
 
-  if (currentDraft) {
-    messages.push({
-      role: "user" as const,
-      content: `Mein bisheriger Entwurf der Antwort:\n\n${currentDraft}\n\nBitte überarbeite und verbessere diese Zusammenfassung basierend auf dem gesamten Gespräch.`,
-    });
-  } else {
-    messages.push({
-      role: "user" as const,
-      content: "Bitte fasse das bisherige Gespräch zu einer strukturierten Antwort auf die Originalfrage zusammen.",
-    });
-  }
-
   try {
-    const generatedAnswer = await chatWithLLM(messages, {
-      temperature: 0.3, // Lower temperature for more focused summaries
-      maxTokens: 2048,
+    const response = await chatWithLLM(messages, {
+      temperature: 0.7,
+      maxTokens: 512,
     });
 
     return NextResponse.json({
-      generatedAnswer,
+      response,
       model: process.env.LLM_MODEL || "qwen2.5:14b",
     });
   } catch (error) {
-    console.error("[generate-answer] LLM error:", error);
+    console.error("[chat] LLM error:", error);
     return errorResponse(
       "INTERNAL_ERROR",
       `LLM-Fehler: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
