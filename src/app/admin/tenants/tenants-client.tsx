@@ -92,10 +92,23 @@ export function TenantsClient({ email }: { email: string }) {
     }
   }
 
+  const [inviteRole, setInviteRole] = useState<"tenant_admin" | "tenant_member">("tenant_member");
+  const [inviteBlocks, setInviteBlocks] = useState<string[]>([]);
+
+  const ALL_BLOCKS = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+
+  function toggleBlock(block: string) {
+    setInviteBlocks((prev) =>
+      prev.includes(block) ? prev.filter((b) => b !== block) : [...prev, block]
+    );
+  }
+
   function openInvite(tenantId: string, tenantName: string) {
     setInviteTenantId(tenantId);
     setInviteTenantName(tenantName);
     setInviteEmail("");
+    setInviteRole("tenant_member");
+    setInviteBlocks([]);
     setInviteOpen(true);
   }
 
@@ -108,7 +121,11 @@ export function TenantsClient({ email }: { email: string }) {
       const res = await fetch(`/api/admin/tenants/${inviteTenantId}/invite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inviteEmail.trim() }),
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          role: inviteRole,
+          ...(inviteRole === "tenant_member" && inviteBlocks.length > 0 ? { allowedBlocks: inviteBlocks } : {}),
+        }),
       });
 
       if (res.ok) {
@@ -253,6 +270,60 @@ export function TenantsClient({ email }: { email: string }) {
                   onKeyDown={(e) => e.key === "Enter" && handleInvite()}
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Rolle</Label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setInviteRole("tenant_admin")}
+                    className={`flex-1 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
+                      inviteRole === "tenant_admin"
+                        ? "border-brand-primary bg-brand-primary/5 text-brand-primary-dark"
+                        : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    Administrator
+                    <span className="block text-[10px] font-normal mt-0.5">Kann Mitarbeiter einladen</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInviteRole("tenant_member")}
+                    className={`flex-1 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
+                      inviteRole === "tenant_member"
+                        ? "border-brand-primary bg-brand-primary/5 text-brand-primary-dark"
+                        : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    Mitarbeiter
+                    <span className="block text-[10px] font-normal mt-0.5">Zugriff auf bestimmte Blöcke</span>
+                  </button>
+                </div>
+              </div>
+              {inviteRole === "tenant_member" && (
+                <div className="space-y-2">
+                  <Label>Zugewiesene Blöcke</Label>
+                  <p className="text-xs text-slate-500">Wählen Sie die Blöcke, auf die der Mitarbeiter Zugriff haben soll.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {ALL_BLOCKS.map((block) => (
+                      <button
+                        key={block}
+                        type="button"
+                        onClick={() => toggleBlock(block)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          inviteBlocks.includes(block)
+                            ? "bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-sm"
+                            : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                        }`}
+                      >
+                        Block {block}
+                      </button>
+                    ))}
+                  </div>
+                  {inviteBlocks.length === 0 && (
+                    <p className="text-xs text-amber-600">Mindestens einen Block auswählen</p>
+                  )}
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button
@@ -263,7 +334,7 @@ export function TenantsClient({ email }: { email: string }) {
               </Button>
               <Button
                 onClick={handleInvite}
-                disabled={inviting || !inviteEmail.trim()}
+                disabled={inviting || !inviteEmail.trim() || (inviteRole === "tenant_member" && inviteBlocks.length === 0)}
               >
                 {inviting ? "Wird gesendet..." : "Einladung senden"}
               </Button>
