@@ -39,7 +39,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-016 | [Chat + Antwort generieren](SLC-016-chat-generate-answer.md) | BL-012 | done | High | 2026-03-27 |
 | SLC-017 | [Ollama LLM Integration](SLC-017-ollama-llm.md) | BL-012, BL-013 | done | High | 2026-03-28 |
 | SLC-018 | [Rollen-System: Tenant-Admin + Block-Zugriff](SLC-018-role-system.md) | BL-023 | done | High | 2026-03-28 |
-| SLC-019 | [Antwort-Review Übersichtsseite](SLC-019-review-overview.md) | BL-015 | planned | Medium | 2026-03-29 |
+| SLC-019 | [Antwort-Review Übersichtsseite](SLC-019-review-overview.md) | BL-015 | done | Medium | 2026-03-29 |
 
 ## Execution Order
 
