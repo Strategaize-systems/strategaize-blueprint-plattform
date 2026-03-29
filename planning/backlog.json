@@ -155,7 +155,7 @@
       "title": "PDF/TXT-Parsing für LLM-Dokumentenkontext",
       "type": "feature",
       "priority": "medium",
-      "status": "open",
+      "status": "done",
       "version": "V1.1",
       "description": "Parsing von hochgeladenen PDF- und TXT-Dateien als Kontext für LLM-Rückfragen",
       "createdAt": "2026-03-24"
