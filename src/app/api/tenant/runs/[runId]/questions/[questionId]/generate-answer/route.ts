@@ -34,11 +34,35 @@ export async function POST(
     return errorResponse("NOT_FOUND", "Question not found", 404);
   }
 
+  // Load evidence context
+  let evidenceContext = "";
+  const { data: evidenceLinks } = await supabase
+    .from("evidence_links")
+    .select("evidence_item_id")
+    .eq("link_type", "question")
+    .eq("link_id", questionId);
+
+  if (evidenceLinks && evidenceLinks.length > 0) {
+    const { data: evidenceItems } = await supabase
+      .from("evidence_items")
+      .select("file_name, extracted_text, note_text, label")
+      .in("id", evidenceLinks.map((l) => l.evidence_item_id));
+
+    const texts = (evidenceItems ?? [])
+      .filter((e) => e.extracted_text || e.note_text)
+      .map((e) => `[${e.label}${e.file_name ? ` — ${e.file_name}` : ""}]: ${e.extracted_text || e.note_text}`)
+      .join("\n\n");
+
+    if (texts) {
+      evidenceContext = `\n\nHochgeladene Dokumente/Nachweise:\n${texts}`;
+    }
+  }
+
   // Build LLM messages for summary generation
   const messages = [
     {
       role: "system" as const,
-      content: `${SYSTEM_PROMPTS.zusammenfassung}\n\nOriginalfrage: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}`,
+      content: `${SYSTEM_PROMPTS.zusammenfassung}\n\nOriginalfrage: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}${evidenceContext}`,
     },
     ...((chatMessages ?? []).map((m) => ({
       role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",

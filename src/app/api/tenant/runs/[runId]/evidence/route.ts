@@ -8,6 +8,7 @@ import {
 } from "@/lib/validations";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createHash } from "crypto";
+import { extractText } from "@/lib/document-parser";
 
 // POST /api/tenant/runs/[runId]/evidence — Upload file or add text note
 export async function POST(
@@ -226,6 +227,13 @@ export async function POST(
       await adminClient.storage.from("evidence").remove([storagePath]);
       return errorResponse("INTERNAL_ERROR", insertError.message, 500);
     }
+
+    // Extract text from document for LLM context (async, non-blocking for response)
+    extractText(buffer, file.type, safeName).then(async (text) => {
+      if (text) {
+        await adminClient.from("evidence_items").update({ extracted_text: text }).eq("id", itemId);
+      }
+    }).catch(() => {});
 
     // If question_id provided, create evidence_link + event (default relation: supports)
     const validRelations = ["proof", "supports", "example", "supersedes"];
