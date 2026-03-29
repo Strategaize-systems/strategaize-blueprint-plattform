@@ -27,7 +27,7 @@ export async function GET() {
         .from("profiles")
         .select("tenant_id, email")
         .in("tenant_id", tenantIds)
-        .in("role", ["tenant_admin", "tenant_owner"])
+        .eq("role", "tenant_admin")
     : { data: [] };
 
   const ownerByTenant = new Map<string, string>();

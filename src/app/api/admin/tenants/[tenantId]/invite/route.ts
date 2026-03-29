@@ -72,7 +72,7 @@ export async function POST(
       .from("profiles")
       .select("id")
       .eq("tenant_id", tenantId)
-      .in("role", ["tenant_admin", "tenant_owner"])
+      .eq("role", "tenant_admin")
       .single();
     role = existingAdmin ? "tenant_member" : "tenant_admin";
   }
