@@ -30,12 +30,14 @@ export async function login(formData: FormData) {
     });
 
     if (error) {
-      console.error("[login] Auth error:", error.message, "| status:", error.status);
+      const { captureException } = await import("@/lib/logger");
+      captureException(new Error(error.message), { source: "auth/login", metadata: { status: error.status } });
       return { error: error.message };
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[login] Unexpected error:", msg);
+    const { captureException } = await import("@/lib/logger");
+    captureException(err, { source: "auth/login" });
     return { error: `Verbindungsfehler: ${msg}` };
   }
 

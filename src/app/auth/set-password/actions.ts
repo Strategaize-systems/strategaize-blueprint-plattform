@@ -30,12 +30,14 @@ export async function setPassword(formData: FormData) {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      console.error("[set-password] Auth error:", error.message);
+      const { captureException } = await import("@/lib/logger");
+      captureException(new Error(error.message), { source: "auth/set-password" });
       return { error: error.message };
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[set-password] Unexpected error:", msg);
+    const { captureException } = await import("@/lib/logger");
+    captureException(err, { source: "auth/set-password" });
     return { error: `Verbindungsfehler: ${msg}` };
   }
 
