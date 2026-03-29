@@ -245,7 +245,7 @@
       "title": "Admin Run-Detail: Alle Antworten + Verlauf sichtbar",
       "type": "improvement",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V1.1",
       "description": "Admin sieht aktuell nur die letzte Antwort pro Frage. Soll alle Antworten sehen (nummeriert #1-#N, mit Mehr/Weniger anzeigen). Zeigt auch wer geantwortet hat (relevant bei mehreren Usern pro Tenant). Gleicher Verlauf-Stil wie im Tenant-Workspace.",
       "createdAt": "2026-03-28"
