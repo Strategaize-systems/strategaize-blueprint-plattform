@@ -24,16 +24,11 @@ export async function extractText(
       return buffer.toString("utf-8").trim() || null;
     }
 
-    // DOCX — basic extraction (XML text nodes)
+    // DOCX — not supported yet (would need JSZip or similar for XML extraction)
     if (
       mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       fileName.endsWith(".docx")
     ) {
-      // DOCX is a ZIP with XML inside — extract text from word/document.xml
-      const { Readable } = await import("stream");
-      const { createGunzip } = await import("zlib");
-      // For now, skip DOCX deep parsing — would need unzip library
-      // Mark as unsupported until we add JSZip or similar
       return null;
     }
 
