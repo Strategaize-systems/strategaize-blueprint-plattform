@@ -65,7 +65,8 @@ export async function POST(
       model: process.env.LLM_MODEL || "qwen2.5:14b",
     });
   } catch (error) {
-    console.error("[chat] LLM error:", error);
+    const { captureException } = await import("@/lib/logger");
+    captureException(error, { source: "api/chat", metadata: { questionId } });
     return errorResponse(
       "INTERNAL_ERROR",
       `LLM-Fehler: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,

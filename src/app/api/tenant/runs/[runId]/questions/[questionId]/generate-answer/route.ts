@@ -69,7 +69,8 @@ export async function POST(
       model: process.env.LLM_MODEL || "qwen2.5:14b",
     });
   } catch (error) {
-    console.error("[generate-answer] LLM error:", error);
+    const { captureException } = await import("@/lib/logger");
+    captureException(error, { source: "api/generate-answer", metadata: { runId, questionId } });
     return errorResponse(
       "INTERNAL_ERROR",
       `LLM-Fehler: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
