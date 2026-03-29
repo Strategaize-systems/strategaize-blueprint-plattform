@@ -239,7 +239,7 @@ export function CatalogClient({ email }: { email: string }) {
                 open={expandedSnapshotId === snap.id}
                 onOpenChange={() => toggleQuestions(snap.id)}
               >
-                <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+                <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
                   <div className="px-6 pt-6 pb-3">
                     <div className="flex items-center justify-between">

@@ -271,96 +271,97 @@ export function RunDetailClient({
         {/* Progress */}
         <ProgressIndicator answered={answered} total={total} className="mb-6" />
 
-        {/* Questions by block */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Questions by block — Premium Layout */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Left: Question navigation */}
           <div className="lg:col-span-1">
-            <Tabs defaultValue={blocks[0]} className="w-full">
-              <TabsList className="flex flex-wrap h-auto">
-                {blocks.map((b) => (
-                  <TabsTrigger key={b} value={b} className="text-xs">
-                    Block {b}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              {blocks.map((b) => (
-                <TabsContent key={b} value={b} className="space-y-2 mt-2">
-                  {(questionsByBlock.get(b) ?? []).map((q) => (
-                    <Card
-                      key={q.id}
-                      className={`cursor-pointer transition-colors ${
-                        activeQuestion === q.id
-                          ? "border-primary"
-                          : "hover:bg-muted/50"
+            <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/50">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Fragen</h3>
+              </div>
+              {/* Block tabs as compact buttons */}
+              <div className="px-3 py-2 border-b border-slate-100 flex flex-wrap gap-1">
+                {blocks.map((b) => {
+                  const bQuestions = questionsByBlock.get(b) ?? [];
+                  const bAnswered = bQuestions.filter((q) => q.latest_answer).length;
+                  const isActiveBlock = activeQ?.block === b;
+                  return (
+                    <button
+                      key={b}
+                      onClick={() => {
+                        const firstQ = bQuestions[0];
+                        if (firstQ) setActiveQuestion(firstQ.id);
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                        isActiveBlock
+                          ? "bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white shadow-sm"
+                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                       }`}
-                      onClick={() => setActiveQuestion(q.id)}
                     >
-                      <CardContent className="p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1">
-                              <p className="text-xs font-mono text-muted-foreground">
-                                {q.frage_id}
-                              </p>
-                              {q.ko_hart && (
-                                <Badge variant="destructive" className="text-[10px] px-1 py-0">
-                                  KO-hart
-                                </Badge>
-                              )}
-                              {q.ko_soft && (
-                                <Badge variant="secondary" className="text-[10px] px-1 py-0">
-                                  KO-soft
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm line-clamp-2">{q.fragetext}</p>
-                          </div>
-                          <div className="flex flex-shrink-0 items-center gap-1">
-                            {q.evidence_count > 0 && (
-                              <Badge variant="secondary" className="text-xs">
-                                {q.evidence_count}
-                              </Badge>
-                            )}
-                            {q.latest_answer ? (
-                              <Badge variant="default" className="text-xs">
-                                Beantwortet
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-xs">
-                                Offen
-                              </Badge>
+                      {b} <span className="font-normal">{bAnswered}/{bQuestions.length}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Question list — scrollable */}
+              <div className="overflow-y-auto" style={{ maxHeight: "500px" }}>
+                {(questionsByBlock.get(activeQ?.block ?? blocks[0]) ?? []).map((q) => {
+                  const isActive = activeQuestion === q.id;
+                  return (
+                    <button
+                      key={q.id}
+                      onClick={() => setActiveQuestion(q.id)}
+                      className={`w-full text-left px-4 py-3 border-b border-slate-100 transition-all ${
+                        isActive
+                          ? "bg-brand-primary/5 border-l-3 border-l-brand-primary"
+                          : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-[10px] font-mono ${isActive ? "text-brand-primary" : "text-slate-400"}`}>
+                              {q.frage_id}
+                            </span>
+                            {q.ko_hart && (
+                              <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1 rounded">KO</span>
                             )}
                           </div>
+                          <p className="text-xs leading-snug line-clamp-2 mt-0.5 text-slate-700">{q.fragetext}</p>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </TabsContent>
-              ))}
-            </Tabs>
+                        <div className="flex-shrink-0 mt-1">
+                          <div className={`h-2 w-2 rounded-full ${
+                            q.latest_answer
+                              ? "bg-brand-success shadow-[0_0_4px_rgba(0,168,79,0.4)]"
+                              : "bg-slate-300"
+                          }`} />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* Question detail (read-only for admin) */}
+          {/* Right: Question detail — Premium */}
           <div className="lg:col-span-2">
             {activeQ ? (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span className="font-mono">{activeQ.frage_id}</span>
-                    <span>Block {activeQ.block}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {activeQ.ebene}
-                    </Badge>
-                    {activeQ.ko_hart && (
-                      <Badge variant="destructive" className="text-xs">KO-hart</Badge>
-                    )}
-                    {activeQ.ko_soft && (
-                      <Badge variant="secondary" className="text-xs">KO-soft</Badge>
-                    )}
+              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center px-3 py-1 rounded-lg bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white text-xs font-bold shadow-sm">
+                      {activeQ.frage_id}
+                    </span>
+                    <span className="text-xs text-slate-400">{activeQ.unterbereich}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">{activeQ.ebene}</span>
+                    {activeQ.ko_hart && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">KO-hart</span>}
+                    {activeQ.ko_soft && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">KO-soft</span>}
                   </div>
-                  <CardTitle className="text-lg">{activeQ.fragetext}</CardTitle>
-                  <CardDescription>{activeQ.unterbereich}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                  <h3 className="text-base font-bold text-slate-900 mt-2 leading-snug">{activeQ.fragetext}</h3>
+                </div>
+                <div className="px-6 py-5 space-y-5">
                   {activeQ.latest_answer && (
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Aktuelle Antwort</p>
@@ -377,17 +378,15 @@ export function RunDetailClient({
                       isAdmin
                     />
                   </div>
-                  <div className="flex gap-4 text-xs text-slate-400">
-                    <span>{activeQ.evidence_count} Evidence</span>
+                  <div className="flex gap-4 text-xs text-slate-400 pt-2 border-t border-slate-100">
+                    <span>{activeQ.evidence_count} Evidence-Dokumente</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ) : (
-              <Card>
-                <CardContent className="py-16 text-center text-muted-foreground">
-                  Wählen Sie eine Frage aus der Liste aus.
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg flex items-center justify-center py-20">
+                <p className="text-sm text-slate-400">Wählen Sie eine Frage aus der Liste aus.</p>
+              </div>
             )}
           </div>
         </div>
