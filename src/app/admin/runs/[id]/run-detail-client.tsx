@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
+import { EventHistory } from "@/components/event-history";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -360,20 +361,23 @@ export function RunDetailClient({
                   <CardDescription>{activeQ.unterbereich}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-1">Aktuelle Antwort</p>
-                    {activeQ.latest_answer ? (
-                      <div className="rounded-md bg-muted p-3 text-sm whitespace-pre-wrap">
+                  {activeQ.latest_answer && (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Aktuelle Antwort</p>
+                      <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm whitespace-pre-wrap text-slate-800 leading-relaxed">
                         {activeQ.latest_answer}
                       </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Noch keine Antwort eingegeben.
-                      </p>
-                    )}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Alle Antworten &amp; Verlauf</p>
+                    <EventHistory
+                      runId={run.id}
+                      questionId={activeQ.id}
+                      isAdmin
+                    />
                   </div>
-                  <div className="flex gap-4 text-xs text-muted-foreground">
-                    <span>{activeQ.event_count} Events</span>
+                  <div className="flex gap-4 text-xs text-slate-400">
                     <span>{activeQ.evidence_count} Evidence</span>
                   </div>
                 </CardContent>

@@ -36,9 +36,11 @@ const EVENT_TYPE_VARIANTS: Record<string, "default" | "secondary" | "outline"> =
 export function EventHistory({
   runId,
   questionId,
+  isAdmin = false,
 }: {
   runId: string;
   questionId: string;
+  isAdmin?: boolean;
 }) {
   const [events, setEvents] = useState<QuestionEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,9 +49,10 @@ export function EventHistory({
   const loadEvents = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/tenant/runs/${runId}/questions/${questionId}/events`
-      );
+      const endpoint = isAdmin
+        ? `/api/admin/runs/${runId}/questions/${questionId}/events`
+        : `/api/tenant/runs/${runId}/questions/${questionId}/events`;
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         setEvents(data.events ?? []);
@@ -57,7 +60,7 @@ export function EventHistory({
     } finally {
       setLoading(false);
     }
-  }, [runId, questionId]);
+  }, [runId, questionId, isAdmin]);
 
   useEffect(() => {
     loadEvents();
