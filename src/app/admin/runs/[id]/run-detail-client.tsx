@@ -188,6 +188,9 @@ export function RunDetailClient({
             )}
           </div>
           <div className="flex items-center gap-2">
+            <Link href={`/admin/runs/${run.id}/review`}>
+              <Button variant="outline">Review-Übersicht</Button>
+            </Link>
             <Button
               variant="outline"
               onClick={handleExport}
