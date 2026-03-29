@@ -9,22 +9,20 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: implementing
-- Current Focus: BL-025 + BL-026 done. Alle Admin-Seiten Premium. Nächster Schritt: BL-017 Sentry Error-Tracking.
-- Current Phase: V1.1 Implementation
+- High-Level State: stable
+- Current Focus: Alle V1.1 Kern-Features implementiert. Kleine Backlog-Items erledigt. Nächste Phase: Mehrsprachigkeit oder Voice Input.
+- Current Phase: V1.1 Stabilisierung
 
 ## Immediate Next Steps
-1. BL-017/018: Sentry Error-Tracking + strukturiertes Logging
-2. BL-015: Antwort-Review Übersichtsseite
-3. BL-016: PDF/TXT-Parsing für LLM-Kontext
-4. BL-022: Mehrsprachigkeit (DE/EN/NL)
-5. BL-021: Voice Input (Whisper)
-6. Erstes echtes Kunden-Onboarding
+1. BL-022: Mehrsprachigkeit (DE/EN/NL) — groß
+2. BL-021: Voice Input (Whisper) — mittel-groß
+3. BL-024: Dedizierte Server pro Kunde — groß
+4. Erstes echtes Kunden-Onboarding
 
 ## Active Scope
-MVP-1 — Kernplattform deployed und stabil. 8 Features, Auth, Admin, Tenant-Workspace, Event-Sourcing, Evidence, Checkpoints, ZIP-Export. Premium UI mit Style Guide v2.1.
+MVP-1 — Kernplattform deployed und stabil. Premium UI v2.1.
 
-V1.1 — In Arbeit: LLM-Rückfragen via Ollama/Qwen (lokal auf Hetzner, DSGVO-konform), Chat-basierter Antwort-Workflow, Block-basierte Checkpoints, Premium Workspace-Design, Rollen-System (tenant_admin + Block-Zugriff).
+V1.1 — Implementiert: LLM-Chat via Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Error-Logging mit E-Mail-Alerts, PDF/TXT-Parsing für LLM-Kontext.
 
 ## Blockers
 - aktuell keine
@@ -33,4 +31,4 @@ V1.1 — In Arbeit: LLM-Rückfragen via Ollama/Qwen (lokal auf Hetzner, DSGVO-ko
 - MVP-1 — 2026-03-26 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Tech-Stack: Dify entfernt (DEC-005), Cloud-API ausgeschlossen wegen DSGVO (DEC-006). LLM läuft lokal auf Hetzner via Ollama + Qwen 2.5 14B. Server: Hetzner CPX62 (32GB RAM, 16 vCPUs). Block-basierte Checkpoints (DEC-007), Mehrfach-Antworten pro Frage (DEC-008), Rollen-System mit tenant_admin + Block-Zugriff (SLC-018).
+Server: Hetzner CPX62 (32GB RAM, 16 vCPUs). Tech-Stack: Next.js 16 + Supabase Self-Hosted + Ollama/Qwen 2.5 14B. Kein Dify, kein Cloud-API (DSGVO). 19 Slices implementiert (SLC-001 bis SLC-019). 26 Backlog-Items, davon 20 done. 25 Known Issues, davon 21 resolved.

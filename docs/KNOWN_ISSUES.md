@@ -186,3 +186,22 @@
 - Severity: Low
 - Area: Frontend / UX
 - Summary: Nach erfolgreichem Speichern einer Antwort blieb der Text in der Textarea stehen. Fix: setAnswerText("") nach erfolgreichem Save.
+
+### ISSUE-023 — RLS Policies referenzierten tenant_owner nach Migration
+- Status: resolved
+- Severity: Blocker
+- Area: Database / RLS
+- Summary: Nach Migration 004 (tenant_owner → tenant_admin) referenzierten 7 RLS-Policies noch tenant_owner. Tenant-User konnten keine Runs sehen. Fix: Alle Policies auf tenant_admin aktualisiert, alte Policies gedroppt.
+
+### ISSUE-024 — Coolify Build OOM bei laufendem Ollama
+- Status: resolved
+- Severity: High
+- Area: Deployment / Infrastructure
+- Summary: Next.js Build schlaegt fehl wenn Ollama + Qwen 14B im RAM geladen ist (~12GB). Server hat 32GB aber Build braucht auch viel RAM. Workaround: Ollama vor Build stoppen, nach Build starten. Langfristig: Node.js Memory-Limit im Dockerfile erhoehen.
+
+### ISSUE-025 — DOCX-Parsing nicht implementiert
+- Status: open
+- Severity: Low
+- Area: Backend / Document Parsing
+- Summary: PDF und TXT werden geparst, DOCX nicht (braeuchte JSZip oder aehnliche Library). Betrifft nur LLM-Kontext — DOCX-Dateien koennen weiterhin hochgeladen werden, nur der Text wird nicht extrahiert.
+- Next Action: JSZip als Dependency hinzufuegen wenn DOCX-Support benoetigt wird.
