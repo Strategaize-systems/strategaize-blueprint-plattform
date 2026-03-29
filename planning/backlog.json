@@ -225,7 +225,7 @@
       "title": "Rollen-System: Sub-Admin (Tenant-Admin / Geschaeftsfuehrer)",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V1.1",
       "description": "Neue Rolle tenant_admin zwischen strategaize_admin und tenant_member. Geschaeftsfuehrer kann Mitarbeiter einladen, Bloecke zuweisen, Fortschritt sehen. Block-Level Zugriffskontrolle: Vertrieb=Block A, Finanzen=Block C etc. RLS-Erweiterung noetig.",
       "createdAt": "2026-03-28"

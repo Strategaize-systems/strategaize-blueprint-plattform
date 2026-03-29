@@ -38,7 +38,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-015 | [Block-basierte Checkpoints](SLC-015-block-checkpoints.md) | — | done | High | 2026-03-27 |
 | SLC-016 | [Chat + Antwort generieren](SLC-016-chat-generate-answer.md) | BL-012 | done | High | 2026-03-27 |
 | SLC-017 | [Ollama LLM Integration](SLC-017-ollama-llm.md) | BL-012, BL-013 | done | High | 2026-03-28 |
-| SLC-018 | [Rollen-System: Tenant-Admin + Block-Zugriff](SLC-018-role-system.md) | BL-023 | in_progress | High | 2026-03-28 |
+| SLC-018 | [Rollen-System: Tenant-Admin + Block-Zugriff](SLC-018-role-system.md) | BL-023 | done | High | 2026-03-28 |
 
 ## Execution Order
 

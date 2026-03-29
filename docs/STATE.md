@@ -10,12 +10,12 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: LLM live + Rollen-System Backend done. MT-3-5 (Frontend Block-Filter + Invite-Dialog) ausstehend.
+- Current Focus: SLC-018 Rollen-System komplett (Backend + Frontend). Nächster Schritt: BL-025 Admin Antwort-Verlauf.
 - Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. SLC-018 MT-3-5: Frontend — Invite-Dialog mit Rollen + Block-Filter im Workspace
-2. BL-025: Admin Run-Detail — alle Antworten + Verlauf sichtbar (nicht nur letzte)
+1. BL-025: Admin Run-Detail — alle Antworten + Verlauf sichtbar (nicht nur letzte)
+2. BL-026: Admin Run-Detail UI Feinschliff (KPI Cards auf v2.1)
 3. BL-022: Mehrsprachigkeit (DE/EN/NL)
 4. BL-017/018: Sentry Error-Tracking
 5. BL-021: Voice Input (Whisper)
