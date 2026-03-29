@@ -100,30 +100,41 @@ export function ReviewClient({ paramsPromise }: { paramsPromise: Promise<{ id: s
         </div>
       </div>
 
-      {/* Gesamt-KPIs */}
+      {/* Gesamt-KPIs — Premium */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-5">
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary rounded-t-2xl" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Gesamt</p>
-          <p className="text-3xl font-bold text-brand-primary mt-1">{overview.totalPercent}%</p>
-          <p className="text-xs text-slate-400 mt-1">{overview.totalAnswered}/{overview.totalQuestions} Fragen</p>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Evidence</p>
-          <p className="text-3xl font-bold text-brand-primary mt-1">{overview.totalEvidence}</p>
-          <p className="text-xs text-slate-400 mt-1">Dokumente hochgeladen</p>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Checkpoints</p>
-          <p className="text-3xl font-bold bg-gradient-to-r from-brand-success-dark to-brand-success bg-clip-text text-transparent mt-1">{overview.totalCheckpoints}</p>
-          <p className="text-xs text-slate-400 mt-1">Blöcke eingereicht</p>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Status</p>
-          <div className="mt-2">
-            <StatusBadge status={run.status} />
+        <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+          <div className="p-5 pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Gesamt</p>
+            <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent mt-1">{overview.totalPercent}%</p>
+            <p className="text-xs text-slate-400 mt-1">{overview.totalAnswered}/{overview.totalQuestions} Fragen</p>
           </div>
-          <p className="text-xs text-slate-400 mt-2">Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}</p>
+        </div>
+        <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
+          <div className="p-5 pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Evidence</p>
+            <p className="text-3xl font-bold bg-gradient-to-r from-brand-primary-dark to-brand-primary bg-clip-text text-transparent mt-1">{overview.totalEvidence}</p>
+            <p className="text-xs text-slate-400 mt-1">Dokumente hochgeladen</p>
+          </div>
+        </div>
+        <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-success-dark to-brand-success" />
+          <div className="p-5 pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Checkpoints</p>
+            <p className="text-3xl font-bold bg-gradient-to-r from-brand-success-dark to-brand-success bg-clip-text text-transparent mt-1">{overview.totalCheckpoints}</p>
+            <p className="text-xs text-slate-400 mt-1">Blöcke eingereicht</p>
+          </div>
+        </div>
+        <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-slate-300" />
+          <div className="p-5 pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Status</p>
+            <div className="mt-2">
+              <StatusBadge status={run.status} />
+            </div>
+            <p className="text-xs text-slate-400 mt-2">Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}</p>
+          </div>
         </div>
       </div>
 
