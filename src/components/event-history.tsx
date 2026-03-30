@@ -10,7 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface QuestionEvent {
   id: string;
@@ -46,6 +46,7 @@ export function EventHistory({
   isAdmin?: boolean;
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const [events, setEvents] = useState<QuestionEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
@@ -180,7 +181,7 @@ export function EventHistory({
                       )}
                     </div>
                     <span className="text-[10px] text-slate-400 tabular-nums">
-                      {new Date(event.created_at).toLocaleString("de-DE")}
+                      {new Date(event.created_at).toLocaleString(locale)}
                     </span>
                   </div>
                   {text && (

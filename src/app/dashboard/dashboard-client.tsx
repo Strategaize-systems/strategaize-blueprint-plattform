@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, FileText, Play, Menu, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Profile {
   id: string;
@@ -37,6 +37,7 @@ interface Run {
 
 export function DashboardClient({ profile }: { profile: Profile }) {
   const t = useTranslations();
+  const locale = useLocale();
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -195,11 +196,11 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                             <span className="font-semibold text-brand-primary">{run.evidence_count}</span> {t("dashboard.evidenceLabel")}
                           </span>
                           <span>
-                            {t("dashboard.created", { date: new Date(run.created_at).toLocaleDateString("de-DE") })}
+                            {t("dashboard.created", { date: new Date(run.created_at).toLocaleDateString(locale) })}
                           </span>
                           {run.submitted_at && (
                             <span>
-                              {t("dashboard.submitted", { date: new Date(run.submitted_at).toLocaleDateString("de-DE") })}
+                              {t("dashboard.submitted", { date: new Date(run.submitted_at).toLocaleDateString(locale) })}
                             </span>
                           )}
                         </div>

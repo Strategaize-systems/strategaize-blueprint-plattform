@@ -14,7 +14,9 @@
     "english": "English",
     "dutch": "Nederlands",
     "showMore": "Show more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "confirmSubmit": "Yes, submit",
+    "runNotFound": "Run not found."
   },
   "metadata": {
     "title": "StrategAIze Client Platform",

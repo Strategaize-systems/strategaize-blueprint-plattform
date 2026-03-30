@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
@@ -102,6 +102,7 @@ export function RunWorkspaceClient({
   isAdmin: boolean;
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const [run, setRun] = useState<Run | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
@@ -445,7 +446,7 @@ export function RunWorkspaceClient({
   if (!run) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <p className="text-slate-500">Run nicht gefunden.</p>
+        <p className="text-slate-500">{t("common.runNotFound")}</p>
       </div>
     );
   }
@@ -749,7 +750,7 @@ export function RunWorkspaceClient({
                     <AlertDialogFooter>
                       <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                       <AlertDialogAction onClick={submitRun}>
-                        Ja, einreichen
+                        {t("common.confirmSubmit")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -1022,7 +1023,7 @@ export function RunWorkspaceClient({
                                   <div className="flex items-center gap-2 text-xs text-slate-500">
                                     <span>{formatFileSize(item.file_size_bytes)}</span>
                                     <span>&bull;</span>
-                                    <span>{new Date(item.created_at).toLocaleDateString("de-DE")}</span>
+                                    <span>{new Date(item.created_at).toLocaleDateString(locale)}</span>
                                     <span>&bull;</span>
                                     <span className="font-medium">{item.label}</span>
                                   </div>
@@ -1121,7 +1122,7 @@ export function RunWorkspaceClient({
                             <div key={sub.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all">
                               <div className="flex items-center gap-2 mb-2 flex-wrap">
                                 <span className="text-xs font-bold text-slate-600">
-                                  {new Date(sub.submitted_at).toLocaleString("de-DE")}
+                                  {new Date(sub.submitted_at).toLocaleString(locale)}
                                 </span>
                                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
                                   v{sub.snapshot_version}
