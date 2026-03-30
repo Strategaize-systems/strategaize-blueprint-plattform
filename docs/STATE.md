@@ -21,7 +21,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 ## Active Scope
 MVP-1 — Kernplattform deployed und stabil. Premium UI v2.1.
 
-V1.1 — Implementiert: LLM-Chat via Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Error-Logging mit E-Mail-Alerts, PDF/DOCX/TXT-Parsing für LLM-Kontext, Dokument-Analyse (LLM liest Evidence und gibt Feedback), Storage Upload gefixt, Analyse-Spinner mit Auto-Polling, Typ-spezifische Evidence-Icons.
+V1.1 — Implementiert: LLM-Chat via Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Error-Logging mit E-Mail-Alerts, PDF/DOCX/TXT-Parsing für LLM-Kontext, Dokument-Analyse (LLM liest Evidence und gibt Feedback), Mehrsprachigkeit DE/EN/NL (UI, LLM-Prompts, E-Mail, Katalog-Sprache), Premium UI v2.1.
 
 ## Blockers
 - aktuell keine

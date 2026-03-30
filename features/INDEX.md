@@ -36,7 +36,7 @@
 | FEAT-016 | Chat + Zusammenfassung-Workflow | done | 2026-03-27 |
 | FEAT-017 | Dokument-Analyse: LLM liest Evidence + Feedback | done | 2026-03-29 |
 
-## V1.1 Features (Geplant)
+## V1.1 Features (Implementiert — Teil 2)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
