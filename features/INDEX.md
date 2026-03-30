@@ -40,7 +40,7 @@
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | in_progress | 2026-03-29 |
+| FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | done | 2026-03-29 |
 
 ## V2 Features (Geplant)
 

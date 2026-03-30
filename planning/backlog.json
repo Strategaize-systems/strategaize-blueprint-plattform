@@ -215,7 +215,7 @@
       "title": "Mehrsprachigkeit (DE/EN/NL)",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V1.1",
       "description": "Dreisprachige Plattform: Deutsch, Englisch, Niederlaendisch. Betrifft: alle UI-Texte (next-intl), LLM System-Prompts pro Sprache, E-Mail-Templates, Fragenkataloge (3 Versionen). Sprachauswahl auf Tenant-Ebene.",
       "createdAt": "2026-03-28"

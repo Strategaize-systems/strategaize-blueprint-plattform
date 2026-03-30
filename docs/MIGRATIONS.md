@@ -52,6 +52,14 @@
 - Risk: Keine — DEFAULT 'de' setzt bestehende Tenants automatisch auf Deutsch
 - Rollback Notes: ALTER TABLE tenants DROP COLUMN language
 
+### MIG-009 — question_catalog_snapshots.language Spalte
+- Date: 2026-03-30
+- Scope: ALTER TABLE question_catalog_snapshots ADD COLUMN language text NOT NULL DEFAULT 'de' CHECK (language IN ('de', 'en', 'nl')); DROP CONSTRAINT version_key; ADD CONSTRAINT UNIQUE(version, language)
+- Affected Areas: question_catalog_snapshots — Katalog-Snapshots können jetzt pro Sprache existieren
+- Reason: BL-022/SLC-027 — Mehrsprachige Fragenkataloge. Gleiche Version in DE/EN/NL importierbar.
+- Risk: Minimal — DEFAULT 'de' setzt bestehende Snapshots automatisch auf Deutsch
+- Rollback Notes: ALTER TABLE question_catalog_snapshots DROP COLUMN language; ADD CONSTRAINT question_catalog_snapshots_version_key UNIQUE (version)
+
 ### MIG-006 — Storage Role Membership Grant
 - Date: 2026-03-29
 - Scope: GRANT service_role TO supabase_storage_admin
