@@ -32,4 +32,4 @@ V1.1 — Implementiert: LLM-Chat via Ollama/Qwen (lokal, DSGVO), Chat-basierter 
 - MVP-1 — 2026-03-26 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62 (32GB RAM, 16 vCPUs). Tech-Stack: Next.js 16 + Supabase Self-Hosted + Ollama/Qwen 2.5 14B. Kein Dify, kein Cloud-API (DSGVO). 20 Slices implementiert (SLC-001 bis SLC-020). 28 Backlog-Items, davon 22 done. 26 Known Issues, davon 23 resolved.
+Server: Hetzner CPX62 (32GB RAM, 16 vCPUs). Tech-Stack: Next.js 16 + Supabase Self-Hosted + Ollama/Qwen 2.5 14B. Kein Dify, kein Cloud-API (DSGVO). 20 Slices implementiert (SLC-001 bis SLC-020), 3 geplant (SLC-021 bis SLC-023). 28 Backlog-Items, davon 24 done. 26 Known Issues, davon 21 resolved.

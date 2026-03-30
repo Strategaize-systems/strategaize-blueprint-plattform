@@ -32,14 +32,14 @@
 | FEAT-012 | Rollen-System (Tenant-Admin + Block-Zugriff) | done | 2026-03-28 |
 | FEAT-013 | Premium UI (Style Guide v2.1) | done | 2026-03-26 |
 | FEAT-014 | Error-Logging + E-Mail Alerts | done | 2026-03-29 |
-| FEAT-015 | PDF/TXT-Parsing für LLM-Kontext | done | 2026-03-29 |
+| FEAT-015 | PDF/DOCX/TXT-Parsing für LLM-Kontext | done | 2026-03-29 |
 | FEAT-016 | Chat + Zusammenfassung-Workflow | done | 2026-03-27 |
+| FEAT-017 | Dokument-Analyse: LLM liest Evidence + Feedback | done | 2026-03-29 |
 
 ## V1.1 Features (Geplant)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-017 | Dokument-Analyse: LLM liest Evidence + Feedback | planned | 2026-03-29 |
 | FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | planned | 2026-03-29 |
 
 ## V2 Features (Geplant)

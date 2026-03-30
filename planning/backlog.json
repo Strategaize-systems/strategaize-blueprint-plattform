@@ -152,12 +152,12 @@
     },
     {
       "id": "BL-016",
-      "title": "PDF/TXT-Parsing für LLM-Dokumentenkontext",
+      "title": "PDF/DOCX/TXT-Parsing für LLM-Dokumentenkontext",
       "type": "feature",
       "priority": "medium",
       "status": "done",
       "version": "V1.1",
-      "description": "Parsing von hochgeladenen PDF- und TXT-Dateien als Kontext für LLM-Rückfragen",
+      "description": "Parsing von hochgeladenen PDF-, DOCX- und TXT-Dateien als Kontext für LLM-Rückfragen. pdf-parse für PDF, mammoth für DOCX, UTF-8 für TXT/CSV.",
       "createdAt": "2026-03-24"
     },
     {
@@ -272,12 +272,12 @@
     },
     {
       "id": "BL-028",
-      "title": "Evidence-Dateien: Typ-spezifische Icons (PDF rot, DOCX blau etc.)",
+      "title": "Evidence-Dateien: Typ-spezifische Icons (klassisches PDF-Icon in Rot etc.)",
       "type": "improvement",
       "priority": "low",
       "status": "open",
       "version": "V1.1",
-      "description": "PDF-Dateien sollen ein rotes PDF-Icon bekommen, DOCX ein blaues Word-Icon etc. Aktuell haben alle Dateien das gleiche blaue Gradient-Icon mit Dateiendung.",
+      "description": "PDF-Dateien sollen ein klassisches PDF-Icon in Rot bekommen (erkennbares PDF-Symbol, nicht nur Dateiendung). DOCX ein blaues Word-Icon, XLSX ein grünes Excel-Icon, Bilder ein Thumbnail-Icon. Aktuell haben alle Dateien das gleiche generische blaue Gradient-Icon mit Dateiendung als Text.",
       "createdAt": "2026-03-30"
     }
   ]
