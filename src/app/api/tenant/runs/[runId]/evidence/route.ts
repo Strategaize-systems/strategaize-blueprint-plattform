@@ -176,11 +176,8 @@ export async function POST(
     // Extract text BEFORE insert (avoids append-only trigger on UPDATE)
     let extractedText: string | null = null;
     try {
-      console.log(`[evidence] Extracting text from ${safeName} (${file.type}, ${buffer.length} bytes)`);
       extractedText = await extractText(buffer, file.type, safeName);
-      console.log(`[evidence] Extraction result: ${extractedText ? `${extractedText.length} chars` : "null"}`);
     } catch (extractError) {
-      console.error(`[evidence] Extraction FAILED for ${safeName}:`, extractError);
       const { captureException } = await import("@/lib/logger");
       captureException(extractError, {
         source: "evidence/text-extraction",
@@ -245,13 +242,10 @@ export async function POST(
     }
 
     // LLM document analysis (async, non-blocking for response)
-    console.log(`[evidence] Analysis check: extractedText=${!!extractedText}, questionId=${questionId}`);
     if (extractedText && questionId) {
-      console.log(`[evidence] Starting LLM document analysis for ${safeName}`);
       (async () => {
         try {
           const { chatWithLLM, SYSTEM_PROMPTS } = await import("@/lib/llm");
-          console.log(`[evidence] LLM module loaded`);
 
           // Get question context
           const { data: question } = await adminClient
@@ -260,15 +254,12 @@ export async function POST(
             .eq("id", questionId)
             .single();
 
-          console.log(`[evidence] Question loaded: ${question ? question.fragetext?.slice(0, 50) : "NOT FOUND"}`);
-
           if (question) {
             // Truncate text to ~4000 chars to stay within LLM context
             const truncatedText = extractedText.length > 4000
               ? extractedText.slice(0, 4000) + "\n\n[... Dokument gekürzt ...]"
               : extractedText;
 
-            console.log(`[evidence] Calling Ollama with ${truncatedText.length} chars...`);
             const analysis = await chatWithLLM([
               {
                 role: "system",
@@ -280,10 +271,8 @@ export async function POST(
               },
             ], { temperature: 0.3, maxTokens: 1024 });
 
-            console.log(`[evidence] Ollama response: ${analysis?.length ?? 0} chars`);
-
             // Save analysis as question event
-            const { error: eventError } = await adminClient.from("question_events").insert({
+            await adminClient.from("question_events").insert({
               client_event_id: crypto.randomUUID(),
               question_id: questionId,
               run_id: runId,
@@ -292,15 +281,8 @@ export async function POST(
               payload: { text: analysis, file_name: safeName, evidence_item_id: itemId },
               created_by: user!.id,
             });
-
-            if (eventError) {
-              console.error(`[evidence] Failed to save analysis event:`, eventError);
-            } else {
-              console.log(`[evidence] Document analysis saved successfully for ${safeName}`);
-            }
           }
         } catch (err) {
-          console.error(`[evidence] Document analysis FAILED:`, err);
           const { captureException } = await import("@/lib/logger");
           captureException(err, {
             source: "evidence/document-analysis",
@@ -308,8 +290,6 @@ export async function POST(
           });
         }
       })();
-    } else {
-      console.log(`[evidence] Skipping analysis: no text or no questionId`);
     }
 
     // If question_id provided, create evidence_link + event (default relation: supports)
