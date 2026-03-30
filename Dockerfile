@@ -45,6 +45,9 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
+# pdf-parse uses require() and is not bundled by Next.js standalone
+COPY --from=builder /app/node_modules/pdf-parse/ ./node_modules/pdf-parse/
+
 USER nextjs
 
 EXPOSE 3000
