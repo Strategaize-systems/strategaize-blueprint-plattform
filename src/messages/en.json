@@ -2,18 +2,168 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "unknownError": "Unknown error",
+    "networkError": "Network error — please try again",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
     "create": "Create",
-    "networkError": "Network error — please try again",
+    "logout": "Log out",
     "language": "Language",
     "german": "Deutsch",
     "english": "English",
-    "dutch": "Nederlands"
+    "dutch": "Nederlands",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "metadata": {
     "title": "StrategAIze Client Platform",
     "description": "Exit Ready Blueprint — Structured Data Collection"
+  },
+  "sidebar": {
+    "subtitle": "Strategic Business Assessment",
+    "analysis": "Analysis",
+    "runs": "Runs",
+    "runsDescription": "Your Assessments"
+  },
+  "blocks": {
+    "A": "Fundamentals",
+    "B": "Market & Competition",
+    "C": "Finance",
+    "D": "Organisation",
+    "E": "Processes",
+    "F": "IT & Systems",
+    "G": "Legal & Compliance",
+    "H": "Strategy",
+    "I": "Exit Readiness"
+  },
+  "progress": {
+    "total": "Total",
+    "block": "Block"
+  },
+  "status": {
+    "collecting": "In Progress",
+    "submitted": "Submitted",
+    "locked": "Locked"
+  },
+  "workspace": {
+    "yourAnswer": "Your Answer",
+    "messagesCount": "{count} messages",
+    "emptyState": "Enter your answer or work with the AI assistant",
+    "inputPlaceholder": "Enter your message or answer...",
+    "charCount": "Answer: {length} characters",
+    "textCharCount": "Text: {length} characters",
+    "noAnswer": "No answer yet",
+    "selectQuestion": "Select a question to begin",
+    "noSelectionTitle": "Select a question",
+    "noSelectionInstructions": "Choose a question from the navigation on the left."
+  },
+  "ai": {
+    "thinking": "AI is thinking...",
+    "working": "AI is working...",
+    "generateSummary": "Generate summary",
+    "summary": "Summary",
+    "accept": "Accept",
+    "regenerate": "Regenerate",
+    "unavailable": "[LLM unavailable — please try again later]",
+    "connectionError": "[Connection error to LLM]"
+  },
+  "answer": {
+    "save": "Save answer",
+    "saving": "Saving...",
+    "saved": "Answer saved",
+    "generationError": "Error generating answer",
+    "summaryCreated": "Summary created — review and accept as answer",
+    "summaryAccepted": "Summary accepted — now click 'Save answer'"
+  },
+  "evidence": {
+    "title": "Uploaded Evidence",
+    "historyTitle": "History",
+    "empty": "No files uploaded.",
+    "categoryPlaceholder": "Category",
+    "uploadFile": "Upload file",
+    "uploading": "Uploading...",
+    "fileUploaded": "File uploaded — document is being analysed…",
+    "noteInputPlaceholder": "Enter text note...",
+    "saveNote": "Save note",
+    "noteAdded": "Note added",
+    "downloadFailed": "Download failed",
+    "labels": {
+      "policy": "Policy",
+      "process": "Process",
+      "template": "Template",
+      "contract": "Contract",
+      "financial": "Financial",
+      "legal": "Legal",
+      "system": "System",
+      "org": "Org",
+      "kpi": "KPI",
+      "other": "Other"
+    },
+    "relations": {
+      "proof": "Proof",
+      "supports": "Supports",
+      "example": "Example",
+      "supersedes": "Supersedes"
+    }
+  },
+  "events": {
+    "answer": "Answer",
+    "note": "Note",
+    "evidenceAttached": "Evidence linked",
+    "statusChanged": "Status changed",
+    "documentAnalysis": "Document Analysis",
+    "empty": "No events for this question.",
+    "header": "History ({count} events)",
+    "analyzing": "Document is being analysed…",
+    "analyzingDescription": "The AI is analysing the uploaded document. This takes approximately 30–60 seconds."
+  },
+  "checkpoints": {
+    "title": "Submitted Checkpoints",
+    "current": "Current",
+    "progress": "{answered}/{total} questions in Block {block} answered",
+    "emptyTitle": "No checkpoint submitted yet.",
+    "emptyInstructions": "Answer questions and submit a checkpoint."
+  },
+  "submit": {
+    "block": "Submit Block {block}",
+    "blockLoading": "Submitting...",
+    "dialogTitle": "Submit Block {block}?",
+    "dialogAnswered": "You have answered {answered} of {total} questions.",
+    "dialogRemaining": "There are still {remaining} questions open.",
+    "dialogInfo": "After submission, you can continue to add answers and evidence until the run is locked.",
+    "noteLabel": "Optional note",
+    "notePlaceholder": "Note about submission status (optional)...",
+    "submitted": "Checkpoint for Block {block} submitted"
+  },
+  "login": {
+    "description": "Sign in with your credentials.",
+    "email": "Email",
+    "emailPlaceholder": "name@company.com",
+    "password": "Password",
+    "passwordPlaceholder": "Password",
+    "button": "Sign in",
+    "buttonLoading": "Signing in...",
+    "inviteOnly": "No account? Access is by invitation only.",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "setPassword": {
+    "title": "Set Password",
+    "description": "Welcome to StrategAIze. Please set your password.",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPlaceholder": "Repeat password",
+    "button": "Set Password",
+    "buttonLoading": "Saving..."
+  },
+  "dashboard": {
+    "title": "Your Runs",
+    "subtitle": "Your assigned assessment runs",
+    "emptyTitle": "No runs assigned yet",
+    "emptyDescription": "Please wait for an assignment from StrategAIze.",
+    "evidenceLabel": "Evidence documents",
+    "created": "Created: {date}",
+    "submitted": "Submitted: {date}"
   }
 }

@@ -2,18 +2,168 @@
   "common": {
     "loading": "Wordt geladen...",
     "error": "Fout",
+    "unknownError": "Onbekende fout",
+    "networkError": "Netwerkfout — probeer het opnieuw",
     "save": "Opslaan",
     "cancel": "Annuleren",
     "delete": "Verwijderen",
     "create": "Aanmaken",
-    "networkError": "Netwerkfout — probeer het opnieuw",
+    "logout": "Afmelden",
     "language": "Taal",
     "german": "Deutsch",
     "english": "English",
-    "dutch": "Nederlands"
+    "dutch": "Nederlands",
+    "showMore": "Meer tonen",
+    "showLess": "Minder tonen"
   },
   "metadata": {
     "title": "StrategAIze Klantenplatform",
     "description": "Exit Ready Blueprint — Gestructureerde Dataverzameling"
+  },
+  "sidebar": {
+    "subtitle": "Strategische Bedrijfsanalyse",
+    "analysis": "Analyse",
+    "runs": "Runs",
+    "runsDescription": "Uw Assessments"
+  },
+  "blocks": {
+    "A": "Basiskennis",
+    "B": "Markt & Concurrentie",
+    "C": "Financiën",
+    "D": "Organisatie",
+    "E": "Processen",
+    "F": "IT & Systemen",
+    "G": "Juridisch & Compliance",
+    "H": "Strategie",
+    "I": "Exit-Readiness"
+  },
+  "progress": {
+    "total": "Totaal",
+    "block": "Blok"
+  },
+  "status": {
+    "collecting": "In bewerking",
+    "submitted": "Ingediend",
+    "locked": "Vergrendeld"
+  },
+  "workspace": {
+    "yourAnswer": "Uw Antwoord",
+    "messagesCount": "{count} berichten",
+    "emptyState": "Voer uw antwoord in of werk samen met de AI-assistent",
+    "inputPlaceholder": "Voer uw bericht of antwoord in...",
+    "charCount": "Antwoord: {length} tekens",
+    "textCharCount": "Tekst: {length} tekens",
+    "noAnswer": "Nog geen antwoord",
+    "selectQuestion": "Selecteer een vraag om te beginnen",
+    "noSelectionTitle": "Selecteer een vraag",
+    "noSelectionInstructions": "Kies een vraag uit de navigatie aan de linkerkant."
+  },
+  "ai": {
+    "thinking": "AI denkt na...",
+    "working": "AI is bezig...",
+    "generateSummary": "Samenvatting maken",
+    "summary": "Samenvatting",
+    "accept": "Overnemen",
+    "regenerate": "Opnieuw genereren",
+    "unavailable": "[LLM niet bereikbaar — probeer het later opnieuw]",
+    "connectionError": "[Verbindingsfout met LLM]"
+  },
+  "answer": {
+    "save": "Antwoord opslaan",
+    "saving": "Wordt opgeslagen...",
+    "saved": "Antwoord opgeslagen",
+    "generationError": "Fout bij het genereren van het antwoord",
+    "summaryCreated": "Samenvatting gemaakt — controleer en neem over als antwoord",
+    "summaryAccepted": "Samenvatting overgenomen — klik nu op 'Antwoord opslaan'"
+  },
+  "evidence": {
+    "title": "Geüploade Bewijsstukken",
+    "historyTitle": "Geschiedenis",
+    "empty": "Geen bestanden geüpload.",
+    "categoryPlaceholder": "Categorie",
+    "uploadFile": "Bestand uploaden",
+    "uploading": "Wordt geüpload...",
+    "fileUploaded": "Bestand geüpload — document wordt geanalyseerd…",
+    "noteInputPlaceholder": "Tekstnotitie invoeren...",
+    "saveNote": "Notitie opslaan",
+    "noteAdded": "Notitie toegevoegd",
+    "downloadFailed": "Download mislukt",
+    "labels": {
+      "policy": "Beleid",
+      "process": "Proces",
+      "template": "Sjabloon",
+      "contract": "Contract",
+      "financial": "Financieel",
+      "legal": "Juridisch",
+      "system": "Systeem",
+      "org": "Org",
+      "kpi": "KPI",
+      "other": "Overig"
+    },
+    "relations": {
+      "proof": "Bewijs",
+      "supports": "Ondersteunt",
+      "example": "Voorbeeld",
+      "supersedes": "Vervangt"
+    }
+  },
+  "events": {
+    "answer": "Antwoord",
+    "note": "Notitie",
+    "evidenceAttached": "Bewijsstuk gekoppeld",
+    "statusChanged": "Status gewijzigd",
+    "documentAnalysis": "Documentanalyse",
+    "empty": "Geen gebeurtenissen voor deze vraag.",
+    "header": "Geschiedenis ({count} gebeurtenissen)",
+    "analyzing": "Document wordt geanalyseerd…",
+    "analyzingDescription": "De AI analyseert het geüploade document. Dit duurt circa 30–60 seconden."
+  },
+  "checkpoints": {
+    "title": "Ingediende Checkpoints",
+    "current": "Actueel",
+    "progress": "{answered}/{total} vragen in Blok {block} beantwoord",
+    "emptyTitle": "Nog geen checkpoint ingediend.",
+    "emptyInstructions": "Beantwoord vragen en dien een checkpoint in."
+  },
+  "submit": {
+    "block": "Blok {block} indienen",
+    "blockLoading": "Wordt ingediend...",
+    "dialogTitle": "Blok {block} indienen?",
+    "dialogAnswered": "U heeft {answered} van {total} vragen beantwoord.",
+    "dialogRemaining": "Er staan nog {remaining} vragen open.",
+    "dialogInfo": "Na het indienen kunt u nog steeds antwoorden en bewijsstukken toevoegen, totdat de run wordt vergrendeld.",
+    "noteLabel": "Optionele notitie",
+    "notePlaceholder": "Opmerking over de indienstatus (optioneel)...",
+    "submitted": "Checkpoint voor Blok {block} ingediend"
+  },
+  "login": {
+    "description": "Meld u aan met uw inloggegevens.",
+    "email": "E-mail",
+    "emailPlaceholder": "naam@bedrijf.nl",
+    "password": "Wachtwoord",
+    "passwordPlaceholder": "Wachtwoord",
+    "button": "Inloggen",
+    "buttonLoading": "Inloggen...",
+    "inviteOnly": "Geen account? Toegang is uitsluitend op uitnodiging.",
+    "unexpectedError": "Er is een onverwachte fout opgetreden"
+  },
+  "setPassword": {
+    "title": "Wachtwoord instellen",
+    "description": "Welkom bij StrategAIze. Stel uw wachtwoord in.",
+    "newPassword": "Nieuw wachtwoord",
+    "newPasswordPlaceholder": "Minimaal 8 tekens",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "confirmPlaceholder": "Wachtwoord herhalen",
+    "button": "Wachtwoord instellen",
+    "buttonLoading": "Wordt opgeslagen..."
+  },
+  "dashboard": {
+    "title": "Uw Runs",
+    "subtitle": "Uw toegewezen assessment-runs",
+    "emptyTitle": "Nog geen runs toegewezen",
+    "emptyDescription": "Wacht op een toewijzing door StrategAIze.",
+    "evidenceLabel": "Bewijsdocumenten",
+    "created": "Aangemaakt: {date}",
+    "submitted": "Ingediend: {date}"
   }
 }
