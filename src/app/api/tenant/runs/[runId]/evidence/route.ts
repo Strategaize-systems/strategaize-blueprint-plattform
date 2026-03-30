@@ -203,8 +203,8 @@ export async function POST(
       );
     }
 
-    // INSERT evidence_item with file_path included (no UPDATE needed — append-only safe)
-    const { data: item, error: insertError } = await supabase
+    // INSERT evidence_item via adminClient (bypasses RLS — already validated above)
+    const { data: item, error: insertError } = await adminClient
       .from("evidence_items")
       .insert({
         id: itemId,
@@ -287,7 +287,7 @@ export async function POST(
     const effectiveRelation = relation && validRelations.includes(relation) ? relation : "supports";
 
     if (questionId) {
-      await supabase.from("evidence_links").insert({
+      await adminClient.from("evidence_links").insert({
         evidence_item_id: item.id,
         tenant_id: profile!.tenant_id,
         link_type: "question",
@@ -295,7 +295,7 @@ export async function POST(
         relation: effectiveRelation,
       });
 
-      await supabase.from("question_events").insert({
+      await adminClient.from("question_events").insert({
         client_event_id: crypto.randomUUID(),
         question_id: questionId,
         run_id: runId,
