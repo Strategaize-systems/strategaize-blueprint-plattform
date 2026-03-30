@@ -85,7 +85,7 @@ export async function POST(
       noDraft: "Please summarize the conversation so far into a structured answer to the original question.",
     },
     nl: {
-      withDraft: (draft: string) => `Mijn huidige conceptantwoord:\n\n${draft}\n\nGelieve deze samenvatting te herzien en verbeteren op basis van het gehele gesprek.`,
+      withDraft: (draft: string) => `Mijn huidige conceptantwoord:\n\n${draft}\n\nHerzie en verbeter deze samenvatting op basis van het gehele gesprek.`,
       noDraft: "Vat het gesprek tot nu toe samen in een gestructureerd antwoord op de oorspronkelijke vraag.",
     },
   };
