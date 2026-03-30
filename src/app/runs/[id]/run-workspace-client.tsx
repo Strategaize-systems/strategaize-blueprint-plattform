@@ -43,7 +43,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image } from "lucide-react";
 
 const EVIDENCE_LABELS = [
   { value: "policy", label: "Policy" },
@@ -1012,15 +1012,37 @@ export function RunWorkspaceClient({
                         <Skeleton className="h-16 w-full rounded-xl" />
                       ) : evidenceItems.filter((e) => e.item_type === "file").length > 0 ? (
                         evidenceItems.filter((e) => e.item_type === "file").map((item) => {
-                          const ext = item.file_name?.split(".").pop()?.toUpperCase() ?? "FILE";
+                          const ext = item.file_name?.split(".").pop()?.toLowerCase() ?? "";
+                          const mime = item.file_mime_type ?? "";
+                          const isPdf = ext === "pdf" || mime === "application/pdf";
+                          const isDocx = ext === "docx" || mime.includes("wordprocessingml");
+                          const isExcel = ext === "xlsx" || ext === "xls" || mime.includes("spreadsheet") || mime.includes("ms-excel");
+                          const isImage = mime.startsWith("image/");
+
+                          const iconBg = isPdf
+                            ? "from-red-600 to-red-700"
+                            : isDocx
+                            ? "from-blue-600 to-blue-700"
+                            : isExcel
+                            ? "from-emerald-600 to-emerald-700"
+                            : isImage
+                            ? "from-violet-500 to-violet-600"
+                            : "from-slate-500 to-slate-600";
+
+                          const iconLabel = isPdf ? "PDF" : isDocx ? "DOCX" : isExcel ? (ext === "xls" ? "XLS" : "XLSX") : isImage ? null : ext.toUpperCase() || "FILE";
+
                           return (
                             <div
                               key={item.id}
                               className="group flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
                             >
                               <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                                  {ext}
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${iconBg} flex items-center justify-center text-white shadow-lg`}>
+                                  {isImage ? (
+                                    <Image className="h-5 w-5" />
+                                  ) : (
+                                    <span className="text-xs font-bold">{iconLabel}</span>
+                                  )}
                                 </div>
                                 <div>
                                   <div className="text-sm font-semibold text-slate-900">{item.file_name}</div>
