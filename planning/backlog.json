@@ -269,6 +269,16 @@
       "version": "V1.1",
       "description": "Nach Upload eines Dokuments analysiert das LLM den Inhalt gegen die aktuelle Frage und gibt Feedback im Chat: relevante Punkte, welche Fragen teilweise beantwortet sind, was noch offen ist. Phase 1: aktuelle Frage. Phase 2: Cross-Frage-Erkennung im Block.",
       "createdAt": "2026-03-29"
+    },
+    {
+      "id": "BL-028",
+      "title": "Evidence-Dateien: Typ-spezifische Icons (PDF rot, DOCX blau etc.)",
+      "type": "improvement",
+      "priority": "low",
+      "status": "open",
+      "version": "V1.1",
+      "description": "PDF-Dateien sollen ein rotes PDF-Icon bekommen, DOCX ein blaues Word-Icon etc. Aktuell haben alle Dateien das gleiche blaue Gradient-Icon mit Dateiendung.",
+      "createdAt": "2026-03-30"
     }
   ]
 }
