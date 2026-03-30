@@ -49,13 +49,17 @@ interface Run {
 interface Tenant {
   id: string;
   name: string;
+  language: string;
 }
 
 interface Snapshot {
   id: string;
   version: string;
+  language: string;
   question_count: number;
 }
+
+const LANG_FLAG: Record<string, string> = { de: "DE", en: "EN", nl: "NL" };
 
 export function RunsClient({ email }: { email: string }) {
   const [runs, setRuns] = useState<Run[]>([]);
@@ -180,13 +184,30 @@ export function RunsClient({ email }: { email: string }) {
                       <SelectValue placeholder="Katalog wählen" />
                     </SelectTrigger>
                     <SelectContent>
-                      {snapshots.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>
-                          v{s.version} ({s.question_count} Fragen)
-                        </SelectItem>
-                      ))}
+                      {(() => {
+                        const selectedTenant = tenants.find((t) => t.id === newTenantId);
+                        const tenantLang = selectedTenant?.language ?? "de";
+                        // Sort: matching language first, then rest
+                        const sorted = [...snapshots].sort((a, b) => {
+                          if (a.language === tenantLang && b.language !== tenantLang) return -1;
+                          if (a.language !== tenantLang && b.language === tenantLang) return 1;
+                          return 0;
+                        });
+                        return sorted.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            v{s.version} [{LANG_FLAG[s.language] ?? s.language.toUpperCase()}] ({s.question_count} Fragen)
+                            {s.language === tenantLang ? " ✓" : ""}
+                          </SelectItem>
+                        ));
+                      })()}
                     </SelectContent>
                   </Select>
+                  {newTenantId && (() => {
+                    const selectedTenant = tenants.find((t) => t.id === newTenantId);
+                    return selectedTenant ? (
+                      <p className="text-xs text-slate-500">Tenant-Sprache: {LANG_FLAG[selectedTenant.language] ?? selectedTenant.language}</p>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="run-title">Titel</Label>

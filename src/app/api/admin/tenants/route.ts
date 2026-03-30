@@ -11,7 +11,7 @@ export async function GET() {
 
   const { data: tenants, error } = await adminClient!
     .from("tenants")
-    .select("id, name, created_at")
+    .select("id, name, language, created_at")
     .order("created_at", { ascending: false });
 
   if (error) {

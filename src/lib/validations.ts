@@ -50,6 +50,7 @@ export type QuestionImportItem = z.infer<typeof questionImportItem>;
 export const importCatalogSchema = z.object({
   version: z.string().min(1, "Version darf nicht leer sein"),
   blueprint_version: z.string().min(1, "Blueprint-Version darf nicht leer sein"),
+  language: z.enum(["de", "en", "nl"]).default("de"),
   questions: z
     .array(questionImportItem)
     .min(1, "Mindestens eine Frage erforderlich"),

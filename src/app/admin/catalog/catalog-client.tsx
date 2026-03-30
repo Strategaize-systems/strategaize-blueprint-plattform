@@ -25,6 +25,13 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -43,10 +50,14 @@ interface Snapshot {
   id: string;
   version: string;
   blueprint_version: string;
+  language: string;
   question_count: number;
   hash: string;
   created_at: string;
 }
+
+const LANGUAGE_LABELS: Record<string, string> = { de: "Deutsch", en: "English", nl: "Nederlands" };
+const LANGUAGE_COLORS: Record<string, string> = { de: "default", en: "secondary", nl: "outline" };
 
 export function CatalogClient({ email }: { email: string }) {
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
@@ -56,6 +67,7 @@ export function CatalogClient({ email }: { email: string }) {
   // Import state
   const [importOpen, setImportOpen] = useState(false);
   const [jsonText, setJsonText] = useState("");
+  const [importLanguage, setImportLanguage] = useState("de");
   const [importing, setImporting] = useState(false);
 
   // Questions preview state
@@ -112,10 +124,14 @@ export function CatalogClient({ email }: { email: string }) {
     }
 
     try {
+      // Inject selected language into the catalog data
+      const payload = typeof parsed === "object" && parsed !== null
+        ? { ...parsed, language: importLanguage }
+        : parsed;
       const res = await fetch("/api/admin/catalog/snapshots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -171,6 +187,19 @@ export function CatalogClient({ email }: { email: string }) {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label>Sprache des Katalogs</Label>
+                  <Select value={importLanguage} onValueChange={setImportLanguage}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="de">Deutsch</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="nl">Nederlands</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="json-file">JSON-Datei laden</Label>
                   <Input
@@ -245,6 +274,9 @@ export function CatalogClient({ email }: { email: string }) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-lg font-bold text-slate-900">v{snap.version}</span>
+                        <Badge variant={(LANGUAGE_COLORS[snap.language] ?? "outline") as "default" | "secondary" | "outline"} className="text-xs">
+                          {LANGUAGE_LABELS[snap.language] ?? snap.language.toUpperCase()}
+                        </Badge>
                         <Badge variant="secondary" className="text-xs">
                           {snap.blueprint_version}
                         </Badge>

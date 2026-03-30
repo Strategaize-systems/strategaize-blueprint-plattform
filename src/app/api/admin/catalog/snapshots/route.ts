@@ -12,7 +12,7 @@ export async function GET() {
 
   const { data: snapshots, error } = await adminClient!
     .from("question_catalog_snapshots")
-    .select("id, version, blueprint_version, question_count, hash, created_at")
+    .select("id, version, blueprint_version, language, question_count, hash, created_at")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -39,19 +39,20 @@ export async function POST(request: Request) {
   const parsed = importCatalogSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { version, blueprint_version, questions } = parsed.data;
+  const { version, blueprint_version, language, questions } = parsed.data;
 
-  // Check version uniqueness
+  // Check version+language uniqueness
   const { data: existing } = await adminClient!
     .from("question_catalog_snapshots")
     .select("id")
     .eq("version", version)
+    .eq("language", language)
     .single();
 
   if (existing) {
     return errorResponse(
       "CONFLICT",
-      `Katalog-Version "${version}" existiert bereits`,
+      `Katalog-Version "${version}" (${language.toUpperCase()}) existiert bereits`,
       409
     );
   }
@@ -81,11 +82,12 @@ export async function POST(request: Request) {
     .insert({
       version,
       blueprint_version,
+      language,
       hash,
       question_count: questions.length,
       created_by: user!.id,
     })
-    .select("id, version, blueprint_version, question_count, hash, created_at")
+    .select("id, version, blueprint_version, language, question_count, hash, created_at")
     .single();
 
   if (snapError) {
@@ -125,7 +127,7 @@ export async function POST(request: Request) {
   // Log admin event (use user session so auth.uid() resolves)
   await supabase.rpc("log_admin_event", {
     p_event_type: "catalog_imported",
-    p_payload: { version, blueprint_version, question_count: questions.length, hash },
+    p_payload: { version, blueprint_version, language, question_count: questions.length, hash },
   });
 
   return NextResponse.json({ snapshot }, { status: 201 });
