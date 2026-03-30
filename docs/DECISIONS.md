@@ -39,3 +39,23 @@
 - Status: accepted
 - Reason: Kunden haben oft mehrere Aspekte pro Frage (z.B. 6 Produkte = 6 Antworten). Editieren/Löschen ist nicht erwünscht — jeder Kontext ist wertvoll für die spätere KI-Analyse. Nummerierte Antworten (#1, #2...) ermöglichen Referenzierung ("bei Antwort #6 fehlt noch...").
 - Consequence: Antworten sind append-only mit Nummerierung im Verlauf. Kein Edit/Delete. Zusammenfassung via LLM konsolidiert alle Antworten zu einer strukturierten Gesamtantwort.
+
+## DEC-009 — next-intl für Internationalisierung
+- Status: accepted
+- Reason: next-intl ist der De-facto-Standard für Next.js App Router mit nativem Server Components Support. react-i18next braucht Workarounds für RSC. Ein JSON pro Sprache, kein Namespace-System nötig.
+- Consequence: next-intl als Dependency. Translation-Dateien in /src/messages/{de,en,nl}.json. Keine URL-Prefixes.
+
+## DEC-010 — Sprache auf Tenant-Ebene (nicht User-Ebene)
+- Status: accepted
+- Reason: Ein Unternehmen arbeitet in einer Sprache. Weniger Komplexität als User-Level Preference. Erweiterbar auf User-Level in V2 falls nötig.
+- Consequence: tenants.language Spalte (de/en/nl, default de). Alle User eines Tenants sehen dieselbe Sprache. Admin-UI bleibt Deutsch.
+
+## DEC-011 — Cookie-basiertes Locale (kein URL-Prefix)
+- Status: accepted
+- Reason: Sprache kommt vom Tenant, nicht von der URL. URL-Prefixes (/de/, /en/) sind für Content-Sites sinnvoll, nicht für SaaS wo die Sprache serverseitig bestimmt wird. Cookie-basiert ist sauberer und erfordert keine URL-Rewrites.
+- Consequence: Middleware setzt Locale-Cookie basierend auf Tenant-Sprache. next-intl liest Locale aus Cookie. Keine URL-Änderung nötig.
+
+## DEC-012 — Katalog-Sprache als Spalte statt separate Tabellen
+- Status: accepted
+- Reason: question_catalog_snapshots bekommt language-Spalte statt separater Tabellen pro Sprache. Einfacher zu verwalten, ein Import pro Sprache. Fallback auf DE wenn keine Übersetzung existiert.
+- Consequence: ALTER TABLE question_catalog_snapshots ADD COLUMN language. Beim Run-Erstellen wird Katalog nach Tenant-Sprache gefiltert.

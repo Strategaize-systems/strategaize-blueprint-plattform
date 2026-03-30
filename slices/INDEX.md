@@ -41,7 +41,11 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-018 | [Rollen-System: Tenant-Admin + Block-Zugriff](SLC-018-role-system.md) | BL-023 | done | High | 2026-03-28 |
 | SLC-019 | [Antwort-Review Übersichtsseite](SLC-019-review-overview.md) | BL-015 | done | Medium | 2026-03-29 |
 | SLC-020 | [Dokument-Analyse: LLM Feedback](SLC-020-document-analysis.md) | BL-027 | done | High | 2026-03-29 |
-| SLC-021 | [Mehrsprachigkeit DE/EN/NL](SLC-021-multilanguage.md) | BL-022 | planned | High | 2026-03-29 |
+| SLC-021 | ~~Mehrsprachigkeit DE/EN/NL~~ (ersetzt durch SLC-024–027) | BL-022 | — | — | 2026-03-29 |
+| SLC-024 | [i18n Foundation: DB + next-intl](SLC-024-i18n-foundation.md) | BL-022 | planned | High | 2026-03-30 |
+| SLC-025 | [UI-Texte extrahieren + übersetzen](SLC-025-ui-translations.md) | BL-022 | planned | High | 2026-03-30 |
+| SLC-026 | [LLM-Prompts + E-Mail Locale](SLC-026-llm-email-locale.md) | BL-022 | planned | High | 2026-03-30 |
+| SLC-027 | [Katalog-Sprache + Admin](SLC-027-catalog-language.md) | BL-022 | planned | Medium | 2026-03-30 |
 | SLC-022 | [Voice Input (Whisper)](SLC-022-voice-input.md) | BL-021 | planned | Medium | 2026-03-29 |
 | SLC-023 | [Dedizierte Server pro Kunde](SLC-023-dedicated-servers.md) | BL-024 | planned | Medium | 2026-03-29 |
 

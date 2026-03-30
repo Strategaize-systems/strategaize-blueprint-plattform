@@ -9,14 +9,15 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: stable
-- Current Focus: V1.1 Kern-Features komplett. PDF/DOCX-Parsing + Dokument-Analyse verifiziert auf Production. Nächstes Feature: Mehrsprachigkeit.
-- Current Phase: V1.1 Stabilisierung
+- High-Level State: implementing
+- Current Focus: BL-022 Mehrsprachigkeit (DE/EN/NL) — Slice-Planning abgeschlossen, 4 Slices (SLC-024 bis SLC-027).
+- Current Phase: V1.1 Implementation
 
 ## Immediate Next Steps
-1. BL-022: Mehrsprachigkeit (DE/EN/NL) — letztes V1.1 Feature
-2. Test-Daten aufräumen auf Production
-3. V1.1 Release vorbereiten (/final-check → /go-live → /deploy)
+1. SLC-024: i18n Foundation (DB + next-intl + Middleware)
+2. SLC-025: UI-Texte extrahieren + übersetzen
+3. SLC-026: LLM-Prompts + E-Mail-Templates lokalisieren
+4. SLC-027: Katalog-Sprache + Admin-Integration
 
 ## Active Scope
 MVP-1 — Kernplattform deployed und stabil. Premium UI v2.1.
