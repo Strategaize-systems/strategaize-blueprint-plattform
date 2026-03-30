@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireTenant, errorResponse } from "@/lib/api-utils";
-import { chatWithLLM, SYSTEM_PROMPTS } from "@/lib/llm";
+import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
+import { chatWithLLM, getSystemPrompts } from "@/lib/llm";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/chat
 // Send a user message and get an LLM follow-up response
@@ -11,7 +11,7 @@ export async function POST(
   const auth = await requireTenant();
   if (auth.errorResponse) return auth.errorResponse;
 
-  const { supabase } = auth;
+  const { supabase, profile } = auth;
   const { runId, questionId } = await params;
 
   let body: { message: string; chatHistory?: { role: string; text: string }[] } = { message: "" };
@@ -35,6 +35,10 @@ export async function POST(
   if (!question) {
     return errorResponse("NOT_FOUND", "Question not found", 404);
   }
+
+  // Load tenant language for localized prompts
+  const locale = await getTenantLocale(supabase, profile!.tenant_id);
+  const prompts = getSystemPrompts(locale);
 
   // Load evidence context for this question (if any documents have extracted text)
   let evidenceContext = "";
@@ -64,7 +68,7 @@ export async function POST(
   const messages = [
     {
       role: "system" as const,
-      content: `${SYSTEM_PROMPTS.rückfrage}\n\nDie aktuelle Frage lautet: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}${evidenceContext}`,
+      content: `${prompts.rückfrage}\n\n${locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is"}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : locale === "nl" ? "Type" : "Type"}: ${question.ebene}${evidenceContext}`,
     },
     // Include chat history for context
     ...((body.chatHistory ?? []).map((m) => ({

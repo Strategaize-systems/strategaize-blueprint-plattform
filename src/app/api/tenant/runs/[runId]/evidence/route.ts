@@ -243,9 +243,16 @@ export async function POST(
 
     // LLM document analysis (async, non-blocking for response)
     if (extractedText && questionId) {
+      // Capture tenant locale before the async IIFE (profile is available here)
+      const tenantLocale = await (async () => {
+        const { data: t } = await adminClient.from("tenants").select("language").eq("id", profile!.tenant_id).single();
+        return (t?.language ?? "de") as string;
+      })();
+
       (async () => {
         try {
-          const { chatWithLLM, SYSTEM_PROMPTS } = await import("@/lib/llm");
+          const { chatWithLLM, getSystemPrompts } = await import("@/lib/llm");
+          const prompts = getSystemPrompts(tenantLocale);
 
           // Get question context
           const { data: question } = await adminClient
@@ -255,19 +262,25 @@ export async function POST(
             .single();
 
           if (question) {
+            const truncateLabel = { de: "[... Dokument gekürzt ...]", en: "[... Document truncated ...]", nl: "[... Document ingekort ...]" };
+            const truncLabel = truncateLabel[tenantLocale as keyof typeof truncateLabel] ?? truncateLabel.de;
             // Truncate text to ~4000 chars to stay within LLM context
             const truncatedText = extractedText.length > 4000
-              ? extractedText.slice(0, 4000) + "\n\n[... Dokument gekürzt ...]"
+              ? extractedText.slice(0, 4000) + `\n\n${truncLabel}`
               : extractedText;
+
+            const questionLabel = tenantLocale === "en" ? "Question" : tenantLocale === "nl" ? "Vraag" : "Frage";
+            const typeLabel = tenantLocale === "de" ? "Typ" : "Type";
+            const analyzeLabel = tenantLocale === "en" ? `Please analyze the following document (${safeName}):` : tenantLocale === "nl" ? `Analyseer het volgende document (${safeName}):` : `Bitte analysiere folgendes Dokument (${safeName}):`;
 
             const analysis = await chatWithLLM([
               {
                 role: "system",
-                content: `${SYSTEM_PROMPTS.dokumentAnalyse}\n\nFrage: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}`,
+                content: `${prompts.dokumentAnalyse}\n\n${questionLabel}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${typeLabel}: ${question.ebene}`,
               },
               {
                 role: "user",
-                content: `Bitte analysiere folgendes Dokument (${safeName}):\n\n${truncatedText}`,
+                content: `${analyzeLabel}\n\n${truncatedText}`,
               },
             ], { temperature: 0.3, maxTokens: 1024 });
 

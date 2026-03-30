@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireTenant, errorResponse } from "@/lib/api-utils";
-import { chatWithLLM, SYSTEM_PROMPTS } from "@/lib/llm";
+import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
+import { chatWithLLM, getSystemPrompts } from "@/lib/llm";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/generate-answer
 // Takes chat history, generates a summary via local LLM (Ollama/Qwen)
@@ -11,7 +11,7 @@ export async function POST(
   const auth = await requireTenant();
   if (auth.errorResponse) return auth.errorResponse;
 
-  const { supabase } = auth;
+  const { supabase, profile } = auth;
   const { runId, questionId } = await params;
 
   let body: { chatMessages?: { role: string; text: string }[]; currentDraft?: string } = {};
@@ -33,6 +33,10 @@ export async function POST(
   if (!question) {
     return errorResponse("NOT_FOUND", "Question not found", 404);
   }
+
+  // Load tenant language for localized prompts
+  const locale = await getTenantLocale(supabase, profile!.tenant_id);
+  const prompts = getSystemPrompts(locale);
 
   // Load evidence context
   let evidenceContext = "";
@@ -62,7 +66,7 @@ export async function POST(
   const messages = [
     {
       role: "system" as const,
-      content: `${SYSTEM_PROMPTS.zusammenfassung}\n\nOriginalfrage: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}${evidenceContext}`,
+      content: `${prompts.zusammenfassung}\n\n${locale === "de" ? "Originalfrage" : locale === "nl" ? "Oorspronkelijke vraag" : "Original question"}: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : "Type"}: ${question.ebene}${evidenceContext}`,
     },
     ...((chatMessages ?? []).map((m) => ({
       role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
@@ -70,15 +74,31 @@ export async function POST(
     }))),
   ];
 
+  const userPrompts = {
+    de: {
+      withDraft: (draft: string) => `Mein bisheriger Entwurf der Antwort:\n\n${draft}\n\nBitte überarbeite und verbessere diese Zusammenfassung basierend auf dem gesamten Gespräch.`,
+      noDraft: "Bitte fasse das bisherige Gespräch zu einer strukturierten Antwort auf die Originalfrage zusammen.",
+    },
+    en: {
+      withDraft: (draft: string) => `My current draft answer:\n\n${draft}\n\nPlease revise and improve this summary based on the entire conversation.`,
+      noDraft: "Please summarize the conversation so far into a structured answer to the original question.",
+    },
+    nl: {
+      withDraft: (draft: string) => `Mijn huidige conceptantwoord:\n\n${draft}\n\nGelieve deze samenvatting te herzien en verbeteren op basis van het gehele gesprek.`,
+      noDraft: "Vat het gesprek tot nu toe samen in een gestructureerd antwoord op de oorspronkelijke vraag.",
+    },
+  };
+  const loc = (locale in userPrompts ? locale : "de") as keyof typeof userPrompts;
+
   if (currentDraft) {
     messages.push({
       role: "user" as const,
-      content: `Mein bisheriger Entwurf der Antwort:\n\n${currentDraft}\n\nBitte überarbeite und verbessere diese Zusammenfassung basierend auf dem gesamten Gespräch.`,
+      content: userPrompts[loc].withDraft(currentDraft),
     });
   } else {
     messages.push({
       role: "user" as const,
-      content: "Bitte fasse das bisherige Gespräch zu einer strukturierten Antwort auf die Originalfrage zusammen.",
+      content: userPrompts[loc].noDraft,
     });
   }
 

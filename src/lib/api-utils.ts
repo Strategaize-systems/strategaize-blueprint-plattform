@@ -131,3 +131,16 @@ export async function requireTenant() {
 
   return { user, profile, supabase, errorResponse: null };
 }
+
+/** Fetch tenant language for the current user's tenant. Returns "de" as fallback. */
+export async function getTenantLocale(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  tenantId: string
+): Promise<string> {
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("language")
+    .eq("id", tenantId)
+    .single();
+  return tenant?.language ?? "de";
+}

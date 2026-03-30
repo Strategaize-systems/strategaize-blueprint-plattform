@@ -17,7 +17,7 @@ export async function POST(
   // Validate tenant exists
   const { data: tenant, error: tenantError } = await adminClient!
     .from("tenants")
-    .select("id, name")
+    .select("id, name, language")
     .eq("id", tenantId)
     .single();
 
@@ -119,6 +119,7 @@ export async function POST(
       to: email,
       tenantName: tenant.name,
       verifyUrl,
+      locale: tenant.language ?? "de",
     });
   } catch (emailError) {
     return errorResponse(
