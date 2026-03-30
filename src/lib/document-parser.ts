@@ -1,5 +1,5 @@
 // Document text extraction for LLM context
-// Supports: PDF, TXT, plain text from DOCX (basic)
+// Supports: PDF, DOCX, TXT, CSV
 
 export async function extractText(
   buffer: Buffer,
@@ -15,6 +15,17 @@ export async function extractText(
       return result.text?.trim() || null;
     }
 
+    // DOCX
+    if (
+      mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      fileName.endsWith(".docx")
+    ) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mammoth = require("mammoth");
+      const result = await mammoth.extractRawText({ buffer });
+      return result.value?.trim() || null;
+    }
+
     // Plain text
     if (
       mimeType === "text/plain" ||
@@ -22,14 +33,6 @@ export async function extractText(
       fileName.endsWith(".csv")
     ) {
       return buffer.toString("utf-8").trim() || null;
-    }
-
-    // DOCX — not supported yet (would need JSZip or similar for XML extraction)
-    if (
-      mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-      fileName.endsWith(".docx")
-    ) {
-      return null;
     }
 
     // Excel — not parseable for text context

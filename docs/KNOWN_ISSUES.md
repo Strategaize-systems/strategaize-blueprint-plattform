@@ -200,17 +200,13 @@
 - Summary: Next.js Build schlaegt fehl wenn Ollama + Qwen 14B im RAM geladen ist (~12GB). Server hat 32GB aber Build braucht auch viel RAM. Workaround: Ollama vor Build stoppen, nach Build starten. Langfristig: Node.js Memory-Limit im Dockerfile erhoehen.
 
 ### ISSUE-026 — Evidence File-Upload RLS-Violation (Storage Service)
-- Status: open
+- Status: resolved
 - Severity: Blocker
 - Area: Storage / Supabase Self-Hosted
-- Summary: File-Upload fuer Evidence schlaegt fehl mit "new row violates row-level security policy". Root Cause: Supabase Storage Service (nicht PostgREST) nutzt set_config() fuer Role-Switching und scheitert daran. Betrifft storage.createBucket() und storage.upload(). Note-Upload (ohne Storage) funktioniert. Getestete Fixes die NICHT funktioniert haben: storage.objects RLS deaktiviert, GRANT ALL auf storage Schema, Policies fuer service_role und supabase_storage_admin, adminClient statt supabase fuer DB-Inserts.
-- Impact: Kein Datei-Upload moeglich. Textnotizen funktionieren.
-- Workaround: Textnotizen als Alternative verwenden
-- Next Action: Storage-Service Konfiguration pruefen (PGRST_JWT_SECRET, Storage env vars), ggf. Storage-Service neu starten, oder alternativen Upload-Weg finden (Dateien direkt ins Filesystem statt Supabase Storage)
+- Summary: File-Upload fuer Evidence schlug fehl mit "new row violates row-level security policy". Root Cause: Supabase Storage Service nutzt supabase_storage_admin Rolle, die keine Membership in service_role hatte. Fix: GRANT service_role TO supabase_storage_admin auf Production-DB. Behoben am 2026-03-29.
 
 ### ISSUE-025 — DOCX-Parsing nicht implementiert
-- Status: open
+- Status: resolved
 - Severity: Low
 - Area: Backend / Document Parsing
-- Summary: PDF und TXT werden geparst, DOCX nicht (braeuchte JSZip oder aehnliche Library). Betrifft nur LLM-Kontext — DOCX-Dateien koennen weiterhin hochgeladen werden, nur der Text wird nicht extrahiert.
-- Next Action: JSZip als Dependency hinzufuegen wenn DOCX-Support benoetigt wird.
+- Summary: DOCX-Textextraktion mit mammoth Library implementiert. extractText() in document-parser.ts unterstuetzt jetzt PDF, DOCX, TXT und CSV. Behoben am 2026-03-30.

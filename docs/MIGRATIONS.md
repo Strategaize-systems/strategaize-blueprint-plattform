@@ -28,3 +28,18 @@
 - Reason: ISSUE-010 (append-only nur RLS), ISSUE-014 (evidence_links ohne tenant_id), ISSUE-018 (CASCADE statt RESTRICT)
 - Risk: evidence_links.tenant_id ist NOT NULL — bestehende Rows ohne tenant_id müssen backfilled werden. Trigger verhindert UPDATE auf append-only Tabellen — auch für service_role.
 - Rollback Notes: DROP TRIGGER enforce_append_only auf allen 5 Tabellen. ALTER TABLE evidence_links DROP COLUMN tenant_id. ALTER TABLE questions FK zurück auf CASCADE.
+
+### MIG-005 — Block-basierte Checkpoints + Rollen-System
+- Date: 2026-03-28
+- Scope: run_submit() Funktions-Signatur-Update (3 Parameter statt 2), tenant_owner → tenant_admin Rollen-Umbenennung in 7 RLS-Policies, block_access Spalte in profiles
+- Affected Areas: runs, profiles, question_events, evidence_items, evidence_links (RLS), run_submissions
+- Reason: Block-basierte Checkpoints benötigen block_id Parameter in run_submit(). Rollen-Umbenennung für Konsistenz (ISSUE-023).
+- Rollback Notes: DROP FUNCTION run_submit(uuid, text, text); CREATE alte 2-Parameter-Version. Policies zurück auf tenant_owner.
+
+### MIG-006 — Storage Role Membership Grant
+- Date: 2026-03-29
+- Scope: GRANT service_role TO supabase_storage_admin
+- Affected Areas: Storage Service — Supabase Storage kann jetzt Dateien hochladen und Buckets erstellen
+- Reason: ISSUE-026 — Storage Service nutzt supabase_storage_admin Rolle, die keine Membership in service_role hatte. Dadurch scheiterten alle Storage-Operationen an RLS.
+- Risk: Minimal — erweitert nur die Rechte des Storage-Service auf das nötige Niveau
+- Rollback Notes: REVOKE service_role FROM supabase_storage_admin

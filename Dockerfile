@@ -45,8 +45,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# pdf-parse uses require() and is not bundled by Next.js standalone
+# pdf-parse and mammoth use require() and are not bundled by Next.js standalone
+# serverExternalPackages in next.config.ts is the primary fix; COPY is fallback
 COPY --from=builder /app/node_modules/pdf-parse/ ./node_modules/pdf-parse/
+COPY --from=builder /app/node_modules/mammoth/ ./node_modules/mammoth/
 
 USER nextjs
 
