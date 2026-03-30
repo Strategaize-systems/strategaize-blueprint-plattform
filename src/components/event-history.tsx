@@ -24,13 +24,15 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   note_added: "Notiz",
   evidence_attached: "Evidence verknüpft",
   status_changed: "Status geändert",
+  document_analysis: "Dokument-Analyse",
 };
 
-const EVENT_TYPE_VARIANTS: Record<string, "default" | "secondary" | "outline"> = {
+const EVENT_TYPE_VARIANTS: Record<string, "default" | "secondary" | "outline" | "gradient-primary"> = {
   answer_submitted: "default",
   note_added: "secondary",
   evidence_attached: "outline",
   status_changed: "outline",
+  document_analysis: "gradient-primary",
 };
 
 export function EventHistory({
@@ -104,10 +106,12 @@ export function EventHistory({
               });
               return events.map((event) => {
               const text =
-                (event.event_type === "answer_submitted" || event.event_type === "note_added") &&
+                (event.event_type === "answer_submitted" || event.event_type === "note_added" || event.event_type === "document_analysis") &&
                 typeof event.payload?.text === "string"
                   ? event.payload.text
                   : null;
+              const fileName = event.event_type === "document_analysis" && typeof event.payload?.file_name === "string"
+                ? event.payload.file_name : null;
               const isLong = text ? text.length > 120 : false;
               const isExpanded = expandedEvents.has(event.id);
               const answerNum = answerNumberMap.get(event.id);
@@ -127,6 +131,9 @@ export function EventHistory({
                       </Badge>
                       {answerNum && (
                         <span className="text-[10px] font-bold text-slate-500">#{answerNum}</span>
+                      )}
+                      {fileName && (
+                        <span className="text-[10px] text-slate-400 truncate max-w-[120px]" title={fileName}>📄 {fileName}</span>
                       )}
                     </div>
                     <span className="text-[10px] text-slate-400 tabular-nums">

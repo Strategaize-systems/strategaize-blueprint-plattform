@@ -228,10 +228,57 @@ export async function POST(
       return errorResponse("INTERNAL_ERROR", insertError.message, 500);
     }
 
-    // Extract text from document for LLM context (async, non-blocking for response)
+    // Extract text + LLM document analysis (async, non-blocking for response)
     extractText(buffer, file.type, safeName).then(async (text) => {
-      if (text) {
-        await adminClient.from("evidence_items").update({ extracted_text: text }).eq("id", itemId);
+      if (!text) return;
+
+      // Save extracted text
+      await adminClient.from("evidence_items").update({ extracted_text: text }).eq("id", itemId);
+
+      // If linked to a question, trigger LLM document analysis
+      if (questionId) {
+        try {
+          const { chatWithLLM, SYSTEM_PROMPTS } = await import("@/lib/llm");
+
+          // Get question context
+          const { data: question } = await adminClient
+            .from("questions")
+            .select("fragetext, block, unterbereich, ebene")
+            .eq("id", questionId)
+            .single();
+
+          if (question) {
+            // Truncate text to ~4000 chars to stay within LLM context
+            const truncatedText = text.length > 4000
+              ? text.slice(0, 4000) + "\n\n[... Dokument gekürzt ...]"
+              : text;
+
+            const analysis = await chatWithLLM([
+              {
+                role: "system",
+                content: `${SYSTEM_PROMPTS.dokumentAnalyse}\n\nFrage: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\nTyp: ${question.ebene}`,
+              },
+              {
+                role: "user",
+                content: `Bitte analysiere folgendes Dokument (${safeName}):\n\n${truncatedText}`,
+              },
+            ], { temperature: 0.3, maxTokens: 1024 });
+
+            // Save analysis as question event
+            await adminClient.from("question_events").insert({
+              client_event_id: crypto.randomUUID(),
+              question_id: questionId,
+              run_id: runId,
+              tenant_id: profile!.tenant_id,
+              event_type: "document_analysis",
+              payload: { text: analysis, file_name: safeName, evidence_item_id: itemId },
+              created_by: user!.id,
+            });
+          }
+        } catch (err) {
+          const { captureException } = await import("@/lib/logger");
+          captureException(err, { source: "evidence/document-analysis", metadata: { itemId, questionId } });
+        }
       }
     }).catch(() => {});
 
