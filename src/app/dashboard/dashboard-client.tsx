@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, FileText, Play, Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Profile {
   id: string;
@@ -35,6 +36,7 @@ interface Run {
 }
 
 export function DashboardClient({ profile }: { profile: Profile }) {
+  const t = useTranslations();
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -71,7 +73,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
       {/* Blueprint Assessment block */}
       <div className="mx-3 mt-2 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-4 text-center">
         <div className="text-sm font-bold text-white">Blueprint Assessment</div>
-        <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
+        <div className="text-[11px] text-slate-500 mt-0.5">{t("sidebar.subtitle")}</div>
       </div>
       <div className="h-3" />
 
@@ -83,9 +85,9 @@ export function DashboardClient({ profile }: { profile: Profile }) {
         >
           <Play className="h-4 w-4" />
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold leading-snug">Runs</div>
+            <div className="text-sm font-bold leading-snug">{t("sidebar.runs")}</div>
             <div className="text-[10px] uppercase tracking-wider font-semibold text-white/50 mt-0.5">
-              Ihre Assessments
+              {t("sidebar.runsDescription")}
             </div>
           </div>
         </Link>
@@ -101,7 +103,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/20 to-brand-primary-dark/20 px-3 py-3 text-sm font-semibold text-slate-300 transition-all hover:from-brand-primary/30 hover:to-brand-primary-dark/30 hover:text-white"
         >
           <LogOut className="h-4 w-4" />
-          Abmelden
+          {t("common.logout")}
         </button>
       </div>
     </div>
@@ -141,8 +143,8 @@ export function DashboardClient({ profile }: { profile: Profile }) {
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
           <div className="flex items-center justify-between px-8 py-5 pl-14 lg:pl-8">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Ihre Runs</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Ihre zugewiesenen Assessment-Runs</p>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t("dashboard.title")}</h1>
+              <p className="text-sm text-slate-500 mt-0.5">{t("dashboard.subtitle")}</p>
             </div>
           </div>
         </header>
@@ -162,9 +164,9 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
                     <FileText className="h-8 w-8 text-slate-400" />
                   </div>
-                  <p className="text-lg font-semibold text-slate-900">Noch keine Runs zugewiesen</p>
+                  <p className="text-lg font-semibold text-slate-900">{t("dashboard.emptyTitle")}</p>
                   <p className="mt-1 text-sm text-slate-500">
-                    Bitte warten Sie auf eine Zuweisung durch StrategAIze.
+                    {t("dashboard.emptyDescription")}
                   </p>
                 </CardContent>
               </Card>
@@ -190,15 +192,14 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                         />
                         <div className="flex gap-4 text-xs text-slate-500 mt-3">
                           <span>
-                            <span className="font-semibold text-brand-primary">{run.evidence_count}</span> Evidence-Dokumente
+                            <span className="font-semibold text-brand-primary">{run.evidence_count}</span> {t("dashboard.evidenceLabel")}
                           </span>
                           <span>
-                            Erstellt: {new Date(run.created_at).toLocaleDateString("de-DE")}
+                            {t("dashboard.created", { date: new Date(run.created_at).toLocaleDateString("de-DE") })}
                           </span>
                           {run.submitted_at && (
                             <span>
-                              Eingereicht:{" "}
-                              {new Date(run.submitted_at).toLocaleDateString("de-DE")}
+                              {t("dashboard.submitted", { date: new Date(run.submitted_at).toLocaleDateString("de-DE") })}
                             </span>
                           )}
                         </div>

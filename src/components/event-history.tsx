@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface QuestionEvent {
   id: string;
@@ -19,12 +20,12 @@ interface QuestionEvent {
   created_by: string;
 }
 
-const EVENT_TYPE_LABELS: Record<string, string> = {
-  answer_submitted: "Antwort",
-  note_added: "Notiz",
-  evidence_attached: "Evidence verknüpft",
-  status_changed: "Status geändert",
-  document_analysis: "Dokument-Analyse",
+const EVENT_TYPE_I18N_KEYS: Record<string, string> = {
+  answer_submitted: "events.answer",
+  note_added: "events.note",
+  evidence_attached: "events.evidenceAttached",
+  status_changed: "events.statusChanged",
+  document_analysis: "events.documentAnalysis",
 };
 
 const EVENT_TYPE_VARIANTS: Record<string, "default" | "secondary" | "outline" | "gradient-primary"> = {
@@ -44,6 +45,7 @@ export function EventHistory({
   questionId: string;
   isAdmin?: boolean;
 }) {
+  const t = useTranslations();
   const [events, setEvents] = useState<QuestionEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
@@ -114,7 +116,7 @@ export function EventHistory({
   if (events.length === 0) {
     return (
       <p className="text-xs text-slate-400 py-2">
-        Keine Ereignisse für diese Frage.
+        {t("events.empty")}
       </p>
     );
   }
@@ -123,7 +125,7 @@ export function EventHistory({
     <Accordion type="single" collapsible className="w-full" defaultValue="history">
       <AccordionItem value="history">
         <AccordionTrigger className="text-xs">
-          Verlauf ({events.length} Ereignisse)
+          {t("events.header", { count: events.length })}
         </AccordionTrigger>
         <AccordionContent>
           <div className="space-y-2 overflow-y-auto pr-1">
@@ -131,10 +133,10 @@ export function EventHistory({
               <div className="rounded-lg border border-brand-primary/30 bg-brand-primary/5 p-2.5 text-xs">
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-primary" />
-                  <span className="text-brand-primary font-medium">Dokument wird analysiert…</span>
+                  <span className="text-brand-primary font-medium">{t("events.analyzing")}</span>
                 </div>
                 <p className="mt-1 text-[10px] text-slate-500">
-                  Die KI analysiert das hochgeladene Dokument. Dies dauert ca. 30–60 Sekunden.
+                  {t("events.analyzingDescription")}
                 </p>
               </div>
             )}
@@ -168,7 +170,7 @@ export function EventHistory({
                         variant={EVENT_TYPE_VARIANTS[event.event_type] ?? "outline"}
                         className="text-[10px]"
                       >
-                        {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
+                        {EVENT_TYPE_I18N_KEYS[event.event_type] ? t(EVENT_TYPE_I18N_KEYS[event.event_type]) : event.event_type}
                       </Badge>
                       {answerNum && (
                         <span className="text-[10px] font-bold text-slate-500">#{answerNum}</span>
@@ -194,12 +196,12 @@ export function EventHistory({
                           {isExpanded ? (
                             <>
                               <ChevronDown className="h-3 w-3" />
-                              Weniger anzeigen
+                              {t("common.showLess")}
                             </>
                           ) : (
                             <>
                               <ChevronRight className="h-3 w-3" />
-                              Mehr anzeigen
+                              {t("common.showMore")}
                             </>
                           )}
                         </button>

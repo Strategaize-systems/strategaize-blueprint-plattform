@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { ProgressIndicator } from "@/components/progress-indicator";
@@ -45,25 +46,9 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image } from "lucide-react";
 
-const EVIDENCE_LABELS = [
-  { value: "policy", label: "Policy" },
-  { value: "process", label: "Prozess" },
-  { value: "template", label: "Vorlage" },
-  { value: "contract", label: "Vertrag" },
-  { value: "financial", label: "Finanzen" },
-  { value: "legal", label: "Recht" },
-  { value: "system", label: "System" },
-  { value: "org", label: "Org" },
-  { value: "kpi", label: "KPI" },
-  { value: "other", label: "Sonstiges" },
-];
+const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
-const EVIDENCE_RELATIONS = [
-  { value: "proof", label: "Nachweis (proof)" },
-  { value: "supports", label: "Unterstützt (supports)" },
-  { value: "example", label: "Beispiel (example)" },
-  { value: "supersedes", label: "Ersetzt (supersedes)" },
-];
+const EVIDENCE_RELATION_KEYS = ["proof", "supports", "example", "supersedes"] as const;
 
 interface Question {
   id: string;
@@ -109,18 +94,6 @@ interface Submission {
   note: string | null;
 }
 
-const BLOCK_NAMES: Record<string, string> = {
-  A: "Grundverständnis",
-  B: "Markt & Wettbewerb",
-  C: "Finanzen",
-  D: "Organisation",
-  E: "Prozesse",
-  F: "IT & Systeme",
-  G: "Recht & Compliance",
-  H: "Strategie",
-  I: "Exit-Readiness",
-};
-
 export function RunWorkspaceClient({
   runId,
   isAdmin,
@@ -128,6 +101,7 @@ export function RunWorkspaceClient({
   runId: string;
   isAdmin: boolean;
 }) {
+  const t = useTranslations();
   const [run, setRun] = useState<Run | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
@@ -269,13 +243,13 @@ export function RunWorkspaceClient({
       } else {
         setChatMessages((prev) => [
           ...prev,
-          { role: "assistant" as const, text: "[LLM nicht erreichbar — bitte später erneut versuchen]" },
+          { role: "assistant" as const, text: t("ai.unavailable") },
         ]);
       }
     } catch {
       setChatMessages((prev) => [
         ...prev,
-        { role: "assistant" as const, text: "[Verbindungsfehler zum LLM]" },
+        { role: "assistant" as const, text: t("ai.connectionError") },
       ]);
     } finally {
       setChatLoading(false);
@@ -301,12 +275,12 @@ export function RunWorkspaceClient({
       if (res.ok) {
         const data = await res.json();
         setChatMessages((prev) => [...prev, { role: "summary" as const, text: data.generatedAnswer }]);
-        setMessage({ text: "Zusammenfassung erstellt — prüfen und als Antwort übernehmen", type: "success" });
+        setMessage({ text: t("answer.summaryCreated"), type: "success" });
       } else {
-        setMessage({ text: "Fehler beim Generieren der Antwort", type: "error" });
+        setMessage({ text: t("answer.generationError"), type: "error" });
       }
     } catch {
-      setMessage({ text: "Netzwerkfehler", type: "error" });
+      setMessage({ text: t("common.networkError"), type: "error" });
     } finally {
       setGenerating(false);
     }
@@ -337,14 +311,14 @@ export function RunWorkspaceClient({
         setEventKey((k) => k + 1);
         await loadRun();
         // Auto-dismiss success message after 3 seconds
-        setMessage({ text: "Antwort gespeichert", type: "success" });
+        setMessage({ text: t("answer.saved"), type: "success" });
         setTimeout(() => setMessage(null), 3000);
       } else {
         const data = await res.json();
-        setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
+        setMessage({ text: data.error?.message ?? t("common.unknownError"), type: "error" });
       }
     } catch {
-      setMessage({ text: "Netzwerkfehler — bitte erneut versuchen", type: "error" });
+      setMessage({ text: t("common.networkError"), type: "error" });
     } finally {
       setSaving(false);
     }
@@ -366,7 +340,7 @@ export function RunWorkspaceClient({
         body: formData,
       });
       if (res.ok) {
-        setMessage({ text: "Datei hochgeladen — Dokument wird analysiert…", type: "success" });
+        setMessage({ text: t("evidence.fileUploaded"), type: "success" });
         if (fileInputRef.current) fileInputRef.current.value = "";
         setUploadLabel("");
         setEventKey((k) => k + 1);
@@ -374,10 +348,10 @@ export function RunWorkspaceClient({
         await loadRun();
       } else {
         const data = await res.json();
-        setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
+        setMessage({ text: data.error?.message ?? t("common.unknownError"), type: "error" });
       }
     } catch {
-      setMessage({ text: "Netzwerkfehler — bitte erneut versuchen", type: "error" });
+      setMessage({ text: t("common.networkError"), type: "error" });
     } finally {
       setUploading(false);
     }
@@ -400,7 +374,7 @@ export function RunWorkspaceClient({
         }),
       });
       if (res.ok) {
-        setMessage({ text: "Notiz hinzugefügt", type: "success" });
+        setMessage({ text: t("evidence.noteAdded"), type: "success" });
         setNoteText("");
         setNoteLabel("");
         setEventKey((k) => k + 1);
@@ -408,10 +382,10 @@ export function RunWorkspaceClient({
         await loadRun();
       } else {
         const data = await res.json();
-        setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
+        setMessage({ text: data.error?.message ?? t("common.unknownError"), type: "error" });
       }
     } catch {
-      setMessage({ text: "Netzwerkfehler — bitte erneut versuchen", type: "error" });
+      setMessage({ text: t("common.networkError"), type: "error" });
     } finally {
       setUploading(false);
     }
@@ -427,7 +401,7 @@ export function RunWorkspaceClient({
         window.open(data.download_url, "_blank");
       }
     } catch {
-      setMessage({ text: "Download fehlgeschlagen", type: "error" });
+      setMessage({ text: t("evidence.downloadFailed"), type: "error" });
     }
   }
 
@@ -444,16 +418,16 @@ export function RunWorkspaceClient({
         }),
       });
       if (res.ok) {
-        setMessage({ text: `Checkpoint für Block ${activeQ?.block} eingereicht`, type: "success" });
+        setMessage({ text: t("submit.submitted", { block: activeQ?.block ?? "" }), type: "success" });
         setSubmitNote("");
         await loadRun();
         await loadSubmissions(activeQ?.block);
       } else {
         const data = await res.json();
-        setMessage({ text: data.error?.message ?? "Unbekannter Fehler", type: "error" });
+        setMessage({ text: data.error?.message ?? t("common.unknownError"), type: "error" });
       }
     } catch {
-      setMessage({ text: "Netzwerkfehler — bitte erneut versuchen", type: "error" });
+      setMessage({ text: t("common.networkError"), type: "error" });
     } finally {
       setSubmitting(false);
     }
@@ -526,7 +500,7 @@ export function RunWorkspaceClient({
       {/* Blueprint Assessment block */}
       <div className="mx-3 mt-2 rounded-xl bg-gradient-to-b from-slate-800/80 to-slate-900/50 border border-white/[0.06] px-5 py-4 text-center">
         <div className="text-sm font-bold text-white">Blueprint Assessment</div>
-        <div className="text-[11px] text-slate-500 mt-0.5">Strategische Unternehmensanalyse</div>
+        <div className="text-[11px] text-slate-500 mt-0.5">{t("sidebar.subtitle")}</div>
       </div>
       <div className="h-3" />
 
@@ -560,11 +534,11 @@ export function RunWorkspaceClient({
                 />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-bold leading-snug">
-                    Block {block}: {BLOCK_NAMES[block] ?? ""}
+                    Block {block}: {t(`blocks.${block}`)}
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-[10px] uppercase tracking-wider font-semibold ${isOpen || hasActiveQuestion ? "text-white/50" : "text-slate-500"}`}>
-                      Analyse
+                      {t("sidebar.analysis")}
                     </span>
                     <span className={`text-[10px] ${isOpen || hasActiveQuestion ? "text-white/30" : "text-slate-600"}`}>&bull;</span>
                     <span className={`text-[10px] tabular-nums font-bold ${isOpen || hasActiveQuestion ? "text-white/50" : "text-slate-500"}`}>
@@ -631,7 +605,7 @@ export function RunWorkspaceClient({
           href="/dashboard"
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/20 to-brand-primary-dark/20 px-3 py-3 text-sm font-semibold text-slate-300 transition-all hover:from-brand-primary/30 hover:to-brand-primary-dark/30 hover:text-white"
         >
-          Abmelden
+          {t("common.logout")}
         </Link>
       </div>
     </div>
@@ -678,12 +652,12 @@ export function RunWorkspaceClient({
               <div className="flex items-center gap-2.5 text-sm text-slate-600">
                 {activeQ ? (
                   <>
-                    <span className="font-semibold truncate">Block {activeQ.block}: {BLOCK_NAMES[activeQ.block] ?? ""}</span>
+                    <span className="font-semibold truncate">Block {activeQ.block}: {t(`blocks.${activeQ.block}`)}</span>
                     <span className="text-slate-300">&bull;</span>
                     <span className="font-medium truncate">{activeQ.unterbereich}</span>
                   </>
                 ) : (
-                  <span className="text-slate-400">Frage auswählen um zu beginnen</span>
+                  <span className="text-slate-400">{t("workspace.selectQuestion")}</span>
                 )}
               </div>
             </div>
@@ -693,7 +667,7 @@ export function RunWorkspaceClient({
               {/* Gesamt */}
               <div className="flex items-center gap-4">
                 <div className="w-16 text-right">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gesamt</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("progress.total")}</span>
                 </div>
                 <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
@@ -718,7 +692,7 @@ export function RunWorkspaceClient({
                 return (
                   <div className="flex items-center gap-4">
                     <div className="w-16 text-right">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Block</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("progress.block")}</span>
                     </div>
                     <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
@@ -738,7 +712,7 @@ export function RunWorkspaceClient({
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md text-xs font-bold uppercase tracking-wider flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-white/80 animate-pulse" />
-                {run.status === "collecting" ? "In Bearbeitung" : run.status === "submitted" ? "Eingereicht" : "Gesperrt"}
+                {run.status === "collecting" ? t("status.collecting") : run.status === "submitted" ? t("status.submitted") : t("status.locked")}
               </div>
               {!isAdmin && !isLocked && (
                 <AlertDialog>
@@ -747,34 +721,33 @@ export function RunWorkspaceClient({
                       disabled={submitting || answered === 0}
                       className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white shadow-md text-xs font-bold uppercase tracking-wider disabled:opacity-50 hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
                     >
-                      {submitting ? "Wird eingereicht..." : `Block ${activeQ?.block ?? ""} einreichen`}
+                      {submitting ? t("submit.blockLoading") : t("submit.block", { block: activeQ?.block ?? "" })}
                     </button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Block {activeQ?.block} einreichen?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("submit.dialogTitle", { block: activeQ?.block ?? "" })}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Sie haben {answered} von {total} Fragen beantwortet.
+                        {t("submit.dialogAnswered", { answered, total })}
                         {total - answered > 0 && (
-                          <> Es sind noch {total - answered} Fragen offen.</>
+                          <> {t("submit.dialogRemaining", { remaining: total - answered })}</>
                         )}
-                        {" "}Nach dem Einreichen können Sie weiterhin Antworten und
-                        Evidence ergänzen, bis der Run gesperrt wird.
+                        {" "}{t("submit.dialogInfo")}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="py-2">
-                      <Label htmlFor="submit-note">Optionale Notiz</Label>
+                      <Label htmlFor="submit-note">{t("submit.noteLabel")}</Label>
                       <Textarea
                         id="submit-note"
                         value={submitNote}
                         onChange={(e) => setSubmitNote(e.target.value)}
-                        placeholder="Hinweis zum Einreichungsstatus (optional)..."
+                        placeholder={t("submit.notePlaceholder")}
                         rows={3}
                         className="mt-1"
                       />
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                       <AlertDialogAction onClick={submitRun}>
                         Ja, einreichen
                       </AlertDialogAction>
@@ -830,10 +803,10 @@ export function RunWorkspaceClient({
                 <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
                   <label className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-primary-dark to-brand-primary" />
-                    Ihre Antwort
+                    {t("workspace.yourAnswer")}
                     {chatMessages.length > 0 && (
                       <span className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary">
-                        {chatMessages.length} Nachrichten
+                        {t("workspace.messagesCount", { count: chatMessages.length })}
                       </span>
                     )}
                   </label>
@@ -849,27 +822,27 @@ export function RunWorkspaceClient({
                             <div className="rounded-xl border border-brand-success/30 bg-emerald-50/50 px-4 py-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="h-3.5 w-3.5 text-brand-success-dark" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-success-dark">Zusammenfassung</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-success-dark">{t("ai.summary")}</span>
                               </div>
                               <p className="text-xs leading-relaxed text-slate-800 whitespace-pre-wrap">{msg.text}</p>
                               <div className="mt-3 flex items-center gap-2">
                                 <button
                                   onClick={() => {
                                     setAnswerText(msg.text);
-                                    setMessage({ text: "Zusammenfassung übernommen — jetzt 'Antwort speichern' klicken", type: "success" });
+                                    setMessage({ text: t("answer.summaryAccepted"), type: "success" });
                                     setTimeout(() => setMessage(null), 4000);
                                   }}
                                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-success-dark to-brand-success text-white text-xs font-bold shadow-sm hover:shadow-md transition-all"
                                 >
                                   <span>&#10003;</span>
-                                  Übernehmen
+                                  {t("ai.accept")}
                                 </button>
                                 <button
                                   onClick={generateAnswer}
                                   disabled={generating}
                                   className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-500 hover:text-brand-primary transition-all"
                                 >
-                                  Neu generieren
+                                  {t("ai.regenerate")}
                                 </button>
                               </div>
                             </div>
@@ -893,7 +866,7 @@ export function RunWorkspaceClient({
                         <div className="flex justify-start">
                           <div className="bg-slate-100 rounded-xl px-4 py-3 flex items-center gap-2">
                             <Loader2 className="h-3.5 w-3.5 text-brand-primary animate-spin" />
-                            <span className="text-xs text-slate-500">KI denkt nach...</span>
+                            <span className="text-xs text-slate-500">{t("ai.thinking")}</span>
                           </div>
                         </div>
                       )}
@@ -901,7 +874,7 @@ export function RunWorkspaceClient({
                     </div>
                   ) : (
                     <div className="flex-1 flex items-center justify-center py-8">
-                      <p className="text-xs text-slate-400">Antwort eingeben oder mit KI-Assistent erarbeiten</p>
+                      <p className="text-xs text-slate-400">{t("workspace.emptyState")}</p>
                     </div>
                   )}
                 </div>
@@ -919,7 +892,7 @@ export function RunWorkspaceClient({
                             sendChatMessage();
                           }
                         }}
-                        placeholder="Ihre Nachricht oder Antwort eingeben..."
+                        placeholder={t("workspace.inputPlaceholder")}
                         rows={4}
                         className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
                       />
@@ -939,7 +912,7 @@ export function RunWorkspaceClient({
                   <div className="px-6 py-4 border-t-2 border-slate-100 bg-slate-50/30">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-500 tabular-nums">
-                        {answerText ? `Antwort: ${answerText.length} Zeichen` : chatInput.trim() ? `Text: ${chatInput.trim().length} Zeichen` : "Noch keine Antwort"}
+                        {answerText ? t("workspace.charCount", { length: answerText.length }) : chatInput.trim() ? t("workspace.textCharCount", { length: chatInput.trim().length }) : t("workspace.noAnswer")}
                       </span>
                       <div className="flex items-center gap-3">
                         {chatMessages.length >= 2 && (
@@ -949,7 +922,7 @@ export function RunWorkspaceClient({
                             className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand-success/30 text-sm font-bold text-brand-success-dark hover:bg-brand-success/5 transition-all disabled:opacity-50"
                           >
                             {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                            {generating ? "KI arbeitet..." : "Zusammenfassung erstellen"}
+                            {generating ? t("ai.working") : t("ai.generateSummary")}
                           </button>
                         )}
                         <button
@@ -957,7 +930,7 @@ export function RunWorkspaceClient({
                           disabled={saving || (!answerText.trim() && !chatInput.trim())}
                           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-primary-dark text-white font-bold shadow-xl shadow-brand-primary/30 hover:shadow-2xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                         >
-                          {saving ? "Wird gespeichert..." : "Antwort speichern"}
+                          {saving ? t("answer.saving") : t("answer.save")}
                           {!saving && <span>&#10003;</span>}
                         </button>
                       </div>
@@ -975,7 +948,7 @@ export function RunWorkspaceClient({
                       <div className="w-6 h-6 rounded-md bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
                         <FileText className="h-3 w-3 text-white" />
                       </div>
-                      Verlauf
+                      {t("evidence.historyTitle")}
                     </h3>
                   </div>
                   <div className="flex-1 overflow-y-auto">
@@ -1001,7 +974,7 @@ export function RunWorkspaceClient({
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary-dark to-brand-primary flex items-center justify-center shadow-md">
                           <FileText className="h-4 w-4 text-white" />
                         </div>
-                        Hochgeladene Nachweise
+                        {t("evidence.title")}
                         <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
                           {evidenceItems.filter((e) => e.item_type === "file").length}
                         </span>
@@ -1059,7 +1032,7 @@ export function RunWorkspaceClient({
                           );
                         })
                       ) : (
-                        <p className="text-sm text-slate-400 py-3 text-center">Keine Dateien hochgeladen.</p>
+                        <p className="text-sm text-slate-400 py-3 text-center">{t("evidence.empty")}</p>
                       )}
 
                       {/* Upload — compact */}
@@ -1075,10 +1048,10 @@ export function RunWorkspaceClient({
                                 disabled={uploading}
                               />
                               <Select value={uploadLabel} onValueChange={setUploadLabel}>
-                                <SelectTrigger><SelectValue placeholder="Kategorie" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("evidence.categoryPlaceholder")} /></SelectTrigger>
                                 <SelectContent>
-                                  {EVIDENCE_LABELS.map((l) => (
-                                    <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                                  {EVIDENCE_LABEL_KEYS.map((key) => (
+                                    <SelectItem key={key} value={key}>{t(`evidence.labels.${key}`)}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
@@ -1089,7 +1062,7 @@ export function RunWorkspaceClient({
                               size="sm"
                               className="w-full"
                             >
-                              {uploading ? "Wird hochgeladen..." : "Datei hochladen"}
+                              {uploading ? t("evidence.uploading") : t("evidence.uploadFile")}
                             </Button>
                           </div>
                           <Separator className="my-3" />
@@ -1097,16 +1070,16 @@ export function RunWorkspaceClient({
                             <Textarea
                               value={noteText}
                               onChange={(e) => setNoteText(e.target.value)}
-                              placeholder="Textnotiz eingeben..."
+                              placeholder={t("evidence.noteInputPlaceholder")}
                               rows={2}
                               disabled={uploading}
                             />
                             <div className="flex gap-2">
                               <Select value={noteLabel} onValueChange={setNoteLabel}>
-                                <SelectTrigger><SelectValue placeholder="Kategorie" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("evidence.categoryPlaceholder")} /></SelectTrigger>
                                 <SelectContent>
-                                  {EVIDENCE_LABELS.map((l) => (
-                                    <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                                  {EVIDENCE_LABEL_KEYS.map((key) => (
+                                    <SelectItem key={key} value={key}>{t(`evidence.labels.${key}`)}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
@@ -1116,7 +1089,7 @@ export function RunWorkspaceClient({
                                 size="sm"
                                 variant="outline"
                               >
-                                Notiz speichern
+                                {t("evidence.saveNote")}
                               </Button>
                             </div>
                           </div>
@@ -1132,7 +1105,7 @@ export function RunWorkspaceClient({
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-success-dark to-brand-success flex items-center justify-center shadow-md">
                           <FileText className="h-4 w-4 text-white" />
                         </div>
-                        Eingereichte Checkpoints
+                        {t("checkpoints.title")}
                         <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 text-slate-600">
                           {submissions.length}
                         </span>
@@ -1160,12 +1133,12 @@ export function RunWorkspaceClient({
                                 )}
                                 {idx === 0 && (
                                   <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                                    Aktuell
+                                    {t("checkpoints.current")}
                                   </span>
                                 )}
                               </div>
                               <div className="text-xs text-slate-500">
-                                {blockAns}/{blockQs.length} Fragen in Block {subBlock} beantwortet
+                                {t("checkpoints.progress", { answered: blockAns, total: blockQs.length, block: subBlock ?? "" })}
                               </div>
                               {sub.note && (
                                 <p className="text-xs text-slate-500 mt-1 line-clamp-2 italic">{sub.note}</p>
@@ -1175,8 +1148,8 @@ export function RunWorkspaceClient({
                         })
                       ) : (
                         <div className="py-6 text-center">
-                          <p className="text-sm text-slate-400">Noch kein Checkpoint eingereicht.</p>
-                          <p className="text-xs text-slate-400 mt-1">Beantworten Sie Fragen und reichen Sie einen Checkpoint ein.</p>
+                          <p className="text-sm text-slate-400">{t("checkpoints.emptyTitle")}</p>
+                          <p className="text-xs text-slate-400 mt-1">{t("checkpoints.emptyInstructions")}</p>
                         </div>
                       )}
                     </div>
@@ -1191,10 +1164,10 @@ export function RunWorkspaceClient({
                   <FileText className="h-8 w-8 text-slate-300" />
                 </div>
                 <p className="text-lg font-semibold text-slate-400">
-                  Frage auswählen
+                  {t("workspace.noSelectionTitle")}
                 </p>
                 <p className="mt-1 text-sm text-slate-400">
-                  Wählen Sie eine Frage aus der Navigation links.
+                  {t("workspace.noSelectionInstructions")}
                 </p>
               </div>
             </div>

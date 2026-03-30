@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { login } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackError = searchParams.get("error");
+  const t = useTranslations();
 
   const [error, setError] = useState<string | null>(callbackError);
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export function LoginForm() {
         setError(result.error);
       }
     } catch {
-      setError("Ein unerwarteter Fehler ist aufgetreten");
+      setError(t("login.unexpectedError"));
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ export function LoginForm() {
           <img src="/brand/logo-full.png" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
           <CardTitle className="text-2xl text-slate-900">Login</CardTitle>
           <CardDescription>
-            Melden Sie sich mit Ihren Zugangsdaten an.
+            {t("login.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,23 +63,23 @@ export function LoginForm() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-Mail</Label>
+              <Label htmlFor="email">{t("login.email")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="name@unternehmen.de"
+                placeholder={t("login.emailPlaceholder")}
                 required
                 autoComplete="email"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t("login.password")}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Passwort"
+                placeholder={t("login.passwordPlaceholder")}
                 required
                 autoComplete="current-password"
               />
@@ -86,11 +88,11 @@ export function LoginForm() {
               <p className="text-sm text-red-600">{error}</p>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Anmelden..." : "Anmelden"}
+              {loading ? t("login.buttonLoading") : t("login.button")}
             </Button>
           </form>
           <p className="mt-6 text-center text-xs text-slate-400">
-            Kein Account? Der Zugang erfolgt ausschließlich per Einladung.
+            {t("login.inviteOnly")}
           </p>
         </CardContent>
       </Card>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { setPassword } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/card";
 
 export function SetPasswordForm() {
+  const t = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +32,7 @@ export function SetPasswordForm() {
         setError(result.error);
       }
     } catch {
-      setError("Ein unerwarteter Fehler ist aufgetreten");
+      setError(t("login.unexpectedError"));
     } finally {
       setLoading(false);
     }
@@ -43,31 +45,31 @@ export function SetPasswordForm() {
         <CardHeader className="pt-8 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-full.png" alt="StrategAIze" className="mx-auto mb-2 h-12 w-auto" />
-          <CardTitle className="text-2xl text-slate-900">Passwort setzen</CardTitle>
+          <CardTitle className="text-2xl text-slate-900">{t("setPassword.title")}</CardTitle>
           <CardDescription>
-            Willkommen bei StrategAIze. Bitte setzen Sie Ihr Passwort.
+            {t("setPassword.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Neues Passwort</Label>
+              <Label htmlFor="password">{t("setPassword.newPassword")}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Mindestens 8 Zeichen"
+                placeholder={t("setPassword.newPasswordPlaceholder")}
                 required
                 minLength={8}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+              <Label htmlFor="confirmPassword">{t("setPassword.confirmPassword")}</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                placeholder="Passwort wiederholen"
+                placeholder={t("setPassword.confirmPlaceholder")}
                 required
               />
             </div>
@@ -75,7 +77,7 @@ export function SetPasswordForm() {
               <p className="text-sm text-red-600">{error}</p>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Wird gespeichert..." : "Passwort setzen"}
+              {loading ? t("setPassword.buttonLoading") : t("setPassword.button")}
             </Button>
           </form>
         </CardContent>
