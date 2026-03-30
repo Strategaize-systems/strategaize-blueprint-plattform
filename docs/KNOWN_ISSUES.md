@@ -199,6 +199,15 @@
 - Area: Deployment / Infrastructure
 - Summary: Next.js Build schlaegt fehl wenn Ollama + Qwen 14B im RAM geladen ist (~12GB). Server hat 32GB aber Build braucht auch viel RAM. Workaround: Ollama vor Build stoppen, nach Build starten. Langfristig: Node.js Memory-Limit im Dockerfile erhoehen.
 
+### ISSUE-026 — Evidence File-Upload RLS-Violation (Storage Service)
+- Status: open
+- Severity: Blocker
+- Area: Storage / Supabase Self-Hosted
+- Summary: File-Upload fuer Evidence schlaegt fehl mit "new row violates row-level security policy". Root Cause: Supabase Storage Service (nicht PostgREST) nutzt set_config() fuer Role-Switching und scheitert daran. Betrifft storage.createBucket() und storage.upload(). Note-Upload (ohne Storage) funktioniert. Getestete Fixes die NICHT funktioniert haben: storage.objects RLS deaktiviert, GRANT ALL auf storage Schema, Policies fuer service_role und supabase_storage_admin, adminClient statt supabase fuer DB-Inserts.
+- Impact: Kein Datei-Upload moeglich. Textnotizen funktionieren.
+- Workaround: Textnotizen als Alternative verwenden
+- Next Action: Storage-Service Konfiguration pruefen (PGRST_JWT_SECRET, Storage env vars), ggf. Storage-Service neu starten, oder alternativen Upload-Weg finden (Dateien direkt ins Filesystem statt Supabase Storage)
+
 ### ISSUE-025 — DOCX-Parsing nicht implementiert
 - Status: open
 - Severity: Low
