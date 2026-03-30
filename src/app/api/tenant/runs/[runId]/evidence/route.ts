@@ -169,9 +169,21 @@ export async function POST(
       .replace(/\.{2,}/g, ".")
       .slice(0, 255);
 
-    // Read file into buffer for SHA256 + upload
+    // Read file into buffer for SHA256 + upload + text extraction
     const buffer = Buffer.from(await file.arrayBuffer());
     const sha256 = createHash("sha256").update(buffer).digest("hex");
+
+    // Extract text BEFORE insert (avoids append-only trigger on UPDATE)
+    let extractedText: string | null = null;
+    try {
+      extractedText = await extractText(buffer, file.type, safeName);
+    } catch (extractError) {
+      const { captureException } = await import("@/lib/logger");
+      captureException(extractError, {
+        source: "evidence/text-extraction",
+        metadata: { fileName: safeName, mimeType: file.type },
+      });
+    }
 
     // Generate item ID upfront so we can use it in the storage path
     const itemId = crypto.randomUUID();
@@ -217,6 +229,7 @@ export async function POST(
         file_size_bytes: file.size,
         file_mime_type: file.type,
         sha256,
+        extracted_text: extractedText,
         created_by: user!.id,
       })
       .select("id, item_type, label, file_name, file_path, file_size_bytes, file_mime_type, sha256, created_at")
@@ -228,15 +241,9 @@ export async function POST(
       return errorResponse("INTERNAL_ERROR", insertError.message, 500);
     }
 
-    // Extract text + LLM document analysis (async, non-blocking for response)
-    extractText(buffer, file.type, safeName).then(async (text) => {
-      if (!text) return;
-
-      // Save extracted text
-      await adminClient.from("evidence_items").update({ extracted_text: text }).eq("id", itemId);
-
-      // If linked to a question, trigger LLM document analysis
-      if (questionId) {
+    // LLM document analysis (async, non-blocking for response)
+    if (extractedText && questionId) {
+      (async () => {
         try {
           const { chatWithLLM, SYSTEM_PROMPTS } = await import("@/lib/llm");
 
@@ -249,9 +256,9 @@ export async function POST(
 
           if (question) {
             // Truncate text to ~4000 chars to stay within LLM context
-            const truncatedText = text.length > 4000
-              ? text.slice(0, 4000) + "\n\n[... Dokument gekürzt ...]"
-              : text;
+            const truncatedText = extractedText.length > 4000
+              ? extractedText.slice(0, 4000) + "\n\n[... Dokument gekürzt ...]"
+              : extractedText;
 
             const analysis = await chatWithLLM([
               {
@@ -277,10 +284,13 @@ export async function POST(
           }
         } catch (err) {
           const { captureException } = await import("@/lib/logger");
-          captureException(err, { source: "evidence/document-analysis", metadata: { itemId, questionId } });
+          captureException(err, {
+            source: "evidence/document-analysis",
+            metadata: { itemId, questionId, fileName: safeName, hasText: !!extractedText },
+          });
         }
-      }
-    }).catch(() => {});
+      })();
+    }
 
     // If question_id provided, create evidence_link + event (default relation: supports)
     const validRelations = ["proof", "supports", "example", "supersedes"];
