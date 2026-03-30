@@ -57,6 +57,10 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   END
   \$\$;
   ALTER ROLE supabase_storage_admin WITH PASSWORD '${POSTGRES_PASSWORD}';
+  -- Storage-Admin braucht Role-Membership um via set_config('role', ...) zu switchen
+  GRANT anon TO supabase_storage_admin;
+  GRANT authenticated TO supabase_storage_admin;
+  GRANT service_role TO supabase_storage_admin;
 
   -- Supabase-Admin Passwort
   ALTER ROLE supabase_admin WITH PASSWORD '${POSTGRES_PASSWORD}';
