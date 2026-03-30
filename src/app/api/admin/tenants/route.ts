@@ -75,12 +75,12 @@ export async function POST(request: Request) {
   const parsed = createTenantSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { name } = parsed.data;
+  const { name, language } = parsed.data;
 
   const { data: tenant, error } = await adminClient!
     .from("tenants")
-    .insert({ name, created_by: user!.id })
-    .select("id, name, created_at")
+    .insert({ name, language, created_by: user!.id })
+    .select("id, name, language, created_at")
     .single();
 
   if (error) {

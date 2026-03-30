@@ -1,0 +1,19 @@
+{
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "create": "Erstellen",
+    "networkError": "Netzwerkfehler — bitte erneut versuchen",
+    "language": "Sprache",
+    "german": "Deutsch",
+    "english": "English",
+    "dutch": "Nederlands"
+  },
+  "metadata": {
+    "title": "StrategAIze Kundenplattform",
+    "description": "Exit Ready Blueprint — Strukturierte Datenerfassung"
+  }
+}

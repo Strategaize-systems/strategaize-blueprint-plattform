@@ -44,6 +44,14 @@
 - Risk: Keine — erweitert nur die erlaubten Werte
 - Rollback Notes: ALTER TABLE question_events DROP CONSTRAINT question_events_event_type_check; ALTER TABLE question_events ADD CONSTRAINT question_events_event_type_check CHECK (event_type IN ('answer_submitted','note_added','evidence_attached','status_changed'));
 
+### MIG-008 — tenants.language Spalte für Mehrsprachigkeit
+- Date: 2026-03-30
+- Scope: ALTER TABLE tenants ADD COLUMN language text NOT NULL DEFAULT 'de' CHECK (language IN ('de', 'en', 'nl'))
+- Affected Areas: tenants — Sprachauswahl pro Tenant für i18n
+- Reason: BL-022 Mehrsprachigkeit. Tenant-Level Locale bestimmt UI-Sprache, LLM-Prompts, E-Mail-Templates.
+- Risk: Keine — DEFAULT 'de' setzt bestehende Tenants automatisch auf Deutsch
+- Rollback Notes: ALTER TABLE tenants DROP COLUMN language
+
 ### MIG-006 — Storage Role Membership Grant
 - Date: 2026-03-29
 - Scope: GRANT service_role TO supabase_storage_admin

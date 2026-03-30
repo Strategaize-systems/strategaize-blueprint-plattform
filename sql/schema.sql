@@ -16,6 +16,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS tenants (
   id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   name        text        NOT NULL CHECK (char_length(name) BETWEEN 2 AND 100),
+  language    text        NOT NULL DEFAULT 'de' CHECK (language IN ('de', 'en', 'nl')),
   created_at  timestamptz NOT NULL DEFAULT now(),
   created_by  uuid        REFERENCES auth.users ON DELETE SET NULL
 );

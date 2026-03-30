@@ -7,6 +7,7 @@ export const createTenantSchema = z.object({
     .string()
     .min(2, "Name muss mindestens 2 Zeichen lang sein")
     .max(100, "Name darf maximal 100 Zeichen lang sein"),
+  language: z.enum(["de", "en", "nl"]).default("de"),
 });
 
 export const inviteTenantUserSchema = z.object({

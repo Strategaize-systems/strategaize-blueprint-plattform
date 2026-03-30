@@ -22,6 +22,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Tenant {
   id: string;
@@ -39,6 +46,7 @@ export function TenantsClient({ email }: { email: string }) {
   // Create tenant state
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newLanguage, setNewLanguage] = useState<"de" | "en" | "nl">("de");
   const [creating, setCreating] = useState(false);
 
   // Invite state
@@ -73,12 +81,13 @@ export function TenantsClient({ email }: { email: string }) {
       const res = await fetch("/api/admin/tenants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName.trim() }),
+        body: JSON.stringify({ name: newName.trim(), language: newLanguage }),
       });
 
       if (res.ok) {
         setMessage({ text: `Tenant "${newName.trim()}" erstellt`, type: "success" });
         setNewName("");
+        setNewLanguage("de");
         setCreateOpen(false);
         await loadTenants();
       } else {
@@ -173,6 +182,19 @@ export function TenantsClient({ email }: { email: string }) {
                     placeholder="z.B. Muster GmbH"
                     onKeyDown={(e) => e.key === "Enter" && handleCreateTenant()}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tenant-language">Sprache</Label>
+                  <Select value={newLanguage} onValueChange={(v) => setNewLanguage(v as "de" | "en" | "nl")}>
+                    <SelectTrigger id="tenant-language">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="de">Deutsch</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="nl">Nederlands</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
