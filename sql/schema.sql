@@ -122,7 +122,8 @@ CREATE TABLE IF NOT EXISTS question_events (
                                  'answer_submitted',
                                  'note_added',
                                  'evidence_attached',
-                                 'status_changed'
+                                 'status_changed',
+                                 'document_analysis'
                                )),
   payload          jsonb       NOT NULL DEFAULT '{}',
   created_at       timestamptz NOT NULL DEFAULT now(),

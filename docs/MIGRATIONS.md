@@ -36,6 +36,14 @@
 - Reason: Block-basierte Checkpoints benötigen block_id Parameter in run_submit(). Rollen-Umbenennung für Konsistenz (ISSUE-023).
 - Rollback Notes: DROP FUNCTION run_submit(uuid, text, text); CREATE alte 2-Parameter-Version. Policies zurück auf tenant_owner.
 
+### MIG-007 — question_events CHECK Constraint erweitert
+- Date: 2026-03-30
+- Scope: CHECK constraint question_events_event_type_check um 'document_analysis' erweitert
+- Affected Areas: question_events — Dokument-Analyse Events können jetzt gespeichert werden
+- Reason: SLC-020 (Dokument-Analyse) schreibt event_type 'document_analysis', aber die CHECK Constraint erlaubte nur 4 originale Event-Typen
+- Risk: Keine — erweitert nur die erlaubten Werte
+- Rollback Notes: ALTER TABLE question_events DROP CONSTRAINT question_events_event_type_check; ALTER TABLE question_events ADD CONSTRAINT question_events_event_type_check CHECK (event_type IN ('answer_submitted','note_added','evidence_attached','status_changed'));
+
 ### MIG-006 — Storage Role Membership Grant
 - Date: 2026-03-29
 - Scope: GRANT service_role TO supabase_storage_admin
