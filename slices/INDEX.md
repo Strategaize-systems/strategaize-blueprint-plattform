@@ -40,7 +40,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-017 | [Ollama LLM Integration](SLC-017-ollama-llm.md) | BL-012, BL-013 | done | High | 2026-03-28 |
 | SLC-018 | [Rollen-System: Tenant-Admin + Block-Zugriff](SLC-018-role-system.md) | BL-023 | done | High | 2026-03-28 |
 | SLC-019 | [Antwort-Review Übersichtsseite](SLC-019-review-overview.md) | BL-015 | done | Medium | 2026-03-29 |
-| SLC-020 | [Dokument-Analyse: LLM Feedback](SLC-020-document-analysis.md) | BL-027 | planned | High | 2026-03-29 |
+| SLC-020 | [Dokument-Analyse: LLM Feedback](SLC-020-document-analysis.md) | BL-027 | done | High | 2026-03-29 |
 | SLC-021 | [Mehrsprachigkeit DE/EN/NL](SLC-021-multilanguage.md) | BL-022 | planned | High | 2026-03-29 |
 | SLC-022 | [Voice Input (Whisper)](SLC-022-voice-input.md) | BL-021 | planned | Medium | 2026-03-29 |
 | SLC-023 | [Dedizierte Server pro Kunde](SLC-023-dedicated-servers.md) | BL-024 | planned | Medium | 2026-03-29 |
