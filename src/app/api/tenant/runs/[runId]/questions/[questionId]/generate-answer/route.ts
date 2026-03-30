@@ -58,7 +58,8 @@ export async function POST(
       .join("\n\n");
 
     if (texts) {
-      evidenceContext = `\n\nHochgeladene Dokumente/Nachweise:\n${texts}`;
+      const evidenceLabel = locale === "en" ? "Uploaded documents/evidence:" : locale === "nl" ? "Geüploade documenten/bewijzen:" : "Hochgeladene Dokumente/Nachweise:";
+      evidenceContext = `\n\n${evidenceLabel}\n${texts}`;
     }
   }
 

@@ -60,7 +60,8 @@ export async function POST(
       .join("\n\n");
 
     if (texts) {
-      evidenceContext = `\n\nDer Nutzer hat folgende Dokumente/Nachweise zu dieser Frage hochgeladen:\n${texts}`;
+      const evidenceLabel = locale === "en" ? "The user has uploaded the following documents/evidence for this question:" : locale === "nl" ? "De gebruiker heeft de volgende documenten/bewijzen voor deze vraag geüpload:" : "Der Nutzer hat folgende Dokumente/Nachweise zu dieser Frage hochgeladen:";
+      evidenceContext = `\n\n${evidenceLabel}\n${texts}`;
     }
   }
 
