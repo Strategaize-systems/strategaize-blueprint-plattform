@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 
 interface QuestionEvent {
   id: string;
@@ -48,6 +48,8 @@ export function EventHistory({
   const [loading, setLoading] = useState(true);
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const loadEvents = useCallback(async () => {
     setLoading(true);
     try {
@@ -67,6 +69,34 @@ export function EventHistory({
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);
+
+  // Auto-poll when a document analysis is pending (evidence_attached without matching document_analysis)
+  const hasPendingAnalysis = events.some((e) => {
+    if (e.event_type !== "evidence_attached") return false;
+    const evidenceId = (e.payload as Record<string, unknown>)?.evidence_item_id;
+    if (!evidenceId) return false;
+    // Check if created within last 3 minutes (analysis typically takes 30-90s)
+    const age = Date.now() - new Date(e.created_at).getTime();
+    if (age > 3 * 60 * 1000) return false;
+    // Check if a matching document_analysis event exists
+    return !events.some(
+      (a) => a.event_type === "document_analysis" &&
+        (a.payload as Record<string, unknown>)?.evidence_item_id === evidenceId
+    );
+  });
+
+  useEffect(() => {
+    if (hasPendingAnalysis && !pollRef.current) {
+      pollRef.current = setInterval(() => { loadEvents(); }, 5000);
+    }
+    if (!hasPendingAnalysis && pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    return () => {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    };
+  }, [hasPendingAnalysis, loadEvents]);
 
   function toggleEvent(id: string) {
     setExpandedEvents((prev) => {
@@ -97,6 +127,17 @@ export function EventHistory({
         </AccordionTrigger>
         <AccordionContent>
           <div className="space-y-2 overflow-y-auto pr-1">
+            {hasPendingAnalysis && (
+              <div className="rounded-lg border border-brand-primary/30 bg-brand-primary/5 p-2.5 text-xs">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-primary" />
+                  <span className="text-brand-primary font-medium">Dokument wird analysiert…</span>
+                </div>
+                <p className="mt-1 text-[10px] text-slate-500">
+                  Die KI analysiert das hochgeladene Dokument. Dies dauert ca. 30–60 Sekunden.
+                </p>
+              </div>
+            )}
             {(() => {
               // Number answers in reverse (oldest=1, newest=N)
               const answerEvents = events.filter((e) => e.event_type === "answer_submitted");

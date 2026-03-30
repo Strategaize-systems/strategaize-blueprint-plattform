@@ -366,7 +366,7 @@ export function RunWorkspaceClient({
         body: formData,
       });
       if (res.ok) {
-        setMessage({ text: "Datei hochgeladen", type: "success" });
+        setMessage({ text: "Datei hochgeladen — Dokument wird analysiert…", type: "success" });
         if (fileInputRef.current) fileInputRef.current.value = "";
         setUploadLabel("");
         setEventKey((k) => k + 1);
