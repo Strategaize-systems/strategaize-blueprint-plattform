@@ -365,7 +365,7 @@
       "title": "Whisper Docker-Service in Docker Compose aufsetzen",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V2",
       "description": "Whisper ASR Webservice als Docker-Container im internen Netzwerk. Resource Limits fuer Ollama + Whisper. Env-Var WHISPER_URL. RAM-Messung auf Server fuer Modell-Entscheidung (small vs medium).",
       "createdAt": "2026-03-31"
@@ -405,7 +405,7 @@
       "title": "Server RAM-Sizing: Ollama + Whisper Koexistenz",
       "type": "improvement",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V2",
       "description": "RAM-Messung auf Hetzner CPX62. Entscheidung: Whisper small vs medium. Falls 32GB nicht reicht: Server-Upgrade auf 64GB. Docker Compose Resource Limits fuer beide Services. Build-OOM Workaround aktualisieren.",
       "createdAt": "2026-03-31"
