@@ -329,6 +329,16 @@
       "version": "V1.1",
       "description": "In der Tenant-Verwaltung ist nicht erkennbar ob ein eingeladener User die Einladung bereits angenommen hat oder noch ausstehend ist. Soll sichtbar sein z.B. als Badge 'Eingeladen' vs 'Aktiv' in der User-Liste oder beim Owner-Feld. Datenquelle: auth.users.email_confirmed_at (null = noch nicht angenommen).",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-034",
+      "title": "Middleware: NEXT_LOCALE Cookie bei jedem Login aktualisieren",
+      "type": "bug",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Middleware setzt NEXT_LOCALE nur wenn Cookie nicht existiert. Wenn Admin einen EN-Invite testet, bleibt der EN-Cookie bestehen und die Login-Seite zeigt Englisch. Fix: Middleware soll bei jedem Request den Cookie mit der Tenant-Sprache des eingeloggten Users abgleichen. Admin ohne Tenant bekommt DE.",
+      "createdAt": "2026-03-31"
     }
   ]
 }
