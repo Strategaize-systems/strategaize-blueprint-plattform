@@ -46,53 +46,33 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-025 | [UI-Texte extrahieren + übersetzen](SLC-025-ui-translations.md) | BL-022 | done | High | 2026-03-30 |
 | SLC-026 | [LLM-Prompts + E-Mail Locale](SLC-026-llm-email-locale.md) | BL-022 | done | High | 2026-03-30 |
 | SLC-027 | [Katalog-Sprache + Admin](SLC-027-catalog-language.md) | BL-022 | done | Medium | 2026-03-30 |
-## V2 Slices — Voice Input (wird durch /slice-planning befüllt)
+## Pre-V2 Fix
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-022 | Voice Input (Whisper) | FEAT-019 | planned | High | 2026-03-29 |
+| SLC-028 | [Block Access Control Fix](SLC-028-block-access-fix.md) | FEAT-012, BL-041 | planned | Blocker | 2026-03-31 |
 
-> SLC-022 wird in /slice-planning in Micro-Slices aufgeteilt. SLC-023 (Dedizierte Server) verschoben auf V3.
+## V2 Slices — Voice Input
+
+> SLC-022 (alter Platzhalter) ersetzt durch SLC-029–031.
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-029 | [Whisper Infrastructure](SLC-029-whisper-infrastructure.md) | FEAT-019 | planned | High | 2026-03-31 |
+| SLC-030 | [Transcription API Route](SLC-030-transcription-api.md) | FEAT-019 | planned | High | 2026-03-31 |
+| SLC-031 | [Voice Recording UI + Integration](SLC-031-voice-recording-ui.md) | FEAT-019 | planned | High | 2026-03-31 |
+
+## V2 Execution Order
+
+```
+1. SLC-028 (Blocker)     → Block Access Fix — MUSS VOR V2
+2. SLC-029 (Infra)       → Whisper Docker + whisper.ts + Deploy
+3. SLC-030 (Backend)     → /transcribe API Route
+4. SLC-031 (Frontend)    → Mic-Button + Recording + Integration + E2E
+```
 
 ## V3 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
 | SLC-023 | Dedizierte Server pro Kunde | FEAT-020 | planned | Medium | 2026-03-29 |
-
-## Execution Order
-
-```
-1. SLC-001 (Blocker)  → MUSS ZUERST — ohne DB-Zugriff geht nichts
-2. SLC-003 (Docs)     → Kann parallel zu SLC-001 (kein Code, nur Docs)
-3. SLC-002 (Security) → Nach SLC-001 (braucht funktionierende DB)
-4. SLC-004 (DB)       → Nach SLC-001 (Schema-Änderungen auf Production)
-5. SLC-005 (Monitor)  → Nach SLC-001 (braucht funktionierende Admin-Seiten zum Testen)
-```
-
-## Issue Coverage
-
-| Issue | Severity | Covered by Slice | Status |
-|-------|----------|-----------------|--------|
-| ISSUE-001 | Blocker | SLC-001 | resolved |
-| ISSUE-002 | High | — (Test-Setup, eigener Future-Slice) | deferred |
-| ISSUE-003 | High | SLC-002 | resolved |
-| ISSUE-004 | High | SLC-005 | deferred (V1.1) |
-| ISSUE-005 | High | SLC-003 | resolved |
-| ISSUE-006 | High | SLC-003 | resolved |
-| ISSUE-007 | High | SLC-002 | resolved |
-| ISSUE-008 | Medium | — (bereits resolved) | resolved |
-| ISSUE-009 | Medium | SLC-002 | resolved |
-| ISSUE-010 | Medium | SLC-004 | resolved |
-| ISSUE-011 | Medium | SLC-005 | resolved |
-| ISSUE-012 | Medium | SLC-003 | resolved |
-| ISSUE-013 | Medium | SLC-003 | resolved |
-| ISSUE-014 | Medium | SLC-004 | resolved |
-| ISSUE-015 | Low | SLC-005 | resolved |
-| ISSUE-016 | Low | SLC-005 | deferred (V1.1) |
-| ISSUE-017 | Low | — (akzeptabel für MVP-1) | deferred |
-| ISSUE-018 | Low | SLC-004 | resolved |
-
-**Deferred Issues:**
-- ISSUE-002 (Tests): Eigener Slice nötig, zu groß für Fix-Phase. Wird nach Stabilisierung geplant.
-- ISSUE-017 (run_submit Vollständigkeit): Akzeptabel für MVP-1, V1.1-Feature.

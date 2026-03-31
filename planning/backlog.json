@@ -205,7 +205,7 @@
       "title": "Voice Input: Whisper ASR Service + Chat-Integration",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "open",
       "version": "V2",
       "description": "Spracheingabe im Chat-Bereich via Whisper (selbst-gehostet auf Hetzner). Kein Browser Speech API. Docker-Service, Transkriptions-API, Mikrofon-UI im Chat, Aufnahme-Feedback, Mehrsprach-Erkennung DE/EN/NL. DSGVO: Audio nur zur Transkription, nicht gespeichert. Server-Upgrade wenn RAM nicht reicht.",
       "createdAt": "2026-03-28"
