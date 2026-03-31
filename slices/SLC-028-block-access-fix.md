@@ -5,7 +5,7 @@
 - Backlog: BL-041
 - Issue: ISSUE-029
 - Priority: Blocker (Pre-V2)
-- Status: planned
+- Status: done
 
 ## Goal
 
