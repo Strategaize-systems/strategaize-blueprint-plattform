@@ -375,7 +375,7 @@
       "title": "Transkriptions-API Route (Audio → Whisper → Text)",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V2",
       "description": "Server-seitige API Route die Audio-Datei empfaengt, an Whisper-Service sendet und transkribierten Text zurueckgibt. Analog zu bestehender Chat-Route. Authentifiziert, Tenant-isoliert.",
       "createdAt": "2026-03-31"

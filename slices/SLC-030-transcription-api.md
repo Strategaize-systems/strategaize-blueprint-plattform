@@ -4,7 +4,7 @@
 - Feature: FEAT-019 (Voice Input)
 - Backlog: BL-037
 - Priority: High
-- Status: planned
+- Status: done
 
 ## Goal
 
