@@ -289,6 +289,26 @@
       "version": "V1.1",
       "description": "Set-Password-Seite nach Invite zeigt immer Deutsch, auch fuer EN/NL-Tenants. Ursache: User hat noch keine Session, Middleware setzt NEXT_LOCALE Cookie nur fuer eingeloggte User. Loesung: Locale als Query-Parameter im Invite-Link mitgeben oder aus dem Invite-Token den Tenant nachschlagen.",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-030",
+      "title": "Invite-Flow: Session-Kollision bei Set-Password im selben Browser",
+      "type": "bug",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Wenn Admin im selben Browser eingeloggt ist und einen Invite-Link klickt, kollidiert die bestehende Admin-Session mit dem Set-Password-Flow des neuen Users. GoTrue erkennt die bestehende Session und wendet das Passwort moeglicherweise auf den falschen Account an. Symptom: 'Gleiches Passwort nochmal' Meldung beim zweiten Invite. Loesung: Set-Password-Route muss bestehende Session explizit beenden, oder Invite-Link muss in neuem Kontext oeffnen.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-031",
+      "title": "Tenant-Verwaltung zeigt 'kein Owner' trotz erfolgreichem Invite",
+      "type": "bug",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Nach Invite wird in der Tenant-Uebersicht 'kein Owner eingeladen' angezeigt. Moeglicherweise wird der Invite-User als tenant_member statt tenant_admin angelegt, oder das Profil wurde dem falschen Tenant zugeordnet (Session-Kollision BL-030). Muss zusammen mit BL-030 untersucht werden.",
+      "createdAt": "2026-03-31"
     }
   ]
 }
