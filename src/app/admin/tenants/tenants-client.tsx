@@ -256,7 +256,9 @@ export function TenantsClient({ email }: { email: string }) {
     setInviteTenantId(tenantId);
     setInviteTenantName(tenantName);
     setInviteEmail("");
-    setInviteRole("tenant_member");
+    // Default to admin if tenant has no owner yet
+    const tenant = tenants.find((t) => t.id === tenantId);
+    setInviteRole(!tenant?.owner_email ? "tenant_admin" : "tenant_member");
     setInviteBlocks([]);
     setInviteOpen(true);
   }
@@ -437,7 +439,7 @@ export function TenantsClient({ email }: { email: string }) {
                           )}
                         </>
                       ) : (
-                        <span className="font-semibold text-slate-400">Kein Owner eingeladen</span>
+                        <span className="font-semibold text-amber-600">Kein Admin — User anzeigen für Details</span>
                       )}
                       </span>
                       <span className="text-slate-500">
