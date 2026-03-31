@@ -64,21 +64,20 @@ export async function GET(
   }
 
   // Block-level access filtering for tenant_member
-  let allowedBlocks: string[] | null = null;
+  // tenant_admin sees all blocks, tenant_member sees only assigned blocks
+  let filteredQuestions = questions ?? [];
   if (auth.profile.role === "tenant_member") {
     const { data: blockAccess } = await supabase
       .from("member_block_access")
       .select("block")
       .eq("profile_id", auth.profile.id)
       .eq("run_id", runId);
-    if (blockAccess && blockAccess.length > 0) {
-      allowedBlocks = blockAccess.map((b) => b.block);
-    }
+    const allowedBlocks = (blockAccess ?? []).map((b) => b.block);
+    // Secure default: no entries = no access (not all access)
+    filteredQuestions = allowedBlocks.length > 0
+      ? filteredQuestions.filter((q) => allowedBlocks.includes(q.block))
+      : [];
   }
-
-  const filteredQuestions = allowedBlocks
-    ? (questions ?? []).filter((q) => allowedBlocks!.includes(q.block))
-    : (questions ?? []);
 
   const enrichedQuestions = filteredQuestions.map((q) => ({
     id: q.id,

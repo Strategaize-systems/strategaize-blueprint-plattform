@@ -67,3 +67,11 @@
 - Reason: ISSUE-026 — Storage Service nutzt supabase_storage_admin Rolle, die keine Membership in service_role hatte. Dadurch scheiterten alle Storage-Operationen an RLS.
 - Risk: Minimal — erweitert nur die Rechte des Storage-Service auf das nötige Niveau
 - Rollback Notes: REVOKE service_role FROM supabase_storage_admin
+
+### MIG-011 — Backfill member_block_access für bestehende tenant_member
+- Date: 2026-03-31
+- Scope: INSERT fehlende member_block_access Einträge basierend auf User-Metadata allowed_blocks
+- Affected Areas: Block-Zugriffskontrolle — tenant_member sehen jetzt nur noch die ihnen zugewiesenen Blöcke
+- Reason: ISSUE-029 — handle_new_user() erstellt Block-Einträge nur für Runs die zum Invite-Zeitpunkt existieren. Runs die später erstellt werden, haben keine Einträge.
+- Risk: Niedrig — fügt nur fehlende Einträge hinzu, überschreibt keine bestehenden
+- Rollback Notes: DELETE FROM member_block_access WHERE created_at >= '2026-03-31'

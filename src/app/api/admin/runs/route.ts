@@ -149,6 +149,47 @@ export async function POST(request: Request) {
     return errorResponse("INTERNAL_ERROR", error.message, 500);
   }
 
+  // Copy block access from existing runs to the new run for tenant_members.
+  // When a member was invited with allowed_blocks, entries were created for
+  // runs that existed at invite time. New runs need the same block entries.
+  const { data: existingMembers } = await adminClient!
+    .from("profiles")
+    .select("id")
+    .eq("tenant_id", tenant_id)
+    .eq("role", "tenant_member");
+
+  if (existingMembers && existingMembers.length > 0) {
+    // Find another run of this tenant to copy block access from
+    const { data: otherRuns } = await adminClient!
+      .from("runs")
+      .select("id")
+      .eq("tenant_id", tenant_id)
+      .neq("id", run.id)
+      .limit(1);
+
+    if (otherRuns && otherRuns.length > 0) {
+      const sourceRunId = otherRuns[0].id;
+      for (const member of existingMembers) {
+        const { data: existingAccess } = await adminClient!
+          .from("member_block_access")
+          .select("block")
+          .eq("profile_id", member.id)
+          .eq("run_id", sourceRunId);
+
+        if (existingAccess && existingAccess.length > 0) {
+          const newEntries = existingAccess.map((a) => ({
+            profile_id: member.id,
+            run_id: run.id,
+            block: a.block,
+          }));
+          await adminClient!
+            .from("member_block_access")
+            .upsert(newEntries, { onConflict: "profile_id,run_id,block" });
+        }
+      }
+    }
+  }
+
   // Log admin event (use user session so auth.uid() resolves)
   await supabase.rpc("log_admin_event", {
     p_event_type: "run_created",
