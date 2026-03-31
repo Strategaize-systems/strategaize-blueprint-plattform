@@ -1031,27 +1031,30 @@ export function RunWorkspaceClient({
                         rows={4}
                         className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
                       />
-                      {whisperEnabled && (
+                      {/* Mic + Send stacked vertically */}
+                      <div className="flex flex-col gap-1.5 flex-shrink-0 self-end">
+                        {whisperEnabled && (
+                          <button
+                            onClick={isRecording ? stopRecording : startRecording}
+                            disabled={isTranscribing}
+                            title={isRecording ? t("workspace.stopRecording") : t("workspace.startRecording")}
+                            className={`p-2.5 rounded-lg transition-all disabled:opacity-50 ${
+                              isRecording
+                                ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                                : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+                            }`}
+                          >
+                            {isTranscribing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isRecording ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                          </button>
+                        )}
                         <button
-                          onClick={isRecording ? stopRecording : startRecording}
-                          disabled={isTranscribing}
-                          title={isRecording ? t("workspace.stopRecording") : t("workspace.startRecording")}
-                          className={`p-2.5 rounded-lg transition-all flex-shrink-0 self-end disabled:opacity-50 ${
-                            isRecording
-                              ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
-                          }`}
+                          onClick={sendChatMessage}
+                          disabled={!chatInput.trim() || chatLoading}
+                          className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all"
                         >
-                          {isTranscribing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isRecording ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                          {chatLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                         </button>
-                      )}
-                      <button
-                        onClick={sendChatMessage}
-                        disabled={!chatInput.trim() || chatLoading}
-                        className="p-2.5 rounded-lg bg-brand-primary text-white disabled:opacity-50 hover:bg-brand-primary-dark transition-all flex-shrink-0 self-end"
-                      >
-                        {chatLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                      </button>
+                      </div>
                     </div>
                   </div>
                 )}
