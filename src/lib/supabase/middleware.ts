@@ -50,31 +50,35 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Set NEXT_LOCALE cookie from tenant language (if logged in and not already set correctly)
+  // Sync NEXT_LOCALE cookie with tenant language on every page load.
+  // Always re-check — the cookie may be stale from a previous session
+  // (e.g. admin tested EN invite, then NL user logs in).
   if (user && !isApiHealth && !pathname.startsWith("/api/")) {
-    const currentLocale = request.cookies.get("NEXT_LOCALE")?.value;
-    if (!currentLocale) {
-      // Load tenant language from profile → tenant
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("tenant_id")
-        .eq("id", user.id)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("tenant_id")
+      .eq("id", user.id)
+      .single();
+
+    let expectedLocale = "de"; // Default for admin (no tenant)
+
+    if (profile?.tenant_id) {
+      const { data: tenant } = await supabase
+        .from("tenants")
+        .select("language")
+        .eq("id", profile.tenant_id)
         .single();
 
-      if (profile?.tenant_id) {
-        const { data: tenant } = await supabase
-          .from("tenants")
-          .select("language")
-          .eq("id", profile.tenant_id)
-          .single();
+      expectedLocale = tenant?.language ?? "de";
+    }
 
-        const locale = tenant?.language ?? "de";
-        supabaseResponse.cookies.set("NEXT_LOCALE", locale, {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 365, // 1 year
-          sameSite: "lax",
-        });
-      }
+    const currentLocale = request.cookies.get("NEXT_LOCALE")?.value;
+    if (currentLocale !== expectedLocale) {
+      supabaseResponse.cookies.set("NEXT_LOCALE", expectedLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+        sameSite: "lax",
+      });
     }
   }
 
