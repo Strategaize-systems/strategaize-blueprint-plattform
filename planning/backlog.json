@@ -315,7 +315,7 @@
       "title": "Admin: Tenant bearbeiten, loeschen, User entfernen",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V1.1",
       "description": "Admin-UI hat nur Einladen-Button, kein Bearbeiten/Loeschen/User-Entfernen. Kernfeature fuer Admin-Betrieb. Scope: Tenant loeschen (mit Cascade), Tenant bearbeiten (Name, Sprache), User aus Tenant entfernen (Profil + Auth-User).",
       "createdAt": "2026-03-31"
