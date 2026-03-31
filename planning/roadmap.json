@@ -10,7 +10,7 @@
     {
       "id": "v1-1",
       "name": "V1.1",
-      "status": "active",
+      "status": "released",
       "summary": "LLM-Integration — Rückfragen via Ollama/Qwen (lokal, DSGVO), Chat-Workflow, Block-Checkpoints, Premium UI",
       "order": 2
     },

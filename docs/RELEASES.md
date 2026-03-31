@@ -1,11 +1,11 @@
 # Releases
 
 ### REL-002 — V1.1 LLM + Premium UI + i18n
-- Date: 2026-03-30
-- Scope: LLM-Chat mit Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Dokument-Analyse (LLM liest Evidence), Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Premium UI (Style Guide v2.1), Mehrsprachigkeit DE/EN/NL (UI, LLM-Prompts, E-Mail, Katalog), Error-Logging + E-Mail-Alerts, PDF/DOCX/TXT-Parsing
-- Summary: Größtes Update seit MVP-1. 18 neue Slices (SLC-007 bis SLC-020, SLC-024 bis SLC-027). KI-Assistent für strukturierte Antworten, dreisprachige Plattform, komplett überarbeitete UI. Alle Daten bleiben DSGVO-konform auf Hetzner EU.
-- Risks: Keine automatisierten Tests (ISSUE-002). Ollama OOM beim Build (Workaround: vorher stoppen). EN/NL noch nicht live getestet.
-- Rollback Notes: Coolify Rollback auf vorherigen Container. DB: MIG-007/008/009 Rollback-SQL in MIGRATIONS.md dokumentiert.
+- Date: 2026-03-31
+- Scope: LLM-Chat mit Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Dokument-Analyse (LLM liest Evidence), Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Premium UI (Style Guide v2.1), Mehrsprachigkeit DE/EN/NL (UI, LLM-Prompts, E-Mail, Katalog), Error-Logging + E-Mail-Alerts, PDF/DOCX/TXT-Parsing, Tenant-CRUD (Bearbeiten/Löschen/User-Management)
+- Summary: Größtes Update seit MVP-1. 24 Slices, 35 Backlog-Items. KI-Assistent für strukturierte Antworten, dreisprachige Plattform, komplett überarbeitete UI. Post-Launch: 4 Hotfixes am Release-Tag (Session-Kollision, Locale-Cookie, Tenant-CRUD, Delete-Cascade). Alle Smoke-Tests bestanden.
+- Risks: Keine automatisierten Tests (ISSUE-002). UI-Texte Lektorat ausstehend (BL-035).
+- Rollback Notes: Coolify Rollback auf vorherigen Container. DB: MIG-007/008/009/010 Rollback-SQL in MIGRATIONS.md dokumentiert.
 
 ### REL-001 — MVP-1 Initial Deployment
 - Date: 2026-03-25
