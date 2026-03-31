@@ -1,5 +1,12 @@
 # Releases
 
+### REL-003 — V2 Voice Input (Whisper)
+- Date: 2026-03-31
+- Scope: Spracheingabe im Chat via Whisper ASR (selbst-gehostet auf Hetzner, DSGVO). Mikrofon-Button im Chat-Bereich, Audio-Aufnahme via MediaRecorder, serverseitige Transkription, Mehrsprach-Support (DE/EN/NL). Bug-Fix: Block-Zugriffskontrolle (ISSUE-029).
+- Summary: Kunden können Antworten per Sprache eingeben. Audio wird lokal auf dem Server transkribiert (Whisper Small) und als editierbarer Text im Chat-Eingabefeld angezeigt. Feature-Flag NEXT_PUBLIC_WHISPER_ENABLED ermöglicht Deaktivierung ohne Code-Änderung. 4 Slices (SLC-028 bis SLC-031), 6 neue Decisions (DEC-013 bis DEC-018), 5 QA-Reports (RPT-021 bis RPT-025).
+- Risks: Keine automatisierten Tests (ISSUE-002). Whisper Small Transkriptionsqualität noch nicht mit echten Kunden validiert.
+- Rollback Notes: Stufe 1: NEXT_PUBLIC_WHISPER_ENABLED=false → Redeploy (Mic-Button verschwindet). Stufe 2: docker stop whisper-container. Stufe 3: Coolify Container-Rollback auf V1.1.
+
 ### REL-002 — V1.1 LLM + Premium UI + i18n
 - Date: 2026-03-31
 - Scope: LLM-Chat mit Ollama/Qwen (lokal, DSGVO), Chat-basierter Antwort-Workflow mit Zusammenfassung, Dokument-Analyse (LLM liest Evidence), Block-basierte Checkpoints, Rollen-System (tenant_admin + Block-Zugriff), Review-Übersichtsseite, Premium UI (Style Guide v2.1), Mehrsprachigkeit DE/EN/NL (UI, LLM-Prompts, E-Mail, Katalog), Error-Logging + E-Mail-Alerts, PDF/DOCX/TXT-Parsing, Tenant-CRUD (Bearbeiten/Löschen/User-Management)

@@ -9,24 +9,25 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: final-check
-- Current Focus: V2 Gesamt-QA bestanden (RPT-024 PASS). Alle 4 Slices done, E2E verifiziert. Final-Check als nächstes.
-- Current Phase: V2 Final-Check
+- High-Level State: released
+- Current Focus: V2 released und deployed. Post-Launch Monitoring.
+- Current Phase: Stable (V2)
 
 ## Immediate Next Steps
-1. /final-check für V2
-2. /go-live für V2
-3. /deploy V2 (bereits auf Production deployed)
-4. /post-launch V2
+1. /post-launch für V2
+2. Whisper-Qualität mit echten Kunden validieren
+3. BL-035: Manuelles Lektorat UI-Texte (DE/EN/NL)
 
 ## Active Scope
-V2 — Voice Input via Whisper. Alle Slices implementiert und QA bestanden: SLC-028 (Block Access Fix), SLC-029 (Whisper Infrastructure), SLC-030 (Transcription API), SLC-031 (Voice Recording UI). FEAT-019 done. E2E auf Production verifiziert.
+V2 — Voice Input via Whisper. Released am 2026-03-31. FEAT-019 done, 4 Slices done (SLC-028 bis SLC-031), alle QAs bestanden, Final-Check conditionally ready → Go-Live GO.
+
+Abgeschlossen: MVP-1 + V1.1 + V2.
 
 ## Blockers
 - aktuell keine
 
 ## Last Stable Version
-- V1.1 — 2026-03-31 — deployed auf https://blueprint.strategaizetransition.com
+- V2 — 2026-03-31 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). V2 deployed und funktional. Whisper Small, RAM 25GB frei. 4 QA-Reports (RPT-021 bis RPT-024), alle PASS. 18 Decisions (DEC-001 bis DEC-018). Offene Pre-V2 Issues: ISSUE-002/020 (keine Tests), ISSUE-004 (Sentry), ISSUE-016/017 (low).
+Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). Whisper Small deployed, RAM 25GB frei. Feature-Flag NEXT_PUBLIC_WHISPER_ENABLED=true. Rollback: Flag auf false oder Coolify Container-Rollback. 19 Features (18 done + FEAT-019), 28 Slices done, 41 Backlog-Items. V3 geplant: FEAT-020 (Dedizierte Server).

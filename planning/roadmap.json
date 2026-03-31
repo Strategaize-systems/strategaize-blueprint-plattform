@@ -17,7 +17,7 @@
     {
       "id": "v2",
       "name": "V2",
-      "status": "active",
+      "status": "released",
       "summary": "Voice Input — Spracheingabe via Whisper (selbst-gehostet, DSGVO), Audio-Aufnahme im Chat, serverseitige Transkription",
       "order": 3
     },
