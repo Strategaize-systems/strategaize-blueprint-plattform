@@ -279,6 +279,16 @@
       "version": "V1.1",
       "description": "PDF-Dateien sollen ein klassisches PDF-Icon in Rot bekommen (erkennbares PDF-Symbol, nicht nur Dateiendung). DOCX ein blaues Word-Icon, XLSX ein grünes Excel-Icon, Bilder ein Thumbnail-Icon. Aktuell haben alle Dateien das gleiche generische blaue Gradient-Icon mit Dateiendung als Text.",
       "createdAt": "2026-03-30"
+    },
+    {
+      "id": "BL-029",
+      "title": "Set-Password-Seite zeigt falsche Sprache (immer DE)",
+      "type": "bug",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Set-Password-Seite nach Invite zeigt immer Deutsch, auch fuer EN/NL-Tenants. Ursache: User hat noch keine Session, Middleware setzt NEXT_LOCALE Cookie nur fuer eingeloggte User. Loesung: Locale als Query-Parameter im Invite-Link mitgeben oder aus dem Invite-Token den Tenant nachschlagen.",
+      "createdAt": "2026-03-31"
     }
   ]
 }
