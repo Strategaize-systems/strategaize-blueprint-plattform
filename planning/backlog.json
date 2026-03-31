@@ -339,6 +339,16 @@
       "version": "V1.1",
       "description": "Middleware setzt NEXT_LOCALE nur wenn Cookie nicht existiert. Wenn Admin einen EN-Invite testet, bleibt der EN-Cookie bestehen und die Login-Seite zeigt Englisch. Fix: Middleware soll bei jedem Request den Cookie mit der Tenant-Sprache des eingeloggten Users abgleichen. Admin ohne Tenant bekommt DE.",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-035",
+      "title": "Manuelles Lektorat aller UI-Texte (DE/EN/NL) vor Go-Live",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Alle sichtbaren UI-Texte in den 3 Translation-Dateien (de.json, en.json, nl.json) muessen vor echtem Kunden-Go-Live manuell geprueft werden. Bekanntes Beispiel: NL 'geüploade' (falsch). Betrifft nur UI-Chrome, nicht Fragetexte. Immo prueft selbst wenn alle Features fertig sind.",
+      "createdAt": "2026-03-31"
     }
   ]
 }
