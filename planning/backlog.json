@@ -309,6 +309,16 @@
       "version": "V1.1",
       "description": "Nach Invite wird in der Tenant-Uebersicht 'kein Owner eingeladen' angezeigt. Moeglicherweise wird der Invite-User als tenant_member statt tenant_admin angelegt, oder das Profil wurde dem falschen Tenant zugeordnet (Session-Kollision BL-030). Muss zusammen mit BL-030 untersucht werden.",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-032",
+      "title": "Admin: Tenant bearbeiten, loeschen, User entfernen",
+      "type": "feature",
+      "priority": "high",
+      "status": "in_progress",
+      "version": "V1.1",
+      "description": "Admin-UI hat nur Einladen-Button, kein Bearbeiten/Loeschen/User-Entfernen. Kernfeature fuer Admin-Betrieb. Scope: Tenant loeschen (mit Cascade), Tenant bearbeiten (Name, Sprache), User aus Tenant entfernen (Profil + Auth-User).",
+      "createdAt": "2026-03-31"
     }
   ]
 }

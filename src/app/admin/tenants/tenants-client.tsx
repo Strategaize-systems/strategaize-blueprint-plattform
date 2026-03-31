@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -29,14 +40,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight, Pencil, Trash2, UserMinus } from "lucide-react";
+
+interface TenantUser {
+  id: string;
+  email: string;
+  role: string;
+  created_at: string;
+}
 
 interface Tenant {
   id: string;
   name: string;
+  language: string;
   created_at: string;
   owner_email: string | null;
   run_count: number;
 }
+
+const LANG_LABELS: Record<string, string> = { de: "DE", en: "EN", nl: "NL" };
 
 export function TenantsClient({ email }: { email: string }) {
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -55,6 +82,29 @@ export function TenantsClient({ email }: { email: string }) {
   const [inviteTenantName, setInviteTenantName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
+  const [inviteRole, setInviteRole] = useState<"tenant_admin" | "tenant_member">("tenant_member");
+  const [inviteBlocks, setInviteBlocks] = useState<string[]>([]);
+
+  // Edit state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTenantId, setEditTenantId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editLanguage, setEditLanguage] = useState<"de" | "en" | "nl">("de");
+  const [saving, setSaving] = useState(false);
+
+  // Delete state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTenantId, setDeleteTenantId] = useState<string | null>(null);
+  const [deleteTenantName, setDeleteTenantName] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  // User list state
+  const [expandedTenantId, setExpandedTenantId] = useState<string | null>(null);
+  const [tenantUsers, setTenantUsers] = useState<TenantUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+
+  const ALL_BLOCKS = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
 
   const loadTenants = useCallback(async () => {
     try {
@@ -72,6 +122,29 @@ export function TenantsClient({ email }: { email: string }) {
     loadTenants();
   }, [loadTenants]);
 
+  async function loadUsers(tenantId: string) {
+    setUsersLoading(true);
+    try {
+      const res = await fetch(`/api/admin/tenants/${tenantId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTenantUsers(data.users ?? []);
+      }
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  function toggleUsers(tenantId: string) {
+    if (expandedTenantId === tenantId) {
+      setExpandedTenantId(null);
+      return;
+    }
+    setExpandedTenantId(tenantId);
+    loadUsers(tenantId);
+  }
+
+  // ─── Create ─────────────────────────────────────────────────────────
   async function handleCreateTenant() {
     if (!newName.trim()) return;
     setCreating(true);
@@ -101,11 +174,76 @@ export function TenantsClient({ email }: { email: string }) {
     }
   }
 
-  const [inviteRole, setInviteRole] = useState<"tenant_admin" | "tenant_member">("tenant_member");
-  const [inviteBlocks, setInviteBlocks] = useState<string[]>([]);
+  // ─── Edit ───────────────────────────────────────────────────────────
+  function openEdit(tenant: Tenant) {
+    setEditTenantId(tenant.id);
+    setEditName(tenant.name);
+    setEditLanguage((tenant.language ?? "de") as "de" | "en" | "nl");
+    setEditOpen(true);
+  }
 
-  const ALL_BLOCKS = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+  async function handleSaveEdit() {
+    if (!editTenantId || !editName.trim()) return;
+    setSaving(true);
+    setMessage(null);
 
+    try {
+      const res = await fetch(`/api/admin/tenants/${editTenantId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: editName.trim(), language: editLanguage }),
+      });
+
+      if (res.ok) {
+        setMessage({ text: "Tenant aktualisiert", type: "success" });
+        setEditOpen(false);
+        await loadTenants();
+      } else {
+        const data = await res.json();
+        setMessage({ text: data.error?.message ?? "Fehler beim Speichern", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Netzwerkfehler", type: "error" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // ─── Delete ─────────────────────────────────────────────────────────
+  function openDelete(tenant: Tenant) {
+    setDeleteTenantId(tenant.id);
+    setDeleteTenantName(tenant.name);
+    setDeleteConfirmOpen(true);
+  }
+
+  async function handleDeleteTenant() {
+    if (!deleteTenantId) return;
+    setDeleting(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/tenants/${deleteTenantId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessage({ text: data.message, type: "success" });
+        setDeleteConfirmOpen(false);
+        if (expandedTenantId === deleteTenantId) setExpandedTenantId(null);
+        await loadTenants();
+      } else {
+        const data = await res.json();
+        setMessage({ text: data.error?.message ?? "Fehler beim Löschen", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Netzwerkfehler", type: "error" });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  // ─── Invite ─────────────────────────────────────────────────────────
   function toggleBlock(block: string) {
     setInviteBlocks((prev) =>
       prev.includes(block) ? prev.filter((b) => b !== block) : [...prev, block]
@@ -142,6 +280,7 @@ export function TenantsClient({ email }: { email: string }) {
         setMessage({ text: data.message, type: "success" });
         setInviteOpen(false);
         await loadTenants();
+        if (expandedTenantId === inviteTenantId) loadUsers(inviteTenantId);
       } else {
         const data = await res.json();
         setMessage({ text: data.error?.message ?? "Fehler beim Einladen", type: "error" });
@@ -153,6 +292,33 @@ export function TenantsClient({ email }: { email: string }) {
     }
   }
 
+  // ─── Remove User ────────────────────────────────────────────────────
+  async function handleRemoveUser(tenantId: string, userId: string) {
+    setRemovingUserId(userId);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/tenants/${tenantId}/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessage({ text: data.message, type: "success" });
+        await loadUsers(tenantId);
+        await loadTenants();
+      } else {
+        const data = await res.json();
+        setMessage({ text: data.error?.message ?? "Fehler beim Entfernen", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Netzwerkfehler", type: "error" });
+    } finally {
+      setRemovingUserId(null);
+    }
+  }
+
+  // ─── Render ─────────────────────────────────────────────────────────
   return (
     <div>
       <div>
@@ -198,16 +364,8 @@ export function TenantsClient({ email }: { email: string }) {
                 </div>
               </div>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setCreateOpen(false)}
-                >
-                  Abbrechen
-                </Button>
-                <Button
-                  onClick={handleCreateTenant}
-                  disabled={creating || !newName.trim()}
-                >
+                <Button variant="outline" onClick={() => setCreateOpen(false)}>Abbrechen</Button>
+                <Button onClick={handleCreateTenant} disabled={creating || !newName.trim()}>
                   {creating ? "Wird erstellt..." : "Erstellen"}
                 </Button>
               </DialogFooter>
@@ -216,10 +374,7 @@ export function TenantsClient({ email }: { email: string }) {
         </div>
 
         {message && (
-          <Alert
-            variant={message.type === "error" ? "destructive" : "default"}
-            className="mb-4"
-          >
+          <Alert variant={message.type === "error" ? "destructive" : "default"} className="mb-4">
             <AlertDescription>{message.text}</AlertDescription>
           </Alert>
         )}
@@ -239,37 +394,161 @@ export function TenantsClient({ email }: { email: string }) {
         ) : (
           <div className="space-y-4">
             {tenants.map((tenant) => (
-              <div key={tenant.id} className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
-                <div className="px-6 pt-6 pb-2">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-slate-900">{tenant.name}</h3>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openInvite(tenant.id, tenant.name)}
-                    >
-                      Einladen
-                    </Button>
+              <Collapsible
+                key={tenant.id}
+                open={expandedTenantId === tenant.id}
+                onOpenChange={() => toggleUsers(tenant.id)}
+              >
+                <div className="relative overflow-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-primary-dark via-brand-primary to-brand-success-dark" />
+                  <div className="px-6 pt-6 pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-bold text-slate-900">{tenant.name}</h3>
+                        <Badge variant="secondary" className="text-xs">
+                          {LANG_LABELS[tenant.language] ?? tenant.language}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => openInvite(tenant.id, tenant.name)}>
+                          Einladen
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(tenant)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => openDelete(tenant)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="px-6 pb-5">
-                  <div className="flex gap-6 text-sm">
-                    <span className="text-slate-500">
-                      Owner: <span className="font-semibold text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
-                    </span>
-                    <span className="text-slate-500">
-                      <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
-                    </span>
-                    <span className="text-slate-400">
-                      Erstellt: {new Date(tenant.created_at).toLocaleDateString("de-DE")}
-                    </span>
+                  <div className="px-6 pb-3">
+                    <div className="flex gap-6 text-sm">
+                      <span className="text-slate-500">
+                        Owner: <span className="font-semibold text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
+                      </span>
+                      <span className="text-slate-500">
+                        <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
+                      </span>
+                      <span className="text-slate-400">
+                        Erstellt: {new Date(tenant.created_at).toLocaleDateString("de-DE")}
+                      </span>
+                    </div>
                   </div>
+                  {/* User list toggle */}
+                  <div className="px-6 pb-4">
+                    <CollapsibleTrigger asChild>
+                      <button className="flex items-center gap-1.5 text-xs font-semibold text-brand-primary hover:text-brand-primary-dark transition-colors">
+                        {expandedTenantId === tenant.id ? (
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        ) : (
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        )}
+                        User anzeigen
+                      </button>
+                    </CollapsibleTrigger>
+                  </div>
+                  <CollapsibleContent>
+                    <div className="px-6 pb-5 border-t border-slate-100 pt-3">
+                      {usersLoading ? (
+                        <Skeleton className="h-16 w-full" />
+                      ) : tenantUsers.length === 0 ? (
+                        <p className="text-sm text-slate-400 py-2">Keine User in diesem Tenant.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {tenantUsers.map((user) => (
+                            <div
+                              key={user.id}
+                              className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2.5 border border-slate-200"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium text-slate-900">{user.email}</span>
+                                <Badge variant={user.role === "tenant_admin" ? "default" : "outline"} className="text-[10px]">
+                                  {user.role === "tenant_admin" ? "Admin" : "Mitarbeiter"}
+                                </Badge>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                disabled={removingUserId === user.id}
+                                onClick={() => handleRemoveUser(tenant.id, user.id)}
+                              >
+                                <UserMinus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CollapsibleContent>
                 </div>
-              </div>
+              </Collapsible>
             ))}
           </div>
         )}
+
+        {/* Edit Tenant Dialog */}
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Tenant bearbeiten</DialogTitle>
+              <DialogDescription>Name und Sprache des Tenants ändern.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Unternehmensname</Label>
+                <Input
+                  id="edit-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveEdit()}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-language">Sprache</Label>
+                <Select value={editLanguage} onValueChange={(v) => setEditLanguage(v as "de" | "en" | "nl")}>
+                  <SelectTrigger id="edit-language">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="de">Deutsch</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="nl">Nederlands</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditOpen(false)}>Abbrechen</Button>
+              <Button onClick={handleSaveEdit} disabled={saving || !editName.trim()}>
+                {saving ? "Wird gespeichert..." : "Speichern"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Tenant Confirmation */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Tenant &quot;{deleteTenantName}&quot; löschen?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Alle Daten dieses Tenants werden unwiderruflich gelöscht: User, Runs, Antworten, Evidence, Checkpoints. Diese Aktion kann nicht rückgängig gemacht werden.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteTenant}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleting ? "Wird gelöscht..." : "Endgültig löschen"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Invite Dialog */}
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
@@ -348,12 +627,7 @@ export function TenantsClient({ email }: { email: string }) {
               )}
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setInviteOpen(false)}
-              >
-                Abbrechen
-              </Button>
+              <Button variant="outline" onClick={() => setInviteOpen(false)}>Abbrechen</Button>
               <Button
                 onClick={handleInvite}
                 disabled={inviting || !inviteEmail.trim() || (inviteRole === "tenant_member" && inviteBlocks.length === 0)}
