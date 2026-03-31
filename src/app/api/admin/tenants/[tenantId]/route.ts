@@ -106,7 +106,7 @@ export async function DELETE(
     return errorResponse("NOT_FOUND", "Tenant not found", 404);
   }
 
-  // Delete all auth users belonging to this tenant
+  // Delete all auth users belonging to this tenant (before DB cascade)
   const { data: profiles } = await adminClient!
     .from("profiles")
     .select("id")
@@ -116,16 +116,20 @@ export async function DELETE(
     await adminClient!.auth.admin.deleteUser(profile.id);
   }
 
-  // Delete tenant (CASCADE deletes profiles, runs, events, evidence, submissions)
-  const { error } = await adminClient!
-    .from("tenants")
-    .delete()
-    .eq("id", tenantId);
+  // Delete tenant via DB function that bypasses append-only triggers.
+  // Direct DELETE fails because CASCADE reaches append-only tables
+  // (admin_events, question_events, evidence_items, run_submissions)
+  // whose triggers block DELETE operations.
+  const { error } = await adminClient!.rpc("delete_tenant_cascade", {
+    p_tenant_id: tenantId,
+  });
 
   if (error) {
     return errorResponse("INTERNAL_ERROR", error.message, 500);
   }
 
+  // Note: log_admin_event AFTER delete because the tenant no longer exists.
+  // We use null tenant_id since the tenant is gone.
   await supabase.rpc("log_admin_event", {
     p_event_type: "tenant_deleted",
     p_payload: { tenant_id: tenantId, tenant_name: tenant.name },
