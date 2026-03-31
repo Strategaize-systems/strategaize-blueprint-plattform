@@ -63,6 +63,7 @@
     "transcribing": "Wordt getranscribeerd...",
     "transcriptionFailed": "Transcriptie mislukt. Probeer het opnieuw.",
     "micNotAvailable": "Geen microfoon beschikbaar",
+    "micPermissionDenied": "Microfoontoegang geweigerd. Sta dit toe in de browserinstellingen.",
     "startRecording": "Spraakinvoer starten",
     "stopRecording": "Opname stoppen",
     "maxRecordingReached": "Maximale opnameduur bereikt (5 min.)"

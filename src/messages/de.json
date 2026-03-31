@@ -63,6 +63,7 @@
     "transcribing": "Wird transkribiert...",
     "transcriptionFailed": "Transkription fehlgeschlagen. Bitte erneut versuchen.",
     "micNotAvailable": "Kein Mikrofon verfügbar",
+    "micPermissionDenied": "Mikrofon-Zugriff wurde verweigert. Bitte in den Browser-Einstellungen erlauben.",
     "startRecording": "Spracheingabe starten",
     "stopRecording": "Aufnahme stoppen",
     "maxRecordingReached": "Maximale Aufnahmedauer erreicht (5 Min.)"

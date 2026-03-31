@@ -63,6 +63,7 @@
     "transcribing": "Transcribing...",
     "transcriptionFailed": "Transcription failed. Please try again.",
     "micNotAvailable": "No microphone available",
+    "micPermissionDenied": "Microphone access denied. Please allow in browser settings.",
     "startRecording": "Start voice input",
     "stopRecording": "Stop recording",
     "maxRecordingReached": "Maximum recording duration reached (5 min.)"

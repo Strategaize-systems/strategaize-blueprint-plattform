@@ -270,13 +270,29 @@ export function RunWorkspaceClient({
 
   // Voice recording functions
   async function startRecording() {
+    // Check if mediaDevices API is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setMessage({ text: t("workspace.micNotAvailable"), type: "error" });
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-          ? "audio/webm;codecs=opus"
-          : "audio/webm",
-      });
+      setMicAvailable(true); // Reset on success (in case previous attempt failed)
+
+      // Determine supported MIME type
+      let mimeType = "audio/webm";
+      if (typeof MediaRecorder !== "undefined") {
+        if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+          mimeType = "audio/webm;codecs=opus";
+        } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+          mimeType = "audio/webm";
+        } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+          mimeType = "audio/mp4";
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -286,7 +302,7 @@ export function RunWorkspaceClient({
 
       mediaRecorder.onstop = () => {
         stream.getTracks().forEach((track) => track.stop());
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         transcribeRecording(audioBlob);
       };
 
@@ -304,8 +320,16 @@ export function RunWorkspaceClient({
           return prev + 1;
         });
       }, 1000);
-    } catch {
-      setMicAvailable(false);
+    } catch (err) {
+      const error = err as Error;
+      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+        setMessage({ text: t("workspace.micPermissionDenied"), type: "error" });
+      } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+        setMessage({ text: t("workspace.micNotAvailable"), type: "error" });
+        setMicAvailable(false);
+      } else {
+        setMessage({ text: t("workspace.micNotAvailable"), type: "error" });
+      }
     }
   }
 
@@ -1008,8 +1032,8 @@ export function RunWorkspaceClient({
                       {whisperEnabled && (
                         <button
                           onClick={isRecording ? stopRecording : startRecording}
-                          disabled={!micAvailable || isTranscribing}
-                          title={!micAvailable ? t("workspace.micNotAvailable") : isRecording ? t("workspace.stopRecording") : t("workspace.startRecording")}
+                          disabled={isTranscribing}
+                          title={isRecording ? t("workspace.stopRecording") : t("workspace.startRecording")}
                           className={`p-2.5 rounded-lg transition-all flex-shrink-0 self-end disabled:opacity-50 ${
                             isRecording
                               ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
