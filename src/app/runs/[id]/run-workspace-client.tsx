@@ -206,6 +206,8 @@ export function RunWorkspaceClient({
   }, [activeQuestion, isAdmin, loadEvidence]);
 
   function selectQuestion(q: Question) {
+    // Stop any active recording when switching questions
+    if (isRecording) stopRecording();
     setActiveQuestion(q.id);
     setAnswerText("");
     setChatInput("");
