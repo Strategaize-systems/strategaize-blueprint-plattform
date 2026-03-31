@@ -58,7 +58,14 @@
     "noAnswer": "Nog geen antwoord",
     "selectQuestion": "Selecteer een vraag om te beginnen",
     "noSelectionTitle": "Selecteer een vraag",
-    "noSelectionInstructions": "Kies een vraag uit de navigatie aan de linkerkant."
+    "noSelectionInstructions": "Kies een vraag uit de navigatie aan de linkerkant.",
+    "recording": "Opname loopt...",
+    "transcribing": "Wordt getranscribeerd...",
+    "transcriptionFailed": "Transcriptie mislukt. Probeer het opnieuw.",
+    "micNotAvailable": "Geen microfoon beschikbaar",
+    "startRecording": "Spraakinvoer starten",
+    "stopRecording": "Opname stoppen",
+    "maxRecordingReached": "Maximale opnameduur bereikt (5 min.)"
   },
   "ai": {
     "thinking": "AI denkt na...",

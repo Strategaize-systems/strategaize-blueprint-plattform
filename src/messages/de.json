@@ -58,7 +58,14 @@
     "noAnswer": "Noch keine Antwort",
     "selectQuestion": "Frage auswählen um zu beginnen",
     "noSelectionTitle": "Frage auswählen",
-    "noSelectionInstructions": "Wählen Sie eine Frage aus der Navigation links."
+    "noSelectionInstructions": "Wählen Sie eine Frage aus der Navigation links.",
+    "recording": "Aufnahme läuft...",
+    "transcribing": "Wird transkribiert...",
+    "transcriptionFailed": "Transkription fehlgeschlagen. Bitte erneut versuchen.",
+    "micNotAvailable": "Kein Mikrofon verfügbar",
+    "startRecording": "Spracheingabe starten",
+    "stopRecording": "Aufnahme stoppen",
+    "maxRecordingReached": "Maximale Aufnahmedauer erreicht (5 Min.)"
   },
   "ai": {
     "thinking": "KI denkt nach...",

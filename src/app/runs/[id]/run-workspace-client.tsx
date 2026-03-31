@@ -44,7 +44,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square } from "lucide-react";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -134,6 +134,17 @@ export function RunWorkspaceClient({
   const [chatLoading, setChatLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Voice recording state
+  const whisperEnabled = process.env.NEXT_PUBLIC_WHISPER_ENABLED === "true";
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [micAvailable, setMicAvailable] = useState(true);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const MAX_RECORDING_SECONDS = 300; // 5 minutes
 
   const loadRun = useCallback(async () => {
     try {
@@ -255,6 +266,89 @@ export function RunWorkspaceClient({
     } finally {
       setChatLoading(false);
     }
+  }
+
+  // Voice recording functions
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/webm",
+      });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        transcribeRecording(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+
+      // Duration timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration((prev) => {
+          if (prev + 1 >= MAX_RECORDING_SECONDS) {
+            stopRecording();
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } catch {
+      setMicAvailable(false);
+    }
+  }
+
+  function stopRecording() {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+  }
+
+  async function transcribeRecording(audioBlob: Blob) {
+    if (!activeQuestion) return;
+    setIsTranscribing(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "recording.webm");
+      const res = await fetch(
+        `/api/tenant/runs/${runId}/questions/${activeQuestion}/transcribe`,
+        { method: "POST", body: formData }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.transcript?.trim()) {
+          setChatInput((prev) => prev ? `${prev} ${data.transcript.trim()}` : data.transcript.trim());
+        }
+      } else {
+        setMessage({ text: t("workspace.transcriptionFailed"), type: "error" });
+      }
+    } catch {
+      setMessage({ text: t("workspace.transcriptionFailed"), type: "error" });
+    } finally {
+      setIsTranscribing(false);
+    }
+  }
+
+  function formatDuration(seconds: number) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
   }
 
   async function generateAnswer() {
@@ -883,6 +977,20 @@ export function RunWorkspaceClient({
                 {/* Fixed input area — always at bottom, 4 rows */}
                 {!isAdmin && !isLocked && (
                   <div className="flex-shrink-0 px-5 py-3 border-t border-slate-200 bg-white">
+                    {/* Recording indicator */}
+                    {isRecording && (
+                      <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-lg bg-red-50 border border-red-200">
+                        <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                        <span className="text-xs font-medium text-red-600">{t("workspace.recording")}</span>
+                        <span className="text-xs font-mono text-red-500 ml-auto">{formatDuration(recordingDuration)}</span>
+                      </div>
+                    )}
+                    {isTranscribing && (
+                      <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-lg bg-brand-primary/5 border border-brand-primary/20">
+                        <Loader2 className="h-3 w-3 animate-spin text-brand-primary" />
+                        <span className="text-xs font-medium text-brand-primary">{t("workspace.transcribing")}</span>
+                      </div>
+                    )}
                     <div className="flex items-end gap-2">
                       <textarea
                         value={chatInput}
@@ -897,6 +1005,20 @@ export function RunWorkspaceClient({
                         rows={4}
                         className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm leading-relaxed focus:border-brand-primary focus:outline-none transition-colors resize-none"
                       />
+                      {whisperEnabled && (
+                        <button
+                          onClick={isRecording ? stopRecording : startRecording}
+                          disabled={!micAvailable || isTranscribing}
+                          title={!micAvailable ? t("workspace.micNotAvailable") : isRecording ? t("workspace.stopRecording") : t("workspace.startRecording")}
+                          className={`p-2.5 rounded-lg transition-all flex-shrink-0 self-end disabled:opacity-50 ${
+                            isRecording
+                              ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+                          }`}
+                        >
+                          {isTranscribing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isRecording ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                        </button>
+                      )}
                       <button
                         onClick={sendChatMessage}
                         disabled={!chatInput.trim() || chatLoading}

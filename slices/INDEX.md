@@ -60,7 +60,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 |----|-------|---------|--------|----------|---------|
 | SLC-029 | [Whisper Infrastructure](SLC-029-whisper-infrastructure.md) | FEAT-019 | done | High | 2026-03-31 |
 | SLC-030 | [Transcription API Route](SLC-030-transcription-api.md) | FEAT-019 | done | High | 2026-03-31 |
-| SLC-031 | [Voice Recording UI + Integration](SLC-031-voice-recording-ui.md) | FEAT-019 | planned | High | 2026-03-31 |
+| SLC-031 | [Voice Recording UI + Integration](SLC-031-voice-recording-ui.md) | FEAT-019 | done | High | 2026-03-31 |
 
 ## V2 Execution Order
 

@@ -46,7 +46,7 @@
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-019 | Voice Input (Whisper) | planned | 2026-03-29 |
+| FEAT-019 | Voice Input (Whisper) | done | 2026-03-31 |
 
 ## V3 Features (Geplant)
 

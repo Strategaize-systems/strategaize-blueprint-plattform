@@ -58,7 +58,14 @@
     "noAnswer": "No answer yet",
     "selectQuestion": "Select a question to begin",
     "noSelectionTitle": "Select a question",
-    "noSelectionInstructions": "Choose a question from the navigation on the left."
+    "noSelectionInstructions": "Choose a question from the navigation on the left.",
+    "recording": "Recording...",
+    "transcribing": "Transcribing...",
+    "transcriptionFailed": "Transcription failed. Please try again.",
+    "micNotAvailable": "No microphone available",
+    "startRecording": "Start voice input",
+    "stopRecording": "Stop recording",
+    "maxRecordingReached": "Maximum recording duration reached (5 min.)"
   },
   "ai": {
     "thinking": "AI is thinking...",
