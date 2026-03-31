@@ -35,7 +35,18 @@ export async function GET(
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: true });
 
-  return NextResponse.json({ tenant, users: profiles ?? [] });
+  // Enrich with invite status from auth.users (email_confirmed_at)
+  const users = await Promise.all(
+    (profiles ?? []).map(async (p) => {
+      const { data: authUser } = await adminClient!.auth.admin.getUserById(p.id);
+      return {
+        ...p,
+        confirmed: !!authUser?.user?.email_confirmed_at,
+      };
+    })
+  );
+
+  return NextResponse.json({ tenant, users });
 }
 
 // PATCH /api/admin/tenants/[tenantId] — Update tenant (name, language)

@@ -51,6 +51,7 @@ interface TenantUser {
   id: string;
   email: string;
   role: string;
+  confirmed: boolean;
   created_at: string;
 }
 
@@ -60,6 +61,7 @@ interface Tenant {
   language: string;
   created_at: string;
   owner_email: string | null;
+  owner_confirmed: boolean;
   run_count: number;
 }
 
@@ -425,7 +427,18 @@ export function TenantsClient({ email }: { email: string }) {
                   <div className="px-6 pb-3">
                     <div className="flex gap-6 text-sm">
                       <span className="text-slate-500">
-                        Owner: <span className="font-semibold text-slate-900">{tenant.owner_email ?? "Kein Owner eingeladen"}</span>
+                        Owner: {tenant.owner_email ? (
+                        <>
+                          <span className="font-semibold text-slate-900">{tenant.owner_email}</span>
+                          {tenant.owner_confirmed ? (
+                            <Badge variant="default" className="ml-2 text-[10px] bg-brand-success">Aktiv</Badge>
+                          ) : (
+                            <Badge variant="outline" className="ml-2 text-[10px] text-amber-600 border-amber-300">Eingeladen</Badge>
+                          )}
+                        </>
+                      ) : (
+                        <span className="font-semibold text-slate-400">Kein Owner eingeladen</span>
+                      )}
                       </span>
                       <span className="text-slate-500">
                         <span className="font-bold text-brand-primary">{tenant.run_count}</span> Runs
@@ -466,6 +479,11 @@ export function TenantsClient({ email }: { email: string }) {
                                 <Badge variant={user.role === "tenant_admin" ? "default" : "outline"} className="text-[10px]">
                                   {user.role === "tenant_admin" ? "Admin" : "Mitarbeiter"}
                                 </Badge>
+                                {user.confirmed ? (
+                                  <Badge variant="default" className="text-[10px] bg-brand-success">Aktiv</Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Eingeladen</Badge>
+                                )}
                               </div>
                               <Button
                                 variant="ghost"

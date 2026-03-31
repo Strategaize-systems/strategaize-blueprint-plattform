@@ -25,14 +25,19 @@ export async function GET() {
   const { data: owners } = tenantIds.length > 0
     ? await adminClient!
         .from("profiles")
-        .select("tenant_id, email")
+        .select("id, tenant_id, email")
         .in("tenant_id", tenantIds)
         .eq("role", "tenant_admin")
     : { data: [] };
 
-  const ownerByTenant = new Map<string, string>();
+  // Check confirmed status for each owner
+  const ownerByTenant = new Map<string, { email: string; confirmed: boolean }>();
   for (const o of owners ?? []) {
-    ownerByTenant.set(o.tenant_id, o.email);
+    const { data: authUser } = await adminClient!.auth.admin.getUserById(o.id);
+    ownerByTenant.set(o.tenant_id, {
+      email: o.email,
+      confirmed: !!authUser?.user?.email_confirmed_at,
+    });
   }
 
   // Single query: all runs for these tenants
@@ -49,11 +54,15 @@ export async function GET() {
   }
 
   // Enrich tenants with pre-fetched data
-  const enriched = (tenants ?? []).map((t) => ({
-    ...t,
-    owner_email: ownerByTenant.get(t.id) ?? null,
-    run_count: runsByTenant.get(t.id) ?? 0,
-  }));
+  const enriched = (tenants ?? []).map((t) => {
+    const owner = ownerByTenant.get(t.id);
+    return {
+      ...t,
+      owner_email: owner?.email ?? null,
+      owner_confirmed: owner?.confirmed ?? false,
+      run_count: runsByTenant.get(t.id) ?? 0,
+    };
+  });
 
   return NextResponse.json({ tenants: enriched });
 }

@@ -325,7 +325,7 @@
       "title": "Admin: Invite-Status sichtbar machen (eingeladen/angenommen)",
       "type": "improvement",
       "priority": "medium",
-      "status": "open",
+      "status": "done",
       "version": "V1.1",
       "description": "In der Tenant-Verwaltung ist nicht erkennbar ob ein eingeladener User die Einladung bereits angenommen hat oder noch ausstehend ist. Soll sichtbar sein z.B. als Badge 'Eingeladen' vs 'Aktiv' in der User-Liste oder beim Owner-Feld. Datenquelle: auth.users.email_confirmed_at (null = noch nicht angenommen).",
       "createdAt": "2026-03-31"
