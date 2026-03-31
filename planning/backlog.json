@@ -355,7 +355,7 @@
       "title": "Bug: Block-Zugriffskontrolle zeigt falsche/alle Bloecke",
       "type": "bug",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V1.1",
       "description": "Block-Level-Zugriffskontrolle funktioniert nicht. NL-Test-Kunde sieht alle Bloecke trotz Einschraenkung. EN-Test-Kunde sieht ebenfalls falsche Bloecke. FEAT-012/SLC-018 Rollen-System ist fehlerhaft. Muss vor V2-Implementation gefixt werden. ISSUE-029.",
       "createdAt": "2026-03-31"

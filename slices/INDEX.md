@@ -50,7 +50,7 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-028 | [Block Access Control Fix](SLC-028-block-access-fix.md) | FEAT-012, BL-041 | planned | Blocker | 2026-03-31 |
+| SLC-028 | [Block Access Control Fix](SLC-028-block-access-fix.md) | FEAT-012, BL-041 | done | Blocker | 2026-03-31 |
 
 ## V2 Slices — Voice Input
 
