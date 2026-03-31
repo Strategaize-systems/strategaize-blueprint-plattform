@@ -300,12 +300,15 @@ services:
       - OLLAMA_HOST=0.0.0.0
 
   # ============================================================
-  # MVP-2: WHISPER (Transkription — nicht Teil von MVP-1)
+  # V2: WHISPER — Speech-to-Text (Whisper Small, DSGVO-konform)
   # ============================================================
-  # whisper:
-  #   image: onerahmet/openai-whisper-asr-webservice:latest
-  #   restart: unless-stopped
-  #   expose:
-  #     - "9000"
-  #   networks:
-  #     - strategaize-net
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    restart: unless-stopped
+    expose:
+      - "9000"
+    environment:
+      - ASR_MODEL=small
+      - ASR_ENGINE=openai_whisper
+    networks:
+      - strategaize-net
