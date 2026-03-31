@@ -319,6 +319,16 @@
       "version": "V1.1",
       "description": "Admin-UI hat nur Einladen-Button, kein Bearbeiten/Loeschen/User-Entfernen. Kernfeature fuer Admin-Betrieb. Scope: Tenant loeschen (mit Cascade), Tenant bearbeiten (Name, Sprache), User aus Tenant entfernen (Profil + Auth-User).",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-033",
+      "title": "Admin: Invite-Status sichtbar machen (eingeladen/angenommen)",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V1.1",
+      "description": "In der Tenant-Verwaltung ist nicht erkennbar ob ein eingeladener User die Einladung bereits angenommen hat oder noch ausstehend ist. Soll sichtbar sein z.B. als Badge 'Eingeladen' vs 'Aktiv' in der User-Liste oder beim Owner-Feld. Datenquelle: auth.users.email_confirmed_at (null = noch nicht angenommen).",
+      "createdAt": "2026-03-31"
     }
   ]
 }
