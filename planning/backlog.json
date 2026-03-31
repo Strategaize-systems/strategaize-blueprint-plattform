@@ -202,12 +202,12 @@
     },
     {
       "id": "BL-021",
-      "title": "Spracheingabe / Voice Input (Whisper oder Browser Speech API)",
+      "title": "Voice Input: Whisper ASR Service + Chat-Integration",
       "type": "feature",
-      "priority": "medium",
-      "status": "open",
+      "priority": "high",
+      "status": "in_progress",
       "version": "V2",
-      "description": "Spracheingabe im Chat-Bereich. Option A: Whisper lokal auf Hetzner (braucht 2-5GB RAM). Option B: Browser Web Speech API (kein Server-RAM, weniger genau). RAM-Situation auf Server pruefen bevor Entscheidung.",
+      "description": "Spracheingabe im Chat-Bereich via Whisper (selbst-gehostet auf Hetzner). Kein Browser Speech API. Docker-Service, Transkriptions-API, Mikrofon-UI im Chat, Aufnahme-Feedback, Mehrsprach-Erkennung DE/EN/NL. DSGVO: Audio nur zur Transkription, nicht gespeichert. Server-Upgrade wenn RAM nicht reicht.",
       "createdAt": "2026-03-28"
     },
     {
@@ -235,9 +235,9 @@
       "title": "Dedizierte Server pro Kunde (Single-Tenant Deployment)",
       "type": "feature",
       "priority": "medium",
-      "status": "open",
-      "version": "V2",
-      "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Deployment-Automatisierung, Coolify-Template, vorkonfigurierte Env-Vars. Teil der Dienstleistung.",
+      "status": "deferred",
+      "version": "V3",
+      "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Deployment-Automatisierung, Coolify-Template, vorkonfigurierte Env-Vars. Verschoben auf V3 — aktuelles Multi-Tenant mit RLS reicht. Nur bei konkretem Kundenbedarf.",
       "createdAt": "2026-03-28"
     },
     {
@@ -348,6 +348,66 @@
       "status": "open",
       "version": "V1.1",
       "description": "Alle sichtbaren UI-Texte in den 3 Translation-Dateien (de.json, en.json, nl.json) muessen vor echtem Kunden-Go-Live manuell geprueft werden. Bekanntes Beispiel: NL 'geüploade' (falsch). Betrifft nur UI-Chrome, nicht Fragetexte. Immo prueft selbst wenn alle Features fertig sind.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-041",
+      "title": "Bug: Block-Zugriffskontrolle zeigt falsche/alle Bloecke",
+      "type": "bug",
+      "priority": "high",
+      "status": "open",
+      "version": "V1.1",
+      "description": "Block-Level-Zugriffskontrolle funktioniert nicht. NL-Test-Kunde sieht alle Bloecke trotz Einschraenkung. EN-Test-Kunde sieht ebenfalls falsche Bloecke. FEAT-012/SLC-018 Rollen-System ist fehlerhaft. Muss vor V2-Implementation gefixt werden. ISSUE-029.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-036",
+      "title": "Whisper Docker-Service in Docker Compose aufsetzen",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2",
+      "description": "Whisper ASR Webservice als Docker-Container im internen Netzwerk. Resource Limits fuer Ollama + Whisper. Env-Var WHISPER_URL. RAM-Messung auf Server fuer Modell-Entscheidung (small vs medium).",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-037",
+      "title": "Transkriptions-API Route (Audio → Whisper → Text)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2",
+      "description": "Server-seitige API Route die Audio-Datei empfaengt, an Whisper-Service sendet und transkribierten Text zurueckgibt. Analog zu bestehender Chat-Route. Authentifiziert, Tenant-isoliert.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-038",
+      "title": "Mikrofon-UI im Chat-Bereich (Aufnahme + Feedback)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2",
+      "description": "Mikrofon-Button neben Text-Eingabefeld. MediaRecorder API fuer Audio-Capture. Start/Stop-Steuerung. Visuelles Recording-Feedback (Puls-Animation, Dauer). Browser-Berechtigung-Handling. Transkribierter Text im Eingabefeld, editierbar vor Absenden.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-039",
+      "title": "Whisper Mehrsprach-Support (DE/EN/NL Auto-Detect oder Tenant-Hint)",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2",
+      "description": "Whisper erkennt Sprache automatisch oder nutzt Tenant-Locale als Hint fuer bessere Erkennung. Integration mit bestehendem i18n-System.",
+      "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-040",
+      "title": "Server RAM-Sizing: Ollama + Whisper Koexistenz",
+      "type": "improvement",
+      "priority": "high",
+      "status": "open",
+      "version": "V2",
+      "description": "RAM-Messung auf Hetzner CPX62. Entscheidung: Whisper small vs medium. Falls 32GB nicht reicht: Server-Upgrade auf 64GB. Docker Compose Resource Limits fuer beide Services. Build-OOM Workaround aktualisieren.",
       "createdAt": "2026-03-31"
     }
   ]

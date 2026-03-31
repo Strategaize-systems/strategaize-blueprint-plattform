@@ -46,8 +46,19 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 | SLC-025 | [UI-Texte extrahieren + übersetzen](SLC-025-ui-translations.md) | BL-022 | done | High | 2026-03-30 |
 | SLC-026 | [LLM-Prompts + E-Mail Locale](SLC-026-llm-email-locale.md) | BL-022 | done | High | 2026-03-30 |
 | SLC-027 | [Katalog-Sprache + Admin](SLC-027-catalog-language.md) | BL-022 | done | Medium | 2026-03-30 |
-| SLC-022 | [Voice Input (Whisper)](SLC-022-voice-input.md) | BL-021 | planned | Medium | 2026-03-29 |
-| SLC-023 | [Dedizierte Server pro Kunde](SLC-023-dedicated-servers.md) | BL-024 | planned | Medium | 2026-03-29 |
+## V2 Slices — Voice Input (wird durch /slice-planning befüllt)
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-022 | Voice Input (Whisper) | FEAT-019 | planned | High | 2026-03-29 |
+
+> SLC-022 wird in /slice-planning in Micro-Slices aufgeteilt. SLC-023 (Dedizierte Server) verschoben auf V3.
+
+## V3 Slices (Geplant)
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-023 | Dedizierte Server pro Kunde | FEAT-020 | planned | Medium | 2026-03-29 |
 
 ## Execution Order
 

@@ -222,3 +222,11 @@
 - Severity: Blocker
 - Area: Auth / Session
 - Summary: Admin-Session im selben Browser kollidierte mit Set-Password-Flow. GoTrue meldete "New password should be different from old password". Fix: Callback-Route ruft jetzt signOut() vor verifyOtp() auf. Supabase-Client schreibt Cookies direkt auf die Redirect-Response statt ueber cookies() API. Behoben am 2026-03-31.
+
+### ISSUE-029 — Block-Zugriffskontrolle funktioniert nicht korrekt
+- Status: open
+- Severity: High
+- Area: RLS / Rollen-System / Frontend
+- Summary: Tenants sehen Bloecke die ihnen nicht zugewiesen sind. NL-Test-Kunde sieht alle Bloecke obwohl nur bestimmte freigeschaltet waren. EN-Test-Kunde sieht ebenfalls falsche Bloecke. Block-Level-Zugriffskontrolle (FEAT-012, SLC-018) ist fehlerhaft — entweder RLS-Policy, Frontend-Filter oder beides.
+- Impact: Kunden sehen Fragen die nicht fuer sie bestimmt sind. Kernfeature des Rollen-Systems funktioniert nicht.
+- Next Action: Ursache diagnostizieren (RLS vs. Frontend-Filter vs. Profil-Daten). Muss vor V2-Implementation gefixt werden.

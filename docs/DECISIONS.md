@@ -59,3 +59,33 @@
 - Status: accepted
 - Reason: question_catalog_snapshots bekommt language-Spalte statt separater Tabellen pro Sprache. Einfacher zu verwalten, ein Import pro Sprache. Fallback auf DE wenn keine Übersetzung existiert.
 - Consequence: ALTER TABLE question_catalog_snapshots ADD COLUMN language. Beim Run-Erstellen wird Katalog nach Tenant-Sprache gefiltert.
+
+## DEC-013 — V2 Scope: Nur Voice Input (Whisper)
+- Status: accepted
+- Reason: Discovery-Ergebnis 31.03.2026. Scoring-Dashboard gehört in die OS-Plattform (Blueprint = Rohdaten + Workflow, OS = Analyse + Auswertung). Fragebogen-Editor nicht nötig (Katalog-Import über Admin-UI reicht). Dedizierte Server sind Infrastruktur, kein Feature-Mehrwert — verschoben auf V3.
+- Consequence: V2 enthält ausschließlich FEAT-019 (Voice Input via Whisper). FEAT-020 auf V3 verschoben. FEAT-021 und FEAT-022 gestrichen. Klarer, fokussierter V2-Scope.
+
+## DEC-014 — Whisper statt Browser Speech API
+- Status: accepted
+- Reason: Browser Speech API ist unzuverlässig über Browser hinweg — nicht kontrollierbar welchen Browser Kunden nutzen. Whisper lokal auf Hetzner garantiert konsistente Qualität und DSGVO-Konformität (Audio-Daten verlassen nie den Server). Server-Upgrade akzeptabel wenn RAM nicht reicht.
+- Consequence: Whisper ASR Service als Docker-Container. Keine Browser Speech API, kein Hybrid-Ansatz. Zusätzlicher RAM-Bedarf (2-5GB). Möglicherweise Server-Upgrade von 32GB auf 64GB nötig.
+
+## DEC-015 — Whisper Small zuerst, später upgraden
+- Status: accepted
+- Reason: Small-Modell (~1GB RAM) reicht zum Testen und Validieren der Integration. Qualität muss erst in der Praxis bewertet werden bevor ein größeres Modell (medium, ~5GB RAM) nötig ist. Upgrade ist trivial (nur Modell-Parameter ändern). Kein Grund, sofort mit dem größten Modell zu starten wenn noch keine echten Kunden da sind.
+- Consequence: V2-Implementation startet mit Whisper Small. Upgrade auf Medium/Large wenn echte Kunden die Plattform nutzen und die Transkriptionsqualität nicht ausreicht. RAM-Sizing-Entscheidung wird dadurch entspannt (32GB sollte reichen).
+
+## DEC-016 — Whisper als Docker-Service (onerahmet/openai-whisper-asr-webservice)
+- Status: accepted
+- Reason: Etabliertes Docker-Image mit REST-API (POST /asr). Gleiche Architektur wie Ollama (interner Docker-Service, kein externer Zugriff). Modellwechsel über Env-Var ASR_MODEL. Alternative wäre Whisper direkt in Python-Prozess zu laufen — aber Docker-Service ist konsistenter mit bestehendem Stack und einfacher zu deployen/upgraden.
+- Consequence: Whisper läuft als eigenständiger Docker-Container auf Port 9000 (intern). Kommunikation via http://whisper:9000/asr. Neuer Service in docker-compose.yml. Env-Var WHISPER_URL im App-Container.
+
+## DEC-017 — Audio nicht speichern (DSGVO)
+- Status: accepted
+- Reason: Audio-Aufnahmen enthalten potenziell sensible Unternehmensdaten (Geschäftsführer spricht über Finanzen, Strategie, Personal). Speicherung würde zusätzliche DSGVO-Anforderungen auslösen (Löschfristen, Auskunftsrecht, Verarbeitungsverzeichnis). Der Zweck ist Transkription, nicht Archivierung.
+- Consequence: Audio wird nur als In-Memory-Buffer in der API Route verarbeitet. Kein Disk-Write, kein Storage-Upload, kein DB-Eintrag. Nach Transkription wird der Buffer verworfen. Nur der resultierende Text wird im Chat verwendet.
+
+## DEC-018 — Feature-Flag für Whisper (NEXT_PUBLIC_WHISPER_ENABLED)
+- Status: accepted
+- Reason: Ermöglicht Deployment ohne Whisper-Container (z.B. bei RAM-Problemen oder für Staging-Umgebung ohne AI-Services). Mikrofon-Button wird nur angezeigt wenn Feature-Flag true ist. Graceful Degradation: Plattform funktioniert komplett ohne Voice Input.
+- Consequence: Env-Var NEXT_PUBLIC_WHISPER_ENABLED steuert Sichtbarkeit des Mikrofon-Buttons im Frontend. Backend-Route existiert immer, gibt aber 503 zurück wenn Whisper nicht erreichbar.

@@ -83,13 +83,14 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 
 ## Implementation Status
 
-> Stand: 2026-03-24. MVP-1 wurde in lokaler Entwicklung (Feb 2026) vollständig implementiert und am 2026-03-24 ins Git-Repository zusammengeführt.
+> Stand: 2026-03-31.
 
 | Version | Status | Features |
 |---------|--------|----------|
-| MVP-1 | **done** | FEAT-001 bis FEAT-008 (Auth, Admin, Tenant, Events, Evidence, Submission, Export) |
-| V1.1 | planned | FEAT-009 (LLM-Rückfragen), FEAT-010 (Review-Übersicht) |
-| V2 | planned | FEAT-011–014 (Voice, Multi-User, Scoring, Fragebogen-Editor) |
+| MVP-1 | **released** | FEAT-001 bis FEAT-008 (Auth, Admin, Tenant, Events, Evidence, Submission, Export) |
+| V1.1 | **released** | FEAT-009 bis FEAT-018 (LLM-Chat, Review, Checkpoints, Rollen, Premium UI, Error-Logging, Doc-Parsing, Doc-Analyse, i18n) |
+| V2 | **requirements** | FEAT-019 (Voice Input via Whisper) |
+| V3 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
 
 ## V1 Scope — Core Features
 
@@ -173,19 +174,43 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 - Wird als Rohmaterial in die Strategaize Operating System Plattform eingespeist
 - API-Endpunkt oder manueller Export (V1: manueller Export reicht)
 
-## V2 Scope (Later)
+## V2 Scope — Voice Input
 
-Die folgenden Features sind explizit **nicht Teil von V1**, aber als nächste Ausbaustufe geplant:
+### FEAT-019: Voice Input (Whisper)
+
+**Priorität:** P0 (V2) — Einziges V2-Feature
+
+Kunden können im Chat-Bereich per Mikrofon sprechen. Die Sprache wird serverseitig durch Whisper (selbst-gehostet auf Hetzner) transkribiert und als editierbarer Text im Eingabefeld angezeigt.
+
+- Audio-Aufnahme im Browser via MediaRecorder API
+- Whisper ASR Service als Docker-Container im internen Netzwerk
+- Server-seitige Transkriptions-API Route
+- Transkribierter Text erscheint im Chat-Eingabefeld, editierbar vor Absenden
+- Automatische Spracherkennung (DE/EN/NL) durch Whisper
+- Visuelles Aufnahme-Feedback (Recording-Indikator)
+- DSGVO: Audio wird nur für Transkription verarbeitet, nicht gespeichert
+- Server-Upgrade auf höhere RAM-Konfiguration akzeptabel falls nötig
+
+**Nicht in V2:**
+- Echtzeit-Streaming-Transkription
+- Audio-Wiedergabe gespeicherter Antworten
+- Text-to-Speech
+
+## V3 Scope (Later)
 
 | Feature | Beschreibung |
 |---------|-------------|
-| Spracheingabe | Speech-to-Text via lokales Whisper auf Hetzner |
-| Audio-Aufnahme & Wiedergabe | Antworten per Sprache diktieren, Aufnahmen abspielen |
-| Admin-Interface | Fragebogen erstellen, bearbeiten, neue Blueprints anlegen |
-| Scoring-Dashboard | Live-Scorecard mit Block-Bewertungen und Gap-Analyse |
-| Fragebogen-Konfigurierbarkeit | Mehrere Blueprint-Typen, nicht nur Exit Ready |
-| Benachrichtigungen | E-Mail-Erinnerungen bei offenen Fragen |
-| Berater-Zugang | Strategaize-Berater können Antworten direkt in der Plattform einsehen |
+| Dedizierte Server pro Kunde | Single-Tenant Deployment auf eigenem Hetzner-Server |
+
+## Parked Ideas (kein fester Zeitplan)
+
+| Idee | Begründung |
+|------|-----------|
+| Scoring-Dashboard & Scorecard | Gehört in die Operating System Plattform, nicht in Blueprint |
+| Admin Fragebogen-Editor | Katalog-Import über Admin-UI reicht |
+| Berater-Zugang | OS-Plattform übernimmt diese Rolle |
+| E-Mail-Benachrichtigungen | Kein identifizierter Kernbedarf |
+| Mehrere Blueprint-Typen | Abhängig vom Editor, derzeit kein Bedarf |
 
 ## Success Criteria
 
@@ -207,16 +232,17 @@ V1 ist erfolgreich, wenn:
 - **Team:** Einzelentwickler mit AI-Unterstützung
 - **Datensensitivität:** Geschäftskritische Unternehmensdaten — RLS und Zugriffskontrolle sind Pflicht
 
-## Non-Goals (V1)
+## Non-Goals
 
-- Kein Sprach-/Audio-Interface (V2)
-- Kein Admin-Interface für Fragebogen-Verwaltung (V2)
-- Kein Scoring-Dashboard oder Scorecard-Berechnung (V2)
-- Keine mehreren Blueprint-Typen (V2)
-- Kein Berater-Portal (V2)
-- Keine E-Mail-Benachrichtigungen (V2)
+- Kein Scoring-Dashboard oder Scorecard-Berechnung (gehört in OS-Plattform)
+- Kein Admin-Interface für Fragebogen-Verwaltung (Katalog-Import reicht)
+- Keine mehreren Blueprint-Typen
+- Kein Berater-Portal (OS-Plattform)
+- Keine E-Mail-Benachrichtigungen
 - Keine mobile App — responsive Web reicht
 - Keine Echtzeit-Kollaboration zwischen mehreren Nutzern gleichzeitig
+- Keine Echtzeit-Streaming-Transkription (V2: Aufnahme → Transkription)
+- Keine Browser Speech API (unzuverlässig über Browser hinweg)
 
 ## Risks & Assumptions
 
@@ -224,26 +250,29 @@ V1 ist erfolgreich, wenn:
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Qwen 2.5 Rückfrage-Qualität unzureichend | Hoch | Iterative Prompt-Optimierung in Dify, Fallback auf größeres Modell |
-| Dify-Integration Komplexität | Mittel | Prototyp der Dify-Anbindung früh in der Architektur validieren |
-| PDF-Parsing-Qualität | Mittel | Unterstützte Formate klar begrenzen, Parsing-Bibliothek evaluieren |
-| Hetzner-Performance für LLM | Mittel | Server-Sizing vor Implementierung klären |
+| RAM reicht nicht für Ollama + Whisper gleichzeitig | Hoch | Server-Upgrade auf 64GB. Oder kleineres Whisper-Modell (small statt medium). |
+| Transkriptions-Qualität bei M&A-Fachbegriffen | Mittel | Whisper medium hat gute Deutsch-Performance. Kunde kann Text vor Absenden korrigieren. |
+| Mikrofon-Berechtigung wird verweigert | Niedrig | Klare Fehlermeldung, Text-Eingabe bleibt verfügbar. |
+| Audio-Qualität variiert (Umgebungsgeräusche) | Mittel | Whisper ist robust. Kunde kann Text korrigieren. |
+| Build-OOM mit Ollama + Whisper im RAM | Mittel | Beide Container vor Build stoppen. Workaround bekannt (ISSUE-024). |
 
 ### Assumptions
 
-- Hetzner-Server mit ausreichend GPU/RAM für Ollama + Qwen 2.5 ist verfügbar
-- Dify.ai kann als Self-Hosted-Instanz auf Hetzner betrieben werden
-- Supabase (self-hosted oder Cloud) ist die Backend-Plattform
-- Der Fragebogen ändert sich in V1 nicht wesentlich
-- 1–2 Kunden gleichzeitig in V1 (kein Hochlast-Szenario)
+- Hetzner-Server kann auf höhere RAM-Konfiguration upgegradet werden
+- Whisper ASR Webservice Docker Image ist stabil und wartbar
+- MediaRecorder API funktioniert in allen modernen Browsern
+- Typische Aufnahmen sind 30 Sekunden bis 3 Minuten
+- 1–2 Kunden gleichzeitig (kein Hochlast-Szenario für Whisper)
+- Supabase Self-Hosted auf Hetzner (entschieden, läuft)
+- Kein Dify — LLM direkt via Ollama REST API (DEC-005)
 
 ## Open Questions
 
-1. **Supabase Cloud oder Self-Hosted?** — Supabase auf Hetzner oder Supabase Cloud?
-2. **Dify-Deployment:** Läuft Dify als Docker-Container auf demselben Hetzner-Server wie Ollama?
-3. **Hetzner-Server-Spec:** Welche GPU/RAM-Konfiguration für Ollama + Qwen 2.5?
-4. **Scoring in V1?** — Die Excel enthält ein vollständiges Scoring-System. Soll die Berechnung in V1 im Backend laufen (ohne Dashboard), damit der Export die Scores enthält?
-5. **Vorherige Arbeit:** Es gab bereits Frontend- und Backend-Arbeit mit Supabase/RLS. Wo befindet sich dieser Code? Im aktuellen Repository ist er nicht vorhanden.
+1. **Server-Sizing:** Reicht CPX62 (32GB) für Ollama + Whisper Small, oder ist Upgrade nötig? → Muss in Architektur-Phase durch RAM-Messung entschieden werden. Mit Whisper Small (~1GB) wahrscheinlich kein Upgrade nötig.
+
+## Resolved Questions (V2)
+
+1. **Whisper-Modell:** Entschieden: Whisper Small zuerst (DEC-015). Upgrade auf Medium/Large wenn echte Kunden bessere Qualität brauchen.
 
 ## Delivery Mode
 
@@ -256,14 +285,17 @@ V1 ist erfolgreich, wenn:
 | Framework | Next.js 16 (App Router) |
 | Sprache | TypeScript |
 | Styling | Tailwind CSS + shadcn/ui |
-| Backend | Supabase (Auth, DB, Storage, RLS) |
-| LLM | Ollama + Qwen 2.5 (lokal) |
-| LLM-Orchestrierung | Dify.ai |
-| Hosting | Hetzner (Self-Hosted) |
-| Deployment | Docker (TBD) |
+| Backend | Supabase Self-Hosted (Auth, DB, Storage, RLS) |
+| LLM | Ollama + Qwen 2.5 14B (lokal auf Hetzner) |
+| Speech-to-Text | Whisper ASR (lokal auf Hetzner, Docker) |
+| i18n | next-intl (DE/EN/NL) |
+| Hosting | Hetzner CPX62 (32GB RAM, 16 vCPUs) |
+| Deployment | Coolify + Docker Compose |
+| API Gateway | Kong (deklarative Config) |
 
 ---
 
 Erstellt: 2026-03-24
+Aktualisiert: 2026-03-31 (V2 Requirements — Voice Input)
 Skill: `/requirements`
 Nächster Schritt: `/architecture`

@@ -11,15 +11,22 @@
       "id": "v1-1",
       "name": "V1.1",
       "status": "released",
-      "summary": "LLM-Integration — Rückfragen via Ollama/Qwen (lokal, DSGVO), Chat-Workflow, Block-Checkpoints, Premium UI",
+      "summary": "LLM-Integration — Rückfragen via Ollama/Qwen (lokal, DSGVO), Chat-Workflow, Block-Checkpoints, Premium UI, i18n DE/EN/NL, Tenant-Admin-CRUD",
       "order": 2
     },
     {
       "id": "v2",
       "name": "V2",
-      "status": "planned",
-      "summary": "Voice & Scoring — Spracheingabe via Whisper, Audio-Wiedergabe, Multi-User Tenant, Scoring-Dashboard, Fragebogen-Editor",
+      "status": "active",
+      "summary": "Voice Input — Spracheingabe via Whisper (selbst-gehostet, DSGVO), Audio-Aufnahme im Chat, serverseitige Transkription",
       "order": 3
+    },
+    {
+      "id": "v3",
+      "name": "V3",
+      "status": "planned",
+      "summary": "Dedizierte Server — Single-Tenant Deployment auf eigenem Hetzner-Server pro Kunde",
+      "order": 4
     }
   ]
 }

@@ -42,13 +42,23 @@
 |----|---------|--------|---------|
 | FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | done | 2026-03-29 |
 
-## V2 Features (Geplant)
+## V2 Features (Requirements)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
 | FEAT-019 | Voice Input (Whisper) | planned | 2026-03-29 |
+
+## V3 Features (Geplant)
+
+| ID | Feature | Status | Created |
+|----|---------|--------|---------|
 | FEAT-020 | Dedizierte Server pro Kunde | planned | 2026-03-29 |
-| FEAT-021 | Scoring-Dashboard & Scorecard | planned | — |
-| FEAT-022 | Admin: Fragebogen-Editor | planned | — |
+
+## Removed Features
+
+| ID | Feature | Reason |
+|----|---------|--------|
+| FEAT-021 | Scoring-Dashboard & Scorecard | Gehört in OS-Plattform, nicht Blueprint |
+| FEAT-022 | Admin: Fragebogen-Editor | Katalog-Import über Admin-UI reicht |
 
 ## Next Available ID: FEAT-023
