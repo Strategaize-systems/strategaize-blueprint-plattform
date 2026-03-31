@@ -111,7 +111,8 @@ export async function POST(
   // our route calls verifyOtp() server-side and then redirects to set-password.
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const hashedToken = linkData.properties?.hashed_token;
-  const verifyUrl = `${appUrl}/auth/callback?token_hash=${hashedToken}&type=invite`;
+  const tenantLocale = tenant.language ?? "de";
+  const verifyUrl = `${appUrl}/auth/callback?token_hash=${hashedToken}&type=invite&locale=${tenantLocale}`;
 
   // Send invite email via our own SMTP (bypasses GoTrue's broken URL generation)
   try {

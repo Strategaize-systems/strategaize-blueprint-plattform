@@ -210,3 +210,15 @@
 - Severity: Low
 - Area: Backend / Document Parsing
 - Summary: DOCX-Textextraktion mit mammoth Library implementiert. extractText() in document-parser.ts unterstuetzt jetzt PDF, DOCX, TXT und CSV. Behoben am 2026-03-30.
+
+### ISSUE-027 — Set-Password-Seite zeigt immer Deutsch (statt Tenant-Sprache)
+- Status: resolved
+- Severity: High
+- Area: i18n / Auth
+- Summary: Set-Password-Seite nach Invite zeigte immer Deutsch. Fix: Invite-Link enthaelt jetzt locale-Parameter, Callback-Route setzt NEXT_LOCALE Cookie vor Redirect zu Set-Password. Behoben am 2026-03-31.
+
+### ISSUE-028 — Invite-Flow: Admin-Session kollidiert mit Set-Password
+- Status: resolved
+- Severity: Blocker
+- Area: Auth / Session
+- Summary: Admin-Session im selben Browser kollidierte mit Set-Password-Flow. GoTrue meldete "New password should be different from old password". Fix: Callback-Route ruft jetzt signOut() vor verifyOtp() auf. Supabase-Client schreibt Cookies direkt auf die Redirect-Response statt ueber cookies() API. Behoben am 2026-03-31.
