@@ -409,6 +409,46 @@
       "version": "V2",
       "description": "RAM-Messung auf Hetzner CPX62. Entscheidung: Whisper small vs medium. Falls 32GB nicht reicht: Server-Upgrade auf 64GB. Docker Compose Resource Limits fuer beide Services. Build-OOM Workaround aktualisieren.",
       "createdAt": "2026-03-31"
+    },
+    {
+      "id": "BL-042",
+      "title": "In-App Learning Center: Hilfe-Button + Navigationsstruktur",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2.1",
+      "description": "Hilfe-Button im Hauptbereich (Tenant-Workspace), der ein Learning Center oeffnet. Muss von jeder Seite erreichbar sein, leicht schliessbar, und innerhalb des eingeloggten Bereichs bleiben. Enthalt: Bedienungsanleitung (Text), Video-Tutorials (Verlinkung), FAQ. Responsive, nicht stoerend.",
+      "createdAt": "2026-04-01"
+    },
+    {
+      "id": "BL-043",
+      "title": "Video-Tutorial-Bereich: 3-4 Lektionen als eingebettete Videos",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2.1",
+      "description": "Innerhalb des Learning Centers und auch unter dem Run-Bereich: 3-4 Video-Lektionen (Erste Schritte, Fragebogen bearbeiten, KI richtig nutzen, Dokumente hochladen). Videos werden extern produziert und als Dateien verlinkt. Video-Player eingebettet, kein externer Redirect. Auch auf Dashboard oder unter Runs sichtbar als Einstiegshilfe.",
+      "createdAt": "2026-04-01"
+    },
+    {
+      "id": "BL-044",
+      "title": "Bedienungsanleitung als In-App-Dokumentation",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2.1",
+      "description": "Die schriftliche Bedienungsanleitung (erzeugt durch /user-guide Skill) als durchsuchbare In-App-Hilfe anzeigen. Markdown-basiert, flow-basiert strukturiert. Inklusive KI-Leitfaden fuer Erstnutzer. Muss jederzeit ueber Hilfe-Button erreichbar sein.",
+      "createdAt": "2026-04-01"
+    },
+    {
+      "id": "BL-045",
+      "title": "DSGVO-Compliance-Dokument erstellen (/compliance Skill)",
+      "type": "improvement",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2.1",
+      "description": "DSGVO-Compliance-Dokumentation fuer Blueprint Plattform erstellen mit /compliance Skill. Brandables Dokument fuer Kundenuebergabe: Datenerhebung, Speicherorte (Hetzner EU), Zugriffskontrollen (RLS), Datenweitergabe, Loeschkonzept, technische Schutzmassnahmen. Kein externer Datenabfluss (Ollama+Whisper lokal).",
+      "createdAt": "2026-04-01"
     }
   ]
 }
