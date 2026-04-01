@@ -330,3 +330,296 @@ docker stop OLLAMA_CONTAINER WHISPER_CONTAINER
 | API Route | `src/app/api/tenant/runs/[runId]/questions/[questionId]/transcribe/route.ts` (NEU) |
 | Frontend | `src/app/runs/[id]/run-workspace-client.tsx` (Mikrofon-Button, Recording-State) |
 | i18n | `src/messages/de.json`, `en.json`, `nl.json` (neue Keys) |
+
+## V2.1: Learning Center Architektur
+
+### Architektur-Überblick
+
+V2.1 ist ein reines Frontend-Feature. Keine DB-Änderungen, keine neuen Docker-Services, keine API-Routes. Das Learning Center ist ein Sheet-Panel (Seitenleiste von rechts), das über einen Hilfe-Button auf allen Tenant-Seiten erreichbar ist.
+
+```
+Tenant-Seite (Dashboard oder Workspace)
+  |
+  +---> Help-Button (floating, unten rechts)
+          |
+          | onClick
+          v
+        Sheet-Panel (von rechts, 480px / fullscreen mobile)
+          |
+          +---> Tab: Videos
+          |       |
+          |       +---> Lektions-Liste (Cards)
+          |       |       |
+          |       |       | onClick
+          |       |       v
+          |       +---> Video-Player (HTML5 <video>)
+          |               |
+          |               +---> /public/videos/tutorial-{nr}-{locale}.mp4
+          |
+          +---> Tab: Anleitung
+                  |
+                  +---> TOC (generiert aus H2/H3)
+                  +---> Suchfeld (Client-seitig)
+                  +---> Markdown-Rendering (react-markdown)
+                          |
+                          +---> /public/docs/USER-GUIDE-{locale}.md
+```
+
+### Komponentenhierarchie
+
+```
+src/components/
+  help-button.tsx              ← Floating Button, rendert auf allen Tenant-Seiten
+  learning-center/
+    learning-center-panel.tsx  ← Sheet-Container mit Tab-State
+    video-tutorials.tsx        ← Videos-Tab: Lektions-Liste
+    video-player.tsx           ← Eingebetteter HTML5 Video-Player
+    user-guide.tsx             ← Anleitung-Tab: Markdown-Rendering + TOC + Suche
+    user-guide-toc.tsx         ← Inhaltsverzeichnis (generiert aus Headings)
+    user-guide-search.tsx      ← Client-seitige Textsuche
+```
+
+### Haupt-Komponenten und Verantwortlichkeiten
+
+| Komponente | Verantwortung |
+|------------|--------------|
+| `help-button.tsx` | Floating Action Button auf Dashboard + Workspace. Öffnet/schließt das Learning Center Sheet. Rendert in den Layouts beider Tenant-Seiten. |
+| `learning-center-panel.tsx` | Sheet-Container (shadcn/ui Sheet). Verwaltet aktiven Tab (Videos/Anleitung). Responsive Breite. |
+| `video-tutorials.tsx` | Rendert Lektions-Cards aus Konfiguration. Verwaltet ausgewählte Lektion. Zeigt VideoPlayer bei Auswahl. |
+| `video-player.tsx` | HTML5 `<video>` mit nativen Controls. Fehlerbehandlung bei fehlender Video-Datei. Zurück-Navigation. |
+| `user-guide.tsx` | Lädt Markdown-Datei per `fetch()`. Rendert via react-markdown. Verwaltet Such-State. |
+| `user-guide-toc.tsx` | Parst H2/H3 Headings aus Markdown. Rendert klickbare Sprungmarken. Scroll-to-Heading bei Klick. |
+| `user-guide-search.tsx` | Suchfeld mit debounced Input. Filtert Markdown-Abschnitte nach Suchbegriff. Highlighted Treffer. |
+
+### Datenfluss
+
+#### Video-Tutorials
+
+```
+1. video-tutorials.tsx importiert Konfiguration aus src/config/tutorials.ts
+2. Konfiguration enthält pro Lektion: id, title-Keys, description-Keys, videoUrl-Template, thumbnailUrl
+3. Lektions-Titel/Beschreibung kommen aus i18n (learning.tutorials.*)
+4. Video-URL wird zur Laufzeit mit Tenant-Locale zusammengebaut:
+     /videos/tutorial-{id}-{locale}.mp4
+5. Thumbnail-URL: /videos/tutorial-{id}-thumb.jpg (sprachunabhängig)
+6. Bei fehlendem Video: <video> onError → Fallback-UI "Video wird vorbereitet"
+```
+
+#### Bedienungsanleitung
+
+```
+1. user-guide.tsx liest Tenant-Locale aus next-intl (useLocale())
+2. Lädt Markdown-Datei per fetch():
+     DE: /docs/USER-GUIDE.md
+     EN: /docs/USER-GUIDE-en.md
+     NL: /docs/USER-GUIDE-nl.md
+3. Fallback: wenn Datei fehlt → DE-Version laden
+4. Markdown-String wird an react-markdown übergeben
+5. Parallel: H2/H3-Headings werden aus Markdown-String geparst → TOC
+6. Suche: filtert den Markdown-Content client-seitig nach Eingabe
+```
+
+### Tutorial-Konfiguration
+
+```typescript
+// src/config/tutorials.ts
+
+export interface Tutorial {
+  id: string;           // "01", "02", "03", "04"
+  titleKey: string;     // i18n Key: "learning.tutorials.t01.title"
+  descriptionKey: string;
+  durationSeconds: number;
+  videoPath: string;    // Template: "/videos/tutorial-{id}-{locale}.mp4"
+  thumbnailPath: string;
+}
+
+export const TUTORIALS: Tutorial[] = [
+  {
+    id: "01",
+    titleKey: "learning.tutorials.t01.title",
+    descriptionKey: "learning.tutorials.t01.description",
+    durationSeconds: 0, // Dummy: Dauer noch unbekannt
+    videoPath: "/videos/tutorial-01-{locale}.mp4",
+    thumbnailPath: "/videos/tutorial-01-thumb.jpg",
+  },
+  // ... 02, 03, 04
+];
+```
+
+### Markdown-Rendering Stack (DEC-019)
+
+- **react-markdown** (Markdown → React-Komponenten)
+- **remark-gfm** (GitHub Flavored Markdown: Tabellen, Strikethrough, Task-Listen)
+- Rendering innerhalb des Sheet-Panels mit Tailwind Typography Styling
+- Keine SSR nötig — Markdown wird client-seitig per `fetch()` geladen und gerendert
+- Kein MDX — reine Markdown-Dateien ohne interaktive Komponenten
+
+### i18n-Strategie für V2.1
+
+Zwei i18n-Ebenen:
+
+| Ebene | Mechanismus | Beispiel |
+|-------|------------|---------|
+| **UI-Chrome** | next-intl Message-Keys | Tab-Labels, Button-Text, Platzhalter |
+| **Content** | Separate Dateien pro Sprache | USER-GUIDE.md, Tutorial-Videos |
+
+UI-Chrome geht in die bestehenden Message-Dateien unter neuem Namespace `learning.*`:
+
+```json
+{
+  "learning": {
+    "helpButton": "Hilfe",
+    "tabVideos": "Video-Tutorials",
+    "tabGuide": "Bedienungsanleitung",
+    "searchPlaceholder": "In Anleitung suchen...",
+    "noResults": "Keine Ergebnisse für \"{query}\"",
+    "videoNotReady": "Dieses Video wird vorbereitet.",
+    "guideNotReady": "Die Anleitung wird vorbereitet.",
+    "tutorials": {
+      "t01": {
+        "title": "Erste Schritte",
+        "description": "Login, Dashboard und Ihren ersten Run starten"
+      },
+      "t02": {
+        "title": "Fragebogen bearbeiten",
+        "description": "Fragen beantworten, Blöcke navigieren, Fortschritt sehen"
+      },
+      "t03": {
+        "title": "KI richtig nutzen",
+        "description": "Rückfragen, Zusammenfassung und Spracheingabe effektiv einsetzen"
+      },
+      "t04": {
+        "title": "Dokumente hochladen",
+        "description": "Evidence hochladen, Labels vergeben, Dokumentanalyse nutzen"
+      }
+    },
+    "backToList": "Zurück zur Übersicht"
+  }
+}
+```
+
+Content-Dateien (Markdown, Videos) liegen unter `/public/` und werden nach Locale ausgewählt.
+
+### Statische Dateien — Verzeichnisstruktur
+
+```
+public/
+  docs/
+    USER-GUIDE.md           ← Deutsch (Default)
+    USER-GUIDE-en.md        ← Englisch
+    USER-GUIDE-nl.md        ← Niederländisch
+  videos/
+    tutorial-01-de.mp4      ← Video-Dateien (später)
+    tutorial-01-en.mp4
+    tutorial-01-nl.mp4
+    tutorial-01-thumb.jpg   ← Thumbnail (sprachunabhängig)
+    tutorial-02-de.mp4
+    tutorial-02-en.mp4
+    ...
+```
+
+**Warum `/public/` statt Supabase Storage (DEC-020):**
+- Kein Auth nötig für Hilfe-Inhalte (User ist bereits eingeloggt)
+- Kein Upload-Workflow nötig (Dateien werden im Repo verwaltet)
+- Kein zusätzlicher API-Aufruf (direkter HTTP-Zugriff)
+- Content-Updates durch Datei-Austausch + Redeploy
+- Video-Dateien sind groß → `.gitignore` für `/public/videos/*.mp4`, Deployment via SCP/rsync
+
+### Integration in bestehende Layouts
+
+Der Help-Button muss auf beiden Tenant-Seiten erscheinen:
+
+```
+1. Dashboard: src/app/dashboard/dashboard-client.tsx
+   → <HelpButton /> am Ende des JSX (fixed positioning, nicht im Layout-Flow)
+
+2. Workspace: src/app/runs/[id]/run-workspace-client.tsx
+   → <HelpButton /> am Ende des JSX (identisch)
+```
+
+Beide Seiten sind Client Components (`"use client"`) → Help-Button kann direkt eingebunden werden.
+
+**Alternative:** Help-Button in ein Shared-Layout extrahieren. Aktuell haben Dashboard und Workspace separate Client-Layouts (kein geteiltes Tenant-Layout). Für V2.1 reicht duplizierter Import — Shared-Layout wäre Over-Engineering für 2 Seiten.
+
+### Sheet-Verhalten
+
+| Eigenschaft | Wert |
+|-------------|------|
+| Öffnungsrichtung | rechts (`side="right"`) |
+| Breite Desktop | `max-w-lg` (512px) |
+| Breite Tablet (< 1024px) | `max-w-full` (100%) |
+| Mobile (< 768px) | Full-Screen |
+| Overlay | Ja (semi-transparent Backdrop) |
+| Schließen | X-Button, Escape, Backdrop-Klick |
+| Z-Index | Standard Sheet z-index (über Content, unter Toasts) |
+| Scroll | Internes Scrolling im Panel |
+| Animation | shadcn/ui Default (slide-in von rechts) |
+
+### Suchlogik (Bedienungsanleitung)
+
+Client-seitige Suche — kein Backend nötig:
+
+```
+1. User tippt Suchbegriff → debounced (300ms)
+2. Markdown-String wird in Abschnitte geteilt (split bei ## oder ###)
+3. Abschnitte die den Suchbegriff enthalten (case-insensitive) werden gefiltert
+4. Treffer-Abschnitte werden angezeigt, Rest ausgeblendet
+5. Suchbegriff wird im gerenderten Text hervorgehoben (<mark>)
+6. Leere Suche → alle Abschnitte anzeigen
+7. Keine Treffer → "Keine Ergebnisse für [Begriff]" Hinweis
+```
+
+### Responsive-Verhalten
+
+| Breakpoint | Hilfe-Button | Sheet | Video-Player |
+|------------|-------------|-------|-------------|
+| Desktop (≥ 1024px) | Floating unten rechts | 512px Breite, rechts | Inline im Panel |
+| Tablet (768–1023px) | Floating unten rechts | 100% Breite | Inline im Panel |
+| Mobile (< 768px) | Floating unten rechts, kleiner | Full-Screen | Inline, volle Breite |
+
+### Neue Dependencies
+
+| Package | Zweck | Größe (approx.) |
+|---------|-------|-----------------|
+| `react-markdown` | Markdown → React-Rendering | ~25KB gzipped |
+| `remark-gfm` | GitHub Flavored Markdown Plugin | ~5KB gzipped |
+
+Keine weiteren Dependencies nötig. HTML5 `<video>` ist nativ, kein Video-Player-Paket.
+
+### Sicherheit / Datenschutz
+
+- **Keine sensiblen Daten:** Learning Center zeigt nur öffentliche Hilfe-Inhalte
+- **Kein DB-Zugriff:** Alle Inhalte sind statische Dateien
+- **Kein externer Service:** Videos und Markdown lokal gehostet
+- **Auth-Kontext bleibt:** Help-Button nur im eingeloggten Bereich sichtbar
+- **Keine Tracking-Daten:** Kein Speichern welche Tutorials gesehen wurden
+
+### RAM-Impact
+
+**Keiner.** V2.1 ist ein reines Frontend-Feature. Kein neuer Docker-Service, kein zusätzlicher Server-Prozess. Statische Dateien werden von Caddy/Next.js ausgeliefert — vernachlässigbarer Zusatz-RAM.
+
+Video-Dateien erhöhen Disk-Nutzung (geschätzt 4 Videos × 3 Sprachen × ~50MB = ~600MB). Hetzner CPX62 hat 160GB Disk — kein Problem.
+
+### Betroffene Dateien (Übersicht für Slice-Planning)
+
+| Bereich | Dateien | Aktion |
+|---------|---------|--------|
+| Dependency | `package.json` | react-markdown + remark-gfm hinzufügen |
+| Komponente | `src/components/help-button.tsx` | NEU |
+| Komponente | `src/components/learning-center/learning-center-panel.tsx` | NEU |
+| Komponente | `src/components/learning-center/video-tutorials.tsx` | NEU |
+| Komponente | `src/components/learning-center/video-player.tsx` | NEU |
+| Komponente | `src/components/learning-center/user-guide.tsx` | NEU |
+| Komponente | `src/components/learning-center/user-guide-toc.tsx` | NEU |
+| Komponente | `src/components/learning-center/user-guide-search.tsx` | NEU |
+| Konfiguration | `src/config/tutorials.ts` | NEU |
+| Integration | `src/app/dashboard/dashboard-client.tsx` | HelpButton einbinden |
+| Integration | `src/app/runs/[id]/run-workspace-client.tsx` | HelpButton einbinden |
+| i18n | `src/messages/de.json` | learning.* Namespace hinzufügen |
+| i18n | `src/messages/en.json` | learning.* Namespace hinzufügen |
+| i18n | `src/messages/nl.json` | learning.* Namespace hinzufügen |
+| Content | `public/docs/USER-GUIDE.md` | NEU (Dummy) |
+| Content | `public/docs/USER-GUIDE-en.md` | NEU (Dummy) |
+| Content | `public/docs/USER-GUIDE-nl.md` | NEU (Dummy) |
+| Content | `public/videos/tutorial-*-thumb.jpg` | NEU (Platzhalter) |
+| Git | `.gitignore` | `/public/videos/*.mp4` hinzufügen |

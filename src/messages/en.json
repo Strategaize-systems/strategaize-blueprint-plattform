@@ -175,5 +175,37 @@
     "evidenceLabel": "Evidence documents",
     "created": "Created: {date}",
     "submitted": "Submitted: {date}"
+  },
+  "learning": {
+    "helpButton": "Help",
+    "title": "Learning Center",
+    "tabVideos": "Video Tutorials",
+    "tabGuide": "User Guide",
+    "close": "Close",
+    "videoNotReady": "This video is being prepared.",
+    "guideNotReady": "The user guide is being prepared.",
+    "placeholder": "Content is loading...",
+    "backToList": "Back to overview",
+    "searchPlaceholder": "Search user guide...",
+    "noResults": "No results for \"{query}\"",
+    "tocTitle": "Contents",
+    "tutorials": {
+      "t01": {
+        "title": "Getting Started",
+        "description": "Login, dashboard and starting your first run"
+      },
+      "t02": {
+        "title": "Editing the Questionnaire",
+        "description": "Answering questions, navigating blocks, tracking progress"
+      },
+      "t03": {
+        "title": "Using AI Effectively",
+        "description": "Follow-up questions, summaries and voice input"
+      },
+      "t04": {
+        "title": "Uploading Documents",
+        "description": "Upload evidence, assign labels, use document analysis"
+      }
+    }
   }
 }

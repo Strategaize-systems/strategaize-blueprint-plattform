@@ -175,5 +175,37 @@
     "evidenceLabel": "Bewijsdocumenten",
     "created": "Aangemaakt: {date}",
     "submitted": "Ingediend: {date}"
+  },
+  "learning": {
+    "helpButton": "Hulp",
+    "title": "Learning Center",
+    "tabVideos": "Video-tutorials",
+    "tabGuide": "Gebruikershandleiding",
+    "close": "Sluiten",
+    "videoNotReady": "Deze video wordt voorbereid.",
+    "guideNotReady": "De handleiding wordt voorbereid.",
+    "placeholder": "Inhoud wordt geladen...",
+    "backToList": "Terug naar overzicht",
+    "searchPlaceholder": "Zoeken in handleiding...",
+    "noResults": "Geen resultaten voor \"{query}\"",
+    "tocTitle": "Inhoud",
+    "tutorials": {
+      "t01": {
+        "title": "Aan de slag",
+        "description": "Inloggen, dashboard en uw eerste run starten"
+      },
+      "t02": {
+        "title": "Vragenlijst bewerken",
+        "description": "Vragen beantwoorden, blokken navigeren, voortgang bekijken"
+      },
+      "t03": {
+        "title": "AI effectief gebruiken",
+        "description": "Vervolgvragen, samenvattingen en spraakinvoer"
+      },
+      "t04": {
+        "title": "Documenten uploaden",
+        "description": "Bewijs uploaden, labels toewijzen, documentanalyse gebruiken"
+      }
+    }
   }
 }

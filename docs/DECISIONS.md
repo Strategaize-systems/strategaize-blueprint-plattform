@@ -89,3 +89,23 @@
 - Status: accepted
 - Reason: Ermöglicht Deployment ohne Whisper-Container (z.B. bei RAM-Problemen oder für Staging-Umgebung ohne AI-Services). Mikrofon-Button wird nur angezeigt wenn Feature-Flag true ist. Graceful Degradation: Plattform funktioniert komplett ohne Voice Input.
 - Consequence: Env-Var NEXT_PUBLIC_WHISPER_ENABLED steuert Sichtbarkeit des Mikrofon-Buttons im Frontend. Backend-Route existiert immer, gibt aber 503 zurück wenn Whisper nicht erreichbar.
+
+## DEC-019 — react-markdown für Bedienungsanleitung
+- Status: accepted
+- Reason: Bedienungsanleitung soll als durchsuchbare In-App-Dokumentation im Learning Center angezeigt werden. react-markdown ist die Standard-Library für Markdown→React-Rendering in Next.js Projekten. Alternativen: MDX (Overkill — keine interaktiven Komponenten nötig), next-mdx-remote (Server-seitig — aber Sheet-Panel ist Client Component), manuelles HTML (nicht wartbar).
+- Consequence: Neue Dependencies: react-markdown (~25KB gzipped) + remark-gfm (~5KB gzipped). Markdown-Dateien werden client-seitig per fetch() geladen und gerendert. Kein Build-Step für Content-Updates nötig — Datei austauschen reicht.
+
+## DEC-020 — Statische Dateien in /public/ statt Supabase Storage
+- Status: accepted
+- Reason: Learning Center Inhalte (Videos, Markdown) sind öffentliche Hilfe-Inhalte, keine benutzerspezifischen Daten. Supabase Storage würde unnötige Komplexität hinzufügen (Auth für public files, Upload-Workflow, API-Aufrufe). Dateien werden im Repo/Deployment verwaltet, nicht von Usern hochgeladen. Content-Updates erfolgen durch Datei-Austausch + Redeploy.
+- Consequence: Markdown-Dateien unter /public/docs/, Video-Thumbnails unter /public/videos/. Video-MP4-Dateien per .gitignore ausgeschlossen (zu groß für Git), Deployment via SCP/rsync auf Server. Direkter HTTP-Zugriff ohne API-Layer.
+
+## DEC-021 — Sheet-Panel statt dedizierte Route für Learning Center
+- Status: accepted
+- Reason: BL-042 fordert "von jeder Seite erreichbar, leicht schließbar, innerhalb des eingeloggten Bereichs". Ein Sheet-Panel (Seitenleiste von rechts) erfüllt alle Kriterien: öffnet sich über dem aktuellen Content, ist per Escape/Klick schließbar, erfordert keine Navigation weg von der aktuellen Seite. Dedizierte Route (/learning) würde Context-Switch erfordern und "leicht schließbar" verletzen.
+- Consequence: Learning Center als shadcn/ui Sheet (side="right"). Help-Button als floating Element auf Dashboard und Workspace. State-Management rein lokal (open/closed, activeTab). Kein Routing-Aufwand.
+
+## DEC-022 — HTML5 video statt Video-Player-Library
+- Status: accepted
+- Reason: 3-4 Tutorial-Videos brauchen nur basic Playback (Play/Pause, Scrub, Fullscreen). Native HTML5 <video> unterstützt das in allen modernen Browsern. Video-Player-Libraries (Plyr, Video.js, react-player) würden Dependency-Overhead für Features bringen, die nicht gebraucht werden (Playlists, Streaming, Analytics, Ads).
+- Consequence: Keine zusätzliche Video-Player-Dependency. HTML5 <video controls> mit Poster-Attribut für Thumbnails. Graceful Degradation bei fehlendem Video über onError Handler.

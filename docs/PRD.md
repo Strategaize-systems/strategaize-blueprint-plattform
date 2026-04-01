@@ -89,7 +89,8 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 |---------|--------|----------|
 | MVP-1 | **released** | FEAT-001 bis FEAT-008 (Auth, Admin, Tenant, Events, Evidence, Submission, Export) |
 | V1.1 | **released** | FEAT-009 bis FEAT-018 (LLM-Chat, Review, Checkpoints, Rollen, Premium UI, Error-Logging, Doc-Parsing, Doc-Analyse, i18n) |
-| V2 | **requirements** | FEAT-019 (Voice Input via Whisper) |
+| V2 | **released** | FEAT-019 (Voice Input via Whisper) |
+| V2.1 | **requirements** | FEAT-023 bis FEAT-025 (Learning Center, Video-Tutorials, Bedienungsanleitung) |
 | V3 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
 
 ## V1 Scope — Core Features
@@ -196,6 +197,107 @@ Kunden können im Chat-Bereich per Mikrofon sprechen. Die Sprache wird serversei
 - Audio-Wiedergabe gespeicherter Antworten
 - Text-to-Speech
 
+## V2.1 Scope — Onboarding & Hilfe (Learning Center)
+
+### Problem
+
+Kunden, die die Blueprint Plattform zum ersten Mal nutzen, haben keine geführte Einführung. Es gibt kein In-App-Hilfesystem, keine Video-Tutorials und keine schriftliche Anleitung. Besonders die KI-gestützten Features (Rückfragen, Zusammenfassung, Dokumentanalyse, Spracheingabe) erfordern Erklärung, damit Kunden sie effektiv nutzen.
+
+### Ziel
+
+Ein In-App Learning Center, das Kunden jederzeit zugänglich ist und ihnen hilft, die Plattform eigenständig zu verstehen und produktiv zu nutzen — ohne Strategaize-Support kontaktieren zu müssen.
+
+### FEAT-023: In-App Learning Center — Hilfe-Button + Navigation (DE/EN/NL)
+
+**Priorität:** P0 (V2.1) — Grundstruktur für alle Hilfe-Inhalte
+
+Ein dauerhaft sichtbarer Hilfe-Button im Tenant-Bereich, der das Learning Center als Seitenpanel (Sheet) öffnet. Das Learning Center ist die Container-Struktur für Video-Tutorials und Bedienungsanleitung.
+
+- Hilfe-Button auf allen Tenant-Seiten sichtbar (Dashboard + Workspace)
+- Öffnet Sheet-Panel von rechts (shadcn/ui Sheet-Komponente)
+- Leicht schließbar (X-Button, Escape, Klick außerhalb)
+- Bleibt innerhalb des eingeloggten Bereichs (kein externer Redirect)
+- Tab-Navigation im Panel: Videos | Anleitung
+- Responsive: Panel auf Mobile als Full-Screen-Overlay
+- Dreisprachig: alle UI-Chrome-Texte über next-intl (DE/EN/NL)
+- Nicht störend: überlagert den Workspace, blockiert aber keine Interaktion nach Schließen
+
+**Akzeptanzkriterien:**
+1. Hilfe-Button ist auf Dashboard und Workspace sichtbar
+2. Klick öffnet Sheet-Panel mit Tab-Navigation
+3. Panel zeigt Inhalte in Tenant-Sprache (DE/EN/NL)
+4. Panel ist auf Desktop und Mobile nutzbar
+5. Schließen per X, Escape oder Klick außerhalb funktioniert
+6. Kein Layout-Shift beim Öffnen/Schließen
+
+### FEAT-024: Video-Tutorial-Bereich (DE/EN/NL)
+
+**Priorität:** P0 (V2.1) — Wichtigste Hilfe-Ressource für Endnutzer
+
+3–4 eingebettete Video-Lektionen innerhalb des Learning Centers, die die Kernfunktionen der Plattform erklären.
+
+- Lektionen:
+  1. **Erste Schritte** — Login, Dashboard, Run starten
+  2. **Fragebogen bearbeiten** — Fragen beantworten, Blöcke navigieren, Fortschritt sehen
+  3. **KI richtig nutzen** — Rückfragen, Zusammenfassung, Spracheingabe
+  4. **Dokumente hochladen** — Evidence, Labels, Dokumentanalyse
+- Video-Player eingebettet (HTML5 `<video>` oder iframe), kein externer Redirect
+- Videos extern produziert (via /user-guide + Narakeet oder manuell), als Dateien eingebunden
+- Automatische Sprachauswahl: zeigt Videos der Tenant-Sprache
+- Auch als Einstiegshilfe auf dem Dashboard sichtbar (optionaler Teaser-Bereich)
+- **Dummy-Content für V2.1-Implementation:** Platzhalter-Thumbnails mit Titel/Beschreibung, Video-URLs noch leer oder mit Platzhalter
+
+**Akzeptanzkriterien:**
+1. Videos-Tab im Learning Center zeigt 3–4 Lektionen mit Titel und Beschreibung
+2. Klick auf eine Lektion öffnet den eingebetteten Player
+3. Sprachauswahl folgt automatisch der Tenant-Sprache
+4. Dummy-Content ist vorhanden und sauber strukturiert
+5. Videos-Bereich funktioniert auch ohne echte Video-Dateien (graceful empty state)
+
+### FEAT-025: Bedienungsanleitung als In-App-Dokumentation (DE/EN/NL)
+
+**Priorität:** P1 (V2.1) — Ergänzung zu Videos für Detail-Fragen
+
+Die schriftliche Bedienungsanleitung (erzeugt via /user-guide Skill) wird als durchsuchbare In-App-Hilfe im Learning Center angezeigt.
+
+- Markdown-basiert, flow-strukturiert (nicht feature-basiert)
+- Gerendert innerhalb des Anleitung-Tabs im Learning Center
+- Durchsuchbar: Textsuche über den gesamten Anleitung-Inhalt
+- Enthält KI-Leitfaden für Erstnutzer (Tipps zur effektiven KI-Nutzung)
+- Inhaltsverzeichnis mit Sprungmarken
+- Dreisprachig: USER-GUIDE.md (DE), USER-GUIDE-en.md (EN), USER-GUIDE-nl.md (NL)
+- Anzeige folgt Tenant-Sprache automatisch
+- **Dummy-Content für V2.1-Implementation:** Platzhalter-Markdown mit Strukturüberschriften und Lorem-Ipsum-ähnlichem Dummy-Text, um Layout und Suche zu testen
+
+**Akzeptanzkriterien:**
+1. Anleitung-Tab zeigt gerenderten Markdown-Content
+2. Inhaltsverzeichnis mit funktionierenden Sprungmarken
+3. Textsuche filtert/highlightet relevante Abschnitte
+4. Anzeige folgt Tenant-Sprache (DE/EN/NL)
+5. Dummy-Content demonstriert die vollständige Struktur
+6. Markdown-Rendering unterstützt Überschriften, Listen, Code-Blöcke, Fettdruck
+
+### V2.1 — Nicht im Scope
+
+- Keine Echtzeit-Chat-Hilfe oder Bot
+- Keine kontextsensitiven Tooltips an einzelnen UI-Elementen
+- Kein Admin-Interface zum Bearbeiten von Hilfe-Inhalten
+- Keine Fortschrittsverfolgung (welche Tutorials der User gesehen hat)
+- Keine Video-Produktion — nur die technische Einbettung (Content kommt via /user-guide)
+- Kein FAQ-Bereich (kann in späterer Version ergänzt werden)
+- DSGVO-Compliance-Dokument (BL-045) läuft separat, nicht Teil des Learning Centers
+
+### V2.1 — Erfolskriterien
+
+V2.1 ist erfolgreich, wenn:
+
+1. **Zugänglichkeit:** Der Hilfe-Button ist auf allen Tenant-Seiten sichtbar und funktional
+2. **Struktur:** Das Learning Center hat eine klare Tab-Navigation (Videos + Anleitung)
+3. **Dreisprachigkeit:** Alle Inhalte werden korrekt in der Tenant-Sprache angezeigt
+4. **Dummy-Ready:** Die Struktur funktioniert vollständig mit Dummy-Content
+5. **Content-Ready:** Echter Content kann ohne Code-Änderungen eingefügt werden (Markdown-Dateien + Video-Dateien austauschen)
+6. **Nicht-invasiv:** Das Learning Center stört die Kernfunktionalität nicht
+
 ## V3 Scope (Later)
 
 | Feature | Beschreibung |
@@ -296,6 +398,6 @@ V1 ist erfolgreich, wenn:
 ---
 
 Erstellt: 2026-03-24
-Aktualisiert: 2026-03-31 (V2 Requirements — Voice Input)
+Aktualisiert: 2026-04-01 (V2.1 Requirements — Learning Center)
 Skill: `/requirements`
 Nächster Schritt: `/architecture`

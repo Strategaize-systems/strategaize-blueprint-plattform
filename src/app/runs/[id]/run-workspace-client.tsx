@@ -45,6 +45,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square } from "lucide-react";
+import { HelpButton } from "@/components/help-button";
+import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -113,6 +115,7 @@ export function RunWorkspaceClient({
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [openBlocks, setOpenBlocks] = useState<Set<string>>(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [learningCenterOpen, setLearningCenterOpen] = useState(false);
 
   // Evidence state
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
@@ -1326,6 +1329,13 @@ export function RunWorkspaceClient({
           )}
         </div>
       </div>
+
+      {/* Learning Center */}
+      <HelpButton onClick={() => setLearningCenterOpen(true)} />
+      <LearningCenterPanel
+        open={learningCenterOpen}
+        onOpenChange={setLearningCenterOpen}
+      />
     </div>
   );
 }

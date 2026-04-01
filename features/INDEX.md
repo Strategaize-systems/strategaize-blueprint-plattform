@@ -61,4 +61,12 @@
 | FEAT-021 | Scoring-Dashboard & Scorecard | Gehört in OS-Plattform, nicht Blueprint |
 | FEAT-022 | Admin: Fragebogen-Editor | Katalog-Import über Admin-UI reicht |
 
-## Next Available ID: FEAT-023
+## V2.1 Features (Geplant — Onboarding & Hilfe)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-023 | In-App Learning Center: Hilfe-Button + Navigation (DE/EN/NL) | done | [Spec](FEAT-023-learning-center.md) | 2026-04-01 |
+| FEAT-024 | Video-Tutorial-Bereich (DE/EN/NL) | done | [Spec](FEAT-024-video-tutorials.md) | 2026-04-01 |
+| FEAT-025 | Bedienungsanleitung als In-App-Dokumentation (DE/EN/NL) | done | [Spec](FEAT-025-bedienungsanleitung.md) | 2026-04-01 |
+
+## Next Available ID: FEAT-026

@@ -71,6 +71,27 @@ Style Guide Implementation — Seite für Seite. Reihenfolge: Foundation → Lay
 4. SLC-031 (Frontend)    → Mic-Button + Recording + Integration + E2E
 ```
 
+## V2.1 Slices — Learning Center
+
+> 3 Slices für 3 Features. Lineare Abhängigkeitskette: SLC-032 → SLC-033/034 (parallel möglich).
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-032 | [Learning Center Shell + Help Button](SLC-032-learning-center-shell.md) | FEAT-023 | done | High | 2026-04-01 |
+| SLC-033 | [Video Tutorials](SLC-033-video-tutorials.md) | FEAT-024 | done | High | 2026-04-01 |
+| SLC-034 | [User Guide + Search](SLC-034-user-guide.md) | FEAT-025 | done | High | 2026-04-01 |
+
+## V2.1 Execution Order
+
+```
+1. SLC-032 (Foundation)  → Shell + Help Button + Dependencies + i18n
+2. SLC-033 (Content)     → Video Tutorials Tab (hängt von SLC-032 ab)
+3. SLC-034 (Content)     → User Guide + Search (hängt von SLC-032 ab)
+
+SLC-033 und SLC-034 können nach SLC-032 parallel implementiert werden,
+aber sequentiell ist sauberer für QA nach jedem Slice.
+```
+
 ## V3 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |

@@ -175,5 +175,37 @@
     "evidenceLabel": "Evidence-Dokumente",
     "created": "Erstellt: {date}",
     "submitted": "Eingereicht: {date}"
+  },
+  "learning": {
+    "helpButton": "Hilfe",
+    "title": "Learning Center",
+    "tabVideos": "Video-Tutorials",
+    "tabGuide": "Bedienungsanleitung",
+    "close": "Schließen",
+    "videoNotReady": "Dieses Video wird vorbereitet.",
+    "guideNotReady": "Die Anleitung wird vorbereitet.",
+    "placeholder": "Inhalte werden geladen...",
+    "backToList": "Zurück zur Übersicht",
+    "searchPlaceholder": "In Anleitung suchen...",
+    "noResults": "Keine Ergebnisse für \"{query}\"",
+    "tocTitle": "Inhalt",
+    "tutorials": {
+      "t01": {
+        "title": "Erste Schritte",
+        "description": "Login, Dashboard und Ihren ersten Run starten"
+      },
+      "t02": {
+        "title": "Fragebogen bearbeiten",
+        "description": "Fragen beantworten, Blöcke navigieren, Fortschritt sehen"
+      },
+      "t03": {
+        "title": "KI richtig nutzen",
+        "description": "Rückfragen, Zusammenfassung und Spracheingabe effektiv einsetzen"
+      },
+      "t04": {
+        "title": "Dokumente hochladen",
+        "description": "Evidence hochladen, Labels vergeben, Dokumentanalyse nutzen"
+      }
+    }
   }
 }

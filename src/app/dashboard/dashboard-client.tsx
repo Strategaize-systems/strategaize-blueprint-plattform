@@ -15,6 +15,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, FileText, Play, Menu, X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { HelpButton } from "@/components/help-button";
+import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 
 interface Profile {
   id: string;
@@ -41,6 +43,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [learningCenterOpen, setLearningCenterOpen] = useState(false);
 
   useEffect(() => {
     async function loadRuns() {
@@ -213,6 +216,13 @@ export function DashboardClient({ profile }: { profile: Profile }) {
           </div>
         </div>
       </div>
+
+      {/* Learning Center */}
+      <HelpButton onClick={() => setLearningCenterOpen(true)} />
+      <LearningCenterPanel
+        open={learningCenterOpen}
+        onOpenChange={setLearningCenterOpen}
+      />
     </div>
   );
 }
