@@ -1,5 +1,12 @@
 # Releases
 
+### REL-004 — V2.1 In-App Learning Center
+- Date: 2026-04-01
+- Scope: In-App Learning Center mit Help-Button (floating, alle Tenant-Seiten), Video-Tutorial-Bereich (4 Lektions-Cards mit HTML5-Player, Fallback bei fehlenden Videos), Bedienungsanleitung (Markdown-Rendering via react-markdown, Inhaltsverzeichnis, Textsuche mit Highlighting). Alles dreisprachig DE/EN/NL. Implementation mit Dummy-Content — echter Content wird später via /user-guide Skill eingefügt.
+- Summary: Reines Frontend-Feature (keine DB-Änderungen, keine neuen API-Routes, keine neuen Docker-Services). 3 Features (FEAT-023/024/025), 3 Slices (SLC-032/033/034), 4 Decisions (DEC-019 bis DEC-022). Neue Dependencies: react-markdown, remark-gfm. 647 Zeilen neuer Code über 8 Dateien. Kein RAM-Impact auf Server.
+- Risks: Keine automatisierten Tests (ISSUE-002, bekanntes Restrisiko). Dummy-Content statt echte Videos/Anleitung (by design).
+- Rollback Notes: Coolify Container-Rollback auf V2. Keine DB-Migration, kein Datenverlust.
+
 ### REL-003 — V2 Voice Input (Whisper)
 - Date: 2026-03-31
 - Scope: Spracheingabe im Chat via Whisper ASR (selbst-gehostet auf Hetzner, DSGVO). Mikrofon-Button im Chat-Bereich, Audio-Aufnahme via MediaRecorder, serverseitige Transkription, Mehrsprach-Support (DE/EN/NL). Bug-Fix: Block-Zugriffskontrolle (ISSUE-029).
