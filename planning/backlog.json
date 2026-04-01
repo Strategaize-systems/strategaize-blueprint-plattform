@@ -412,32 +412,32 @@
     },
     {
       "id": "BL-042",
-      "title": "In-App Learning Center: Hilfe-Button + Navigationsstruktur",
+      "title": "In-App Learning Center: Hilfe-Button + Navigationsstruktur (DE/EN/NL)",
       "type": "feature",
       "priority": "high",
       "status": "open",
       "version": "V2.1",
-      "description": "Hilfe-Button im Hauptbereich (Tenant-Workspace), der ein Learning Center oeffnet. Muss von jeder Seite erreichbar sein, leicht schliessbar, und innerhalb des eingeloggten Bereichs bleiben. Enthalt: Bedienungsanleitung (Text), Video-Tutorials (Verlinkung), FAQ. Responsive, nicht stoerend.",
+      "description": "Hilfe-Button im Hauptbereich (Tenant-Workspace), der ein Learning Center oeffnet. Muss von jeder Seite erreichbar sein, leicht schliessbar, und innerhalb des eingeloggten Bereichs bleiben. Enthalt: Bedienungsanleitung (Text), Video-Tutorials (Verlinkung), FAQ. Responsive, nicht stoerend. Dreisprachig: Learning Center zeigt Inhalte in der Tenant-Sprache (DE/EN/NL) an — nutzt bestehendes i18n-System (next-intl).",
       "createdAt": "2026-04-01"
     },
     {
       "id": "BL-043",
-      "title": "Video-Tutorial-Bereich: 3-4 Lektionen als eingebettete Videos",
+      "title": "Video-Tutorial-Bereich: 3-4 Lektionen als eingebettete Videos (DE/EN/NL)",
       "type": "feature",
       "priority": "high",
       "status": "open",
       "version": "V2.1",
-      "description": "Innerhalb des Learning Centers und auch unter dem Run-Bereich: 3-4 Video-Lektionen (Erste Schritte, Fragebogen bearbeiten, KI richtig nutzen, Dokumente hochladen). Videos werden extern produziert und als Dateien verlinkt. Video-Player eingebettet, kein externer Redirect. Auch auf Dashboard oder unter Runs sichtbar als Einstiegshilfe.",
+      "description": "Innerhalb des Learning Centers und auch unter dem Run-Bereich: 3-4 Video-Lektionen (Erste Schritte, Fragebogen bearbeiten, KI richtig nutzen, Dokumente hochladen). Videos werden extern produziert und als Dateien verlinkt. Video-Player eingebettet, kein externer Redirect. Auch auf Dashboard oder unter Runs sichtbar als Einstiegshilfe. Dreisprachig: je 3-4 Videos pro Sprache (DE/EN/NL). Video-Auswahl folgt Tenant-Sprache automatisch.",
       "createdAt": "2026-04-01"
     },
     {
       "id": "BL-044",
-      "title": "Bedienungsanleitung als In-App-Dokumentation",
+      "title": "Bedienungsanleitung als In-App-Dokumentation (DE/EN/NL)",
       "type": "feature",
       "priority": "medium",
       "status": "open",
       "version": "V2.1",
-      "description": "Die schriftliche Bedienungsanleitung (erzeugt durch /user-guide Skill) als durchsuchbare In-App-Hilfe anzeigen. Markdown-basiert, flow-basiert strukturiert. Inklusive KI-Leitfaden fuer Erstnutzer. Muss jederzeit ueber Hilfe-Button erreichbar sein.",
+      "description": "Die schriftliche Bedienungsanleitung (erzeugt durch /user-guide Skill) als durchsuchbare In-App-Hilfe anzeigen. Markdown-basiert, flow-basiert strukturiert. Inklusive KI-Leitfaden fuer Erstnutzer. Muss jederzeit ueber Hilfe-Button erreichbar sein. Dreisprachig: USER-GUIDE.md (DE), USER-GUIDE-en.md (EN), USER-GUIDE-nl.md (NL). Anzeige folgt Tenant-Sprache automatisch via bestehendem next-intl System.",
       "createdAt": "2026-04-01"
     },
     {

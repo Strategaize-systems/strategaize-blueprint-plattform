@@ -17,6 +17,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 1. OS-Plattform Datenempfang bauen
 2. Eigentest Blueprint mit echten Daten
 3. Findings aus Eigentest als neue Session abarbeiten
+4. V2.1 planen: In-App Learning Center (Hilfe-Button, Video-Tutorials, Bedienungsanleitung, DSGVO-Compliance) — alles dreisprachig DE/EN/NL
 
 ## Active Scope
 V2 — Voice Input via Whisper. Released am 2026-03-31, Post-Launch am 2026-04-01 abgeschlossen. 19 Features done, 28 Slices done, 3 Releases. Plattform ist funktional komplett für Kundeneinsatz.
@@ -28,4 +29,4 @@ V2 — Voice Input via Whisper. Released am 2026-03-31, Post-Launch am 2026-04-0
 - V2 — 2026-03-31 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). V2 stabil, keine offenen Live-Issues. 3 Hotfixes am Release-Tag (Permissions-Policy, Permission-Retry, Recording-Cleanup). BL-035 (Lektorat) offen, niedrige Priorität. V3 (FEAT-020 Dedizierte Server) geplant, kein Zeitdruck.
+Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). V2 stabil, keine offenen Live-Issues. 3 Hotfixes am Release-Tag (Permissions-Policy, Permission-Retry, Recording-Cleanup). BL-035 (Lektorat) offen, niedrige Priorität. V2.1 (Learning Center + DSGVO-Compliance, dreisprachig DE/EN/NL) als nächste Version geplant. V3 (FEAT-020 Dedizierte Server) geplant, kein Zeitdruck.
