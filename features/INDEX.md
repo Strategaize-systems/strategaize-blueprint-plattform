@@ -26,27 +26,27 @@
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-009 | LLM-Chat + Rückfragen (Ollama/Qwen, lokal) | done | 2026-03-24 |
-| FEAT-010 | Antwort-Review Übersichtsseite | done | 2026-03-24 |
-| FEAT-011 | Block-basierte Checkpoints | done | 2026-03-27 |
-| FEAT-012 | Rollen-System (Tenant-Admin + Block-Zugriff) | done | 2026-03-28 |
-| FEAT-013 | Premium UI (Style Guide v2.1) | done | 2026-03-26 |
-| FEAT-014 | Error-Logging + E-Mail Alerts | done | 2026-03-29 |
-| FEAT-015 | PDF/DOCX/TXT-Parsing für LLM-Kontext | done | 2026-03-29 |
-| FEAT-016 | Chat + Zusammenfassung-Workflow | done | 2026-03-27 |
-| FEAT-017 | Dokument-Analyse: LLM liest Evidence + Feedback | done | 2026-03-29 |
+| FEAT-009 | LLM-Chat + Rückfragen (Ollama/Qwen, lokal) | deployed | 2026-03-24 |
+| FEAT-010 | Antwort-Review Übersichtsseite | deployed | 2026-03-24 |
+| FEAT-011 | Block-basierte Checkpoints | deployed | 2026-03-27 |
+| FEAT-012 | Rollen-System (Tenant-Admin + Block-Zugriff) | deployed | 2026-03-28 |
+| FEAT-013 | Premium UI (Style Guide v2.1) | deployed | 2026-03-26 |
+| FEAT-014 | Error-Logging + E-Mail Alerts | deployed | 2026-03-29 |
+| FEAT-015 | PDF/DOCX/TXT-Parsing für LLM-Kontext | deployed | 2026-03-29 |
+| FEAT-016 | Chat + Zusammenfassung-Workflow | deployed | 2026-03-27 |
+| FEAT-017 | Dokument-Analyse: LLM liest Evidence + Feedback | deployed | 2026-03-29 |
 
 ## V1.1 Features (Implementiert — Teil 2)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | done | 2026-03-29 |
+| FEAT-018 | Mehrsprachigkeit (DE/EN/NL) | deployed | 2026-03-29 |
 
 ## V2 Features (Requirements)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-019 | Voice Input (Whisper) | done | 2026-03-31 |
+| FEAT-019 | Voice Input (Whisper) | deployed | 2026-03-31 |
 
 ## V3 Features (Geplant)
 
@@ -65,9 +65,9 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-023 | In-App Learning Center: Hilfe-Button + Navigation (DE/EN/NL) | done | [Spec](FEAT-023-learning-center.md) | 2026-04-01 |
-| FEAT-024 | Video-Tutorial-Bereich (DE/EN/NL) | done | [Spec](FEAT-024-video-tutorials.md) | 2026-04-01 |
-| FEAT-025 | Bedienungsanleitung als In-App-Dokumentation (DE/EN/NL) | done | [Spec](FEAT-025-bedienungsanleitung.md) | 2026-04-01 |
+| FEAT-023 | In-App Learning Center: Hilfe-Button + Navigation (DE/EN/NL) | deployed | [Spec](FEAT-023-learning-center.md) | 2026-04-01 |
+| FEAT-024 | Video-Tutorial-Bereich (DE/EN/NL) | deployed | [Spec](FEAT-024-video-tutorials.md) | 2026-04-01 |
+| FEAT-025 | Bedienungsanleitung als In-App-Dokumentation (DE/EN/NL) | deployed | [Spec](FEAT-025-bedienungsanleitung.md) | 2026-04-01 |
 
 ## V2.2 Features (Geplant — Personalized LLM)
 
