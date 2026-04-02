@@ -1,5 +1,12 @@
 # Releases
 
+### REL-005 — V2.2 Personalized LLM (Owner-Profil + Run Memory)
+- Date: 2026-04-02
+- Scope: Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede-Präferenz, Führungsstil-Ranking, DISC-Kommunikationsstil, freie Vorstellung mit Whisper). LLM Run Memory für Session-Kontinuität (async update nach Chat, kuratiertes Memory max 800 Tokens). Profil + Memory werden in alle LLM-Prompts injiziert. Memory-Anzeige für Owner im Workspace. 2 neue DB-Tabellen (owner_profiles, run_memory). 5 Slices, 4 Decisions, 3 Migrationen.
+- Summary: Das LLM kennt den Owner persönlich (Anrede, Hintergrund, Führungsstil) und kann zwischen Sessions anknüpfen. Zielgruppe: Geschäftsführer 50-65, wenig KI-Erfahrung. Reines Backend+Frontend Feature, kein neuer Docker-Service, kein zusätzlicher RAM-Bedarf. Token-Budget: Profil ~500 + Memory ~800 von 32K Context.
+- Risks: Keine automatisierten Tests (ISSUE-002). LLM-Personalisierung + Memory-Kontinuität noch nicht mit echtem Kunden-Chat validiert (Fallback graceful). GRANT-Fix für authenticated Rolle war nötig (MIG-014, identisches Root-Cause wie ISSUE-001).
+- Rollback Notes: Coolify Container-Rollback auf V2.1. DB: DROP TABLE owner_profiles CASCADE; DROP TABLE run_memory CASCADE;
+
 ### REL-004 — V2.1 In-App Learning Center
 - Date: 2026-04-01
 - Scope: In-App Learning Center mit Help-Button (floating, alle Tenant-Seiten), Video-Tutorial-Bereich (4 Lektions-Cards mit HTML5-Player, Fallback bei fehlenden Videos), Bedienungsanleitung (Markdown-Rendering via react-markdown, Inhaltsverzeichnis, Textsuche mit Highlighting). Alles dreisprachig DE/EN/NL. Implementation mit Dummy-Content — echter Content wird später via /user-guide Skill eingefügt.

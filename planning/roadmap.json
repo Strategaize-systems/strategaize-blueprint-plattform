@@ -31,7 +31,7 @@
     {
       "id": "v2-2",
       "name": "V2.2",
-      "status": "active",
+      "status": "released",
       "summary": "Personalized LLM — Owner-Profil (Führungsstil, DISC, Anrede) + LLM Run Memory für Session-Kontinuität",
       "order": 5
     },

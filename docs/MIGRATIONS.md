@@ -91,3 +91,11 @@
 - Reason: FEAT-027 — LLM Run Memory für Session-Kontinuität
 - Risk: Niedrig — neue Tabelle, keine bestehenden Tabellen betroffen
 - Rollback Notes: DROP TABLE run_memory CASCADE;
+
+### MIG-014 — GRANT authenticated auf owner_profiles + run_memory
+- Date: 2026-04-02
+- Scope: GRANT SELECT, INSERT, UPDATE ON owner_profiles TO authenticated. GRANT SELECT ON run_memory TO authenticated.
+- Affected Areas: Auth — authenticated Rolle kann jetzt owner_profiles lesen/schreiben und run_memory lesen
+- Reason: Identisches Root-Cause wie ISSUE-001 — RLS-Policies existierten, aber ohne Table-Level GRANT konnte authenticated die Tabellen nicht lesen. Dashboard-Redirect zum Profil funktionierte deshalb nicht.
+- Risk: Keines — erweitert nur Berechtigungen für die neue Tabellen
+- Rollback Notes: REVOKE ALL ON owner_profiles FROM authenticated; REVOKE ALL ON run_memory FROM authenticated;
