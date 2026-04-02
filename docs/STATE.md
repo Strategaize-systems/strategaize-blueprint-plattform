@@ -9,12 +9,12 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: slice-planning
-- Current Focus: V2.2 Slice-Planning abgeschlossen — 5 Slices (SLC-035 bis SLC-039) mit Micro-Tasks definiert. Nächster Schritt: Implementation SLC-035 (DB-Schema).
-- Current Phase: V2.2 Slice-Planning
+- High-Level State: implementing
+- Current Focus: SLC-035 (DB-Schema) done — SQL geschrieben, muss auf Hetzner ausgeführt werden. Nächster Schritt: SQL ausführen, dann SLC-036 (Owner-Profil).
+- Current Phase: V2.2 Implementation
 
 ## Immediate Next Steps
-1. /backend für SLC-035 (DB-Schema: owner_profiles + run_memory)
+1. SQL-Migrationen 012 + 013 auf Hetzner ausführen (User via Supabase Studio)
 2. /backend + /frontend für SLC-036 (Owner-Profil)
 3. /backend für SLC-037 (LLM Profil-Injection)
 4. /backend für SLC-038 (Run Memory Backend)

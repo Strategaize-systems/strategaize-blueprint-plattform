@@ -98,7 +98,7 @@ aber sequentiell ist sauberer für QA nach jedem Slice.
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-035 | [DB-Schema: owner_profiles + run_memory](SLC-035-db-schema-v22.md) | FEAT-026, FEAT-027 | planned | High | 2026-04-02 |
+| SLC-035 | [DB-Schema: owner_profiles + run_memory](SLC-035-db-schema-v22.md) | FEAT-026, FEAT-027 | done | High | 2026-04-02 |
 | SLC-036 | [Owner-Profil: Backend + Frontend](SLC-036-owner-profil.md) | FEAT-026 | planned | High | 2026-04-02 |
 | SLC-037 | [LLM Profil-Injection](SLC-037-llm-profil-injection.md) | FEAT-026 | planned | High | 2026-04-02 |
 | SLC-038 | [Run Memory Backend](SLC-038-run-memory-backend.md) | FEAT-027 | planned | High | 2026-04-02 |
