@@ -347,7 +347,7 @@
       "priority": "medium",
       "status": "open",
       "version": "V1.1",
-      "description": "Alle sichtbaren UI-Texte in den 3 Translation-Dateien (de.json, en.json, nl.json) muessen vor echtem Kunden-Go-Live manuell geprueft werden. Bekanntes Beispiel: NL 'geüploade' (falsch). Betrifft nur UI-Chrome, nicht Fragetexte. Immo prueft selbst wenn alle Features fertig sind.",
+      "description": "Alle sichtbaren UI-Texte in den 3 Translation-Dateien (de.json, en.json, nl.json) muessen vor echtem Kunden-Go-Live manuell geprueft werden. Bekanntes Beispiel: NL 'geüploade' (falsch). Betrifft: UI-Chrome, Profil-Formular (Fuehrungsstil-Beschreibungen, DISC-Beschreibungen, Anrede-Optionen), Learning Center Texte, Memory-UI. Nicht: Fragetexte. Immo prueft selbst wenn alle Features fertig sind.",
       "createdAt": "2026-03-31"
     },
     {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
-import { chatWithLLM, getSystemPrompts } from "@/lib/llm";
+import { chatWithLLM, getSystemPrompts, buildOwnerContext, type OwnerProfileData } from "@/lib/llm";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/chat
 // Send a user message and get an LLM follow-up response
@@ -40,6 +40,14 @@ export async function POST(
   const locale = await getTenantLocale(supabase, profile!.tenant_id);
   const prompts = getSystemPrompts(locale);
 
+  // Load owner profile for personalized context (V2.2)
+  const { data: ownerProfileData } = await supabase
+    .from("owner_profiles")
+    .select("*")
+    .eq("tenant_id", profile!.tenant_id)
+    .single();
+  const ownerContext = buildOwnerContext(ownerProfileData as OwnerProfileData | null, locale);
+
   // Load evidence context for this question (if any documents have extracted text)
   let evidenceContext = "";
   const { data: evidenceLinks } = await supabase
@@ -69,7 +77,7 @@ export async function POST(
   const messages = [
     {
       role: "system" as const,
-      content: `${prompts.rückfrage}\n\n${locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is"}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : locale === "nl" ? "Type" : "Type"}: ${question.ebene}${evidenceContext}`,
+      content: `${prompts.rückfrage}${ownerContext ? `\n\n${ownerContext}` : ""}\n\n${locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is"}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : locale === "nl" ? "Type" : "Type"}: ${question.ebene}${evidenceContext}`,
     },
     // Include chat history for context
     ...((body.chatHistory ?? []).map((m) => ({

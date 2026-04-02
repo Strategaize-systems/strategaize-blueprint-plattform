@@ -337,3 +337,123 @@ export function getSystemPrompts(locale?: string) {
 
 /** @deprecated Use getSystemPrompts(locale) instead */
 export const SYSTEM_PROMPTS = PROMPTS_DE;
+
+// ─── V2.2: Owner Profile Context ─────────────────────────────────────────────
+
+export interface OwnerProfileData {
+  display_name: string | null;
+  age_range: string | null;
+  education: string | null;
+  career_summary: string | null;
+  years_as_owner: string | null;
+  address_formal: boolean;
+  address_by_lastname: boolean;
+  leadership_style: string | null;
+  disc_style: string | null;
+  introduction: string | null;
+}
+
+const LEADERSHIP_LABELS: Record<string, Record<LLMLocale, string>> = {
+  patriarchal: { de: "Patriarchisch — entscheidet allein, andere führen aus", en: "Patriarchal — decides alone, others execute", nl: "Patriarchaal — beslist alleen, anderen voeren uit" },
+  cooperative: { de: "Kooperativ — holt Meinungen ein, entscheidet dann", en: "Cooperative — gathers opinions, then decides", nl: "Coöperatief — verzamelt meningen, beslist dan" },
+  delegative: { de: "Delegativ — findet gute Leute und lässt sie machen", en: "Delegative — finds good people and lets them work", nl: "Delegerend — vindt goede mensen en laat ze werken" },
+  coaching: { de: "Coaching — entwickelt Mitarbeiter und begleitet sie", en: "Coaching — develops employees and guides them", nl: "Coaching — ontwikkelt medewerkers en begeleidt ze" },
+  visionary: { de: "Visionär — gibt Richtung vor, Team findet den Weg", en: "Visionary — sets direction, team finds the way", nl: "Visionair — geeft richting, team vindt de weg" },
+};
+
+const DISC_LABELS: Record<string, Record<LLMLocale, string>> = {
+  dominant: { de: "Dominant (Rot) — ergebnisorientiert, direkt, entscheidungsfreudig", en: "Dominant (Red) — results-oriented, direct, decisive", nl: "Dominant (Rood) — resultaatgericht, direct, besluitvaardig" },
+  influential: { de: "Initiativ (Gelb) — kommunikativ, optimistisch, begeisterungsfähig", en: "Influential (Yellow) — communicative, optimistic, enthusiastic", nl: "Initiatiefrijk (Geel) — communicatief, optimistisch, enthousiast" },
+  steady: { de: "Stetig (Grün) — teamorientiert, geduldig, zuverlässig", en: "Steady (Green) — team-oriented, patient, reliable", nl: "Stabiel (Groen) — teamgericht, geduldig, betrouwbaar" },
+  conscientious: { de: "Gewissenhaft (Blau) — analytisch, präzise, qualitätsbewusst", en: "Conscientious (Blue) — analytical, precise, quality-focused", nl: "Gewetensvol (Blauw) — analytisch, precies, kwaliteitsgericht" },
+};
+
+const ADDRESS_RULES: Record<LLMLocale, { du: string; sie: string; firstname: string; lastname: string }> = {
+  de: {
+    du: 'Sprich den Kunden mit "Du" an und verwende konsequent die Du-Form.',
+    sie: 'Sprich den Kunden mit "Sie" an und verwende konsequent die Sie-Form.',
+    firstname: "Verwende den Vornamen",
+    lastname: "Verwende den Nachnamen",
+  },
+  en: {
+    du: "Address the customer informally by first name.",
+    sie: "Address the customer formally (Mr./Ms.).",
+    firstname: "Use first name",
+    lastname: "Use last name",
+  },
+  nl: {
+    du: "Spreek de klant informeel aan met de voornaam.",
+    sie: "Spreek de klant formeel aan (meneer/mevrouw).",
+    firstname: "Gebruik de voornaam",
+    lastname: "Gebruik de achternaam",
+  },
+};
+
+const PROFILE_HEADERS: Record<LLMLocale, { title: string; address: string }> = {
+  de: { title: "PROFIL DES KUNDEN:", address: "ANREDE-REGELN:" },
+  en: { title: "CUSTOMER PROFILE:", address: "ADDRESS RULES:" },
+  nl: { title: "KLANTPROFIEL:", address: "AANSPREEKREGELS:" },
+};
+
+/**
+ * Build a formatted owner profile context block for LLM system prompts.
+ * Returns empty string if no profile data available.
+ * Estimated token budget: ~300-500 tokens.
+ */
+export function buildOwnerContext(profile: OwnerProfileData | null, locale?: string): string {
+  if (!profile) return "";
+
+  const loc = (locale && locale in PROMPTS_BY_LOCALE ? locale : "de") as LLMLocale;
+  const headers = PROFILE_HEADERS[loc];
+  const rules = ADDRESS_RULES[loc];
+
+  const lines: string[] = [];
+  lines.push(headers.title);
+
+  if (profile.display_name) {
+    const addressStyle = profile.address_formal ? rules.sie : rules.du;
+    const nameStyle = profile.address_by_lastname ? rules.lastname : rules.firstname;
+    lines.push(`- Name: ${profile.display_name}`);
+    lines.push("");
+    lines.push(headers.address);
+    lines.push(`- ${addressStyle}`);
+    lines.push(`- ${nameStyle}: ${profile.display_name.split(" ")[profile.address_by_lastname ? 1 : 0] || profile.display_name}`);
+  }
+
+  if (profile.age_range) {
+    const ageLabel = loc === "en" ? "Age" : loc === "nl" ? "Leeftijd" : "Alter";
+    lines.push(`- ${ageLabel}: ${profile.age_range}`);
+  }
+
+  if (profile.education) {
+    const eduLabel = loc === "en" ? "Education" : loc === "nl" ? "Opleiding" : "Ausbildung";
+    lines.push(`- ${eduLabel}: ${profile.education}`);
+  }
+
+  if (profile.years_as_owner) {
+    const yearsLabel = loc === "en" ? "Owner since" : loc === "nl" ? "Eigenaar sinds" : "Inhaber seit";
+    lines.push(`- ${yearsLabel}: ${profile.years_as_owner}`);
+  }
+
+  if (profile.career_summary) {
+    const careerLabel = loc === "en" ? "Background" : loc === "nl" ? "Achtergrond" : "Hintergrund";
+    lines.push(`- ${careerLabel}: ${profile.career_summary}`);
+  }
+
+  if (profile.leadership_style && LEADERSHIP_LABELS[profile.leadership_style]) {
+    const styleLabel = loc === "en" ? "Leadership style" : loc === "nl" ? "Leiderschapsstijl" : "Führungsstil";
+    lines.push(`- ${styleLabel}: ${LEADERSHIP_LABELS[profile.leadership_style][loc]}`);
+  }
+
+  if (profile.disc_style && DISC_LABELS[profile.disc_style]) {
+    const discLabel = loc === "en" ? "Communication" : loc === "nl" ? "Communicatie" : "Kommunikation";
+    lines.push(`- ${discLabel}: ${DISC_LABELS[profile.disc_style][loc]}`);
+  }
+
+  if (profile.introduction) {
+    const introLabel = loc === "en" ? "About themselves" : loc === "nl" ? "Over zichzelf" : "Über sich";
+    lines.push(`- ${introLabel}: "${profile.introduction}"`);
+  }
+
+  return lines.join("\n");
+}
