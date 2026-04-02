@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ProfileFormClient } from "./profile-form-client";
 
 export default async function ProfilePage() {
@@ -24,7 +25,9 @@ export default async function ProfilePage() {
   }
 
   // Load existing owner profile if any
-  const { data: ownerProfile } = await supabase
+  // Uses adminClient because authenticated role may lack table-level GRANT on owner_profiles
+  const adminClient = createAdminClient();
+  const { data: ownerProfile } = await adminClient
     .from("owner_profiles")
     .select("*")
     .eq("tenant_id", profile.tenant_id)

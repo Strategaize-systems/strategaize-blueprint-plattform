@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { DashboardClient } from "./dashboard-client";
 
 export default async function DashboardPage() {
@@ -30,7 +31,9 @@ export default async function DashboardPage() {
   }
 
   // Check if owner profile exists — redirect to profile form if not
-  const { data: ownerProfile } = await supabase
+  // Uses adminClient because authenticated role may lack table-level GRANT
+  const adminClient = createAdminClient();
+  const { data: ownerProfile } = await adminClient
     .from("owner_profiles")
     .select("id")
     .eq("tenant_id", profile.tenant_id)
