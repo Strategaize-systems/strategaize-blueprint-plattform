@@ -440,9 +440,18 @@ export function buildOwnerContext(profile: OwnerProfileData | null, locale?: str
     lines.push(`- ${careerLabel}: ${profile.career_summary}`);
   }
 
-  if (profile.leadership_style && LEADERSHIP_LABELS[profile.leadership_style]) {
-    const styleLabel = loc === "en" ? "Leadership style" : loc === "nl" ? "Leiderschapsstijl" : "Führungsstil";
-    lines.push(`- ${styleLabel}: ${LEADERSHIP_LABELS[profile.leadership_style][loc]}`);
+  if (profile.leadership_style) {
+    const styleLabel = loc === "en" ? "Leadership style (ranked)" : loc === "nl" ? "Leiderschapsstijl (gerangschikt)" : "Führungsstil (Ranking)";
+    const ranked = profile.leadership_style.split(",").filter(Boolean);
+    const rankedLabels = ranked
+      .map((s, i) => {
+        const label = LEADERSHIP_LABELS[s]?.[loc];
+        return label ? `${i + 1}. ${label}` : null;
+      })
+      .filter(Boolean);
+    if (rankedLabels.length > 0) {
+      lines.push(`- ${styleLabel}: ${rankedLabels.join("; ")}`);
+    }
   }
 
   if (profile.disc_style && DISC_LABELS[profile.disc_style]) {

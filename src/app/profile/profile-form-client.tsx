@@ -50,6 +50,7 @@ export function ProfileFormClient({
   ownerProfile: OwnerProfile | null;
 }) {
   const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
   const router = useRouter();
 
   // Form state
@@ -357,8 +358,18 @@ export function ProfileFormClient({
             </div>
           </section>
 
-          {/* Save Button */}
-          <div className="flex justify-center pb-8">
+          {/* Save + Cancel Buttons */}
+          <div className="flex justify-center gap-4 pb-8">
+            {ownerProfile && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="min-w-[150px]"
+                onClick={() => router.push("/dashboard")}
+              >
+                {tCommon("cancel")}
+              </Button>
+            )}
             <Button
               onClick={handleSave}
               disabled={saving || !displayName.trim()}
