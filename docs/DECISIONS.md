@@ -109,3 +109,23 @@
 - Status: accepted
 - Reason: 3-4 Tutorial-Videos brauchen nur basic Playback (Play/Pause, Scrub, Fullscreen). Native HTML5 <video> unterstützt das in allen modernen Browsern. Video-Player-Libraries (Plyr, Video.js, react-player) würden Dependency-Overhead für Features bringen, die nicht gebraucht werden (Playlists, Streaming, Analytics, Ads).
 - Consequence: Keine zusätzliche Video-Player-Dependency. HTML5 <video controls> mit Poster-Attribut für Thumbnails. Graceful Degradation bei fehlendem Video über onError Handler.
+
+## DEC-023 — Token-Budget-Strategie für Personalized LLM
+- Status: accepted
+- Reason: Qwen 2.5 14B hat 32K Context. Mit Profil (~300-500 Tokens) + Memory (~500-800 Tokens) + Question + Evidence + Chat-History landet der System-Kontext bei ~3000-7300 Tokens — komfortabel unter dem Limit. Aber: zu viel Kontext verschlechtert die Antwortqualität. Die Strategie ist deshalb "fokussierter Kontext" statt "alles reinwerfen". Memory wird vom LLM selbst kuratiert (max 800 Tokens). Evidence wird auf 2000 Tokens gekürzt. Chat-History auf 6 Messages.
+- Consequence: Feste Token-Budgets pro Kontext-Teil. Evidence-Truncation bei >2000 Tokens. Chat-History-Limit bei 6 Messages. Memory und Profil bleiben immer komplett (sind bereits kurz/kuratiert). Monitoring der tatsächlichen Token-Nutzung empfohlen.
+
+## DEC-024 — Memory-Update async nach Chat-Response
+- Status: accepted
+- Reason: Der Memory-Update ist ein separater LLM-Call (2-5 Sekunden). Wenn synchron, müsste der Owner nach jeder Antwort zusätzlich warten. Async löst das: Owner bekommt sofort seine Antwort, Memory wird im Hintergrund aktualisiert. Bei Fehler bleibt das alte Memory bestehen — kein Datenverlust, kein Retry nötig.
+- Consequence: Memory-Update als fire-and-forget nach Chat-Response. Memory-Write via adminClient (BYPASSRLS). Kein Error-Feedback an den User bei Memory-Update-Fehler. Nächster Chat-Call triggert automatisch einen neuen Update-Versuch.
+
+## DEC-025 — Profil-Redirect im Dashboard statt Middleware
+- Status: accepted
+- Reason: Profil-Check erfordert DB-Abfrage (owner_profiles für tenant_id). In der Middleware wäre das ein zusätzlicher DB-Call bei jedem Request — unnötiger Overhead. Im Dashboard Server Component reicht ein einmaliger Check beim Seitenaufruf. Wenn kein Profil → redirect("/profile"). Einfacher, performanter, kein Middleware-Komplexität.
+- Consequence: Profil-Check in src/app/dashboard/page.tsx (Server Component). Redirect zu /profile wenn kein Eintrag in owner_profiles für den Tenant existiert. Kein Middleware-Änderung nötig.
+
+## DEC-026 — Owner-Profil auf Tenant-Ebene (nicht User-Ebene)
+- Status: accepted
+- Reason: Ein Unternehmen wird von einem Owner repräsentiert. Das Profil beschreibt die Person hinter dem Tenant — Führungsstil, Kommunikationspräferenz, Hintergrund. Das ist Tenant-Kontext, nicht User-Kontext. Wenn später Mitarbeiter hinzukommen, bekommen sie eigene (leichtere) Profile. UNIQUE(tenant_id) erzwingt genau ein Profil pro Tenant.
+- Consequence: owner_profiles hat UNIQUE(tenant_id). Profil wird über tenant_id geladen, nicht über user_id. Erweiterbar für Mitarbeiter-Profile in späterer Version (separate Tabelle oder Erweiterung).

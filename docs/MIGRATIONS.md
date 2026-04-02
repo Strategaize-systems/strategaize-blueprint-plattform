@@ -75,3 +75,19 @@
 - Reason: ISSUE-029 — handle_new_user() erstellt Block-Einträge nur für Runs die zum Invite-Zeitpunkt existieren. Runs die später erstellt werden, haben keine Einträge.
 - Risk: Niedrig — fügt nur fehlende Einträge hinzu, überschreibt keine bestehenden
 - Rollback Notes: DELETE FROM member_block_access WHERE created_at >= '2026-03-31'
+
+### MIG-012 — owner_profiles Tabelle (V2.2)
+- Date: 2026-04-02
+- Scope: Neue Tabelle owner_profiles mit Spalten: display_name, age_range, education, career_summary, years_as_owner, address_formal, address_by_lastname, leadership_style, disc_style, introduction. UNIQUE(tenant_id). RLS-Policies für Tenant-Isolation. GRANTs für service_role.
+- Affected Areas: Auth/Profil — neuer Pflicht-Schritt vor erstem Run-Zugriff
+- Reason: FEAT-026 — Owner-Profil für personalisierte LLM-Rückfragen
+- Risk: Niedrig — neue Tabelle, keine bestehenden Tabellen betroffen
+- Rollback Notes: DROP TABLE owner_profiles CASCADE;
+
+### MIG-013 — run_memory Tabelle (V2.2)
+- Date: 2026-04-02
+- Scope: Neue Tabelle run_memory mit Spalten: run_id (UNIQUE), memory_text, version. RLS-Policy für Tenant-Isolation (Read-Only für User). GRANTs für service_role (Write via adminClient).
+- Affected Areas: LLM-Integration — persistenter Kontext pro Run
+- Reason: FEAT-027 — LLM Run Memory für Session-Kontinuität
+- Risk: Niedrig — neue Tabelle, keine bestehenden Tabellen betroffen
+- Rollback Notes: DROP TABLE run_memory CASCADE;

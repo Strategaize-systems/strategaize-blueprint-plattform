@@ -9,14 +9,14 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: requirements
-- Current Focus: V2.2 Requirements abgeschlossen — Owner-Profil (FEAT-026) + LLM Run Memory (FEAT-027). PRD, Feature-Specs und Backlog aktualisiert. Nächster Schritt: Architecture.
-- Current Phase: V2.2 Requirements
+- High-Level State: architecture
+- Current Focus: V2.2 Architecture abgeschlossen — DB-Schema (owner_profiles + run_memory), Token-Budget-Strategie, Prompt-Injection, Memory-Lifecycle, 4 Decisions (DEC-023 bis DEC-026), 2 Migrations (MIG-012/013). Nächster Schritt: Slice-Planning.
+- Current Phase: V2.2 Architecture
 
 ## Immediate Next Steps
-1. /architecture für V2.2 Personalized LLM
-2. /slice-planning für V2.2
-3. Implementation (FEAT-026 → FEAT-027)
+1. /slice-planning für V2.2 Personalized LLM
+2. Implementation (FEAT-026 → FEAT-027)
+3. /qa nach jedem Slice
 
 ## Active Scope
 V2.2 — Personalized LLM. Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede, Führungsstil, DISC, freie Vorstellung). LLM Run Memory (kuratierte Zusammenfassung pro Run, LLM-geschrieben, max 800 Tokens). Beides wird in alle LLM-Prompts injiziert. 2 Features (FEAT-026/027), 4 Backlog-Items (BL-046 bis BL-049).

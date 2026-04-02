@@ -623,3 +623,323 @@ Video-Dateien erhöhen Disk-Nutzung (geschätzt 4 Videos × 3 Sprachen × ~50MB 
 | Content | `public/docs/USER-GUIDE-nl.md` | NEU (Dummy) |
 | Content | `public/videos/tutorial-*-thumb.jpg` | NEU (Platzhalter) |
 | Git | `.gitignore` | `/public/videos/*.mp4` hinzufügen |
+
+## V2.2: Personalized LLM Architektur
+
+### Architektur-Überblick
+
+V2.2 erweitert die LLM-Integration um zwei Dimensionen: **Wer ist der Owner?** (Profil) und **Was weiß das LLM bereits?** (Memory). Beide werden als zusätzlicher System-Kontext in jeden LLM-Call injiziert.
+
+```
+Owner meldet sich erstmals an
+  |
+  v
+Profil-Formular (/profile)         ← FEAT-026
+  |
+  | Speichern
+  v
+owner_profiles (DB)                ← Neue Tabelle
+  |
+  | Bei jedem LLM-Call geladen
+  v
+┌─────────────────────────────────────────────────────┐
+│ System-Prompt (erweitert)                            │
+│                                                      │
+│ [1] Persona (Rückfrage/Zusammenfassung/Bewertung)    │
+│ [2] OWNER-PROFIL (~300-500 Tokens)          ← NEU   │
+│ [3] RUN MEMORY (~500-800 Tokens)            ← NEU   │
+│ [4] Frage + Metadaten (~100-200 Tokens)              │
+│ [5] Evidence-Kontext (~500-2000 Tokens)              │
+│ [6] Chat-History (~1000-3000 Tokens)                 │
+│ ─────────────────────────────────────                │
+│ Total: ~2500-6500 Tokens von 32K                     │
+└─────────────────────────────────────────────────────┘
+  |
+  | LLM antwortet
+  v
+Chat-Response an Owner
+  |
+  | Async (non-blocking)
+  v
+Memory-Update-Call an LLM           ← FEAT-027
+  |
+  | Aktualisiertes Memory
+  v
+run_memory (DB)                     ← Neue Tabelle
+```
+
+### Datenmodell
+
+#### Neue Tabelle: `owner_profiles`
+
+```sql
+CREATE TABLE owner_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  -- Persönliche Informationen
+  display_name TEXT,                    -- Vorname oder "Herr Nachname"
+  age_range TEXT,                       -- '30-39', '40-49', '50-59', '60+'
+  education TEXT,                       -- Freitext, max 500 Zeichen
+  career_summary TEXT,                  -- Freitext, max 500 Zeichen
+  years_as_owner TEXT,                  -- '<5', '5-10', '10-20', '20+'
+  -- Anrede-Präferenz
+  address_formal BOOLEAN DEFAULT true,  -- true = Sie, false = Du
+  address_by_lastname BOOLEAN DEFAULT true, -- true = Nachname, false = Vorname
+  -- Selbsteinordnung
+  leadership_style TEXT,               -- 'patriarchal', 'cooperative', 'delegative', 'coaching', 'visionary'
+  disc_style TEXT,                      -- 'dominant', 'influential', 'steady', 'conscientious'
+  -- Freie Vorstellung
+  introduction TEXT,                    -- Freitext, max 2000 Zeichen
+  -- Meta
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(tenant_id)                     -- Ein Profil pro Tenant
+);
+
+-- RLS: Nur eigener Tenant kann lesen/schreiben
+ALTER TABLE owner_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_read_own_profile ON owner_profiles
+  FOR SELECT USING (tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY tenant_upsert_own_profile ON owner_profiles
+  FOR ALL USING (tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid()));
+```
+
+#### Neue Tabelle: `run_memory`
+
+```sql
+CREATE TABLE run_memory (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_id UUID NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
+  memory_text TEXT NOT NULL DEFAULT '',  -- LLM-kuratierter Kontext, max ~800 Tokens
+  version INT NOT NULL DEFAULT 0,       -- Inkrementiert bei jedem Update
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(run_id)                        -- Ein Memory pro Run
+);
+
+-- RLS: Tenant kann nur Memory seiner eigenen Runs lesen
+ALTER TABLE run_memory ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_read_own_memory ON run_memory
+  FOR SELECT USING (
+    run_id IN (SELECT id FROM runs WHERE tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid()))
+  );
+
+-- Memory wird server-seitig via adminClient geschrieben (nicht vom User direkt)
+```
+
+### Komponentenhierarchie
+
+```
+src/
+  app/
+    profile/
+      page.tsx                     ← Server Component: Auth-Check, Redirect wenn kein Profil
+      profile-form-client.tsx      ← Client Component: Profil-Formular (5 Bereiche)
+    api/
+      tenant/
+        profile/
+          route.ts                 ← GET: Profil laden, PUT: Profil speichern
+        runs/[runId]/
+          memory/
+            route.ts               ← GET: Memory laden (für Owner-Anzeige)
+  components/
+    profile/
+      profile-form.tsx             ← Formular mit Steps oder Sections
+      leadership-select.tsx        ← 5 Optionen mit Beschreibungen
+      disc-select.tsx              ← 4 Optionen mit Farben + Beschreibungen
+    learning-center/
+      run-memory-view.tsx          ← Memory-Anzeige im Workspace (Read-Only)
+  lib/
+    llm.ts                         ← Erweitert: buildOwnerContext(), buildMemoryContext(), Memory-Update-Prompt
+```
+
+### Datenfluss: Profil-Erstellung
+
+```
+1. Owner loggt sich ein (erstmals oder ohne Profil)
+2. Dashboard-Page prüft: hat dieser Tenant ein owner_profile?
+3. Wenn nein → Redirect zu /profile
+4. Owner füllt Formular aus (5 Bereiche, optional Whisper für Freitext)
+5. PUT /api/tenant/profile → Upsert in owner_profiles
+6. Redirect zu /dashboard
+7. Bei jedem LLM-Call: Profil wird geladen und als System-Kontext injiziert
+```
+
+### Datenfluss: Memory-Lifecycle
+
+```
+1. Owner startet Chat zu einer Frage
+2. Chat-Route lädt:
+   a) Owner-Profil (aus owner_profiles via tenant_id)
+   b) Run Memory (aus run_memory via run_id)
+   c) Question + Evidence (bestehend)
+3. System-Prompt wird gebaut:
+   [Persona] + [Owner-Profil] + [Run Memory] + [Question] + [Evidence]
+4. LLM antwortet → Response an Owner
+5. ASYNC (nach Response): Memory-Update
+   a) Bisheriges Memory + Chat-Zusammenfassung → Memory-Update-Prompt
+   b) LLM generiert neues Memory (max 800 Tokens)
+   c) Upsert in run_memory (via adminClient, BYPASSRLS)
+   d) version++
+```
+
+### LLM-Prompt-Erweiterung
+
+#### Profil-Kontext-Block (in alle 4 Prompt-Typen injiziert)
+
+```
+PROFIL DES KUNDEN:
+- Name: {display_name} (Anrede: {Du/Sie}, {Vorname/Nachname})
+- Alter: {age_range}, Ausbildung: {education}
+- Inhaber seit: {years_as_owner}, Hintergrund: {career_summary}
+- Führungsstil: {leadership_style_label}
+- Kommunikation: {disc_style_label} — {disc_description}
+- Über sich: "{introduction}"
+
+ANREDE-REGELN:
+- Sprich den Kunden mit "{address_example}" an
+- Verwende konsequent {Du/Sie} in allen Antworten
+```
+
+Geschätzter Token-Bedarf: ~300-500 Tokens (abhängig von Freitext-Länge).
+
+#### Memory-Kontext-Block (in Chat + Generate injiziert)
+
+```
+BISHERIGER KONTEXT (KI-Memory):
+{memory_text}
+```
+
+Geschätzter Token-Bedarf: max 800 Tokens (durch Memory-Update-Prompt begrenzt).
+
+#### Neuer Prompt-Typ: Memory Update (5. Prompt)
+
+```
+Du bist ein Memory-Manager. Aktualisiere das folgende Memory basierend auf der neuen Konversation.
+
+REGELN:
+- Halte das Memory unter 800 Tokens
+- Behalte nur strategisch relevante Informationen
+- Fokus auf: Kernthemen, Muster, offene Punkte, Antwortstil
+- Lösche Redundanzen und veraltete Einträge
+- Wenn der Kunde etwas korrigiert hat, aktualisiere das Memory entsprechend
+
+BISHERIGES MEMORY:
+{currentMemory}
+
+NEUE KONVERSATION (Zusammenfassung):
+Frage: {questionText}
+Block: {block} / {unterbereich}
+Chat: {chatSummary}
+
+AKTUALISIERTES MEMORY:
+```
+
+Temperature: 0.2 (deterministisch, keine Kreativität nötig).
+Max Tokens: 1024 (Memory darf max 800 Tokens lang sein, Puffer für Formatierung).
+
+### Token-Budget-Management (DEC-023)
+
+Qwen 2.5 14B hat 32K Context Window. Aufschlüsselung:
+
+| Kontext-Teil | Budget | Steuerung |
+|-------------|--------|-----------|
+| Persona-Prompt | ~500-800 | Fix (bestehend) |
+| Owner-Profil | ~300-500 | Fix (begrenzt durch Feldlängen) |
+| Run Memory | ~500-800 | Durch Memory-Update-Prompt begrenzt |
+| Question + Meta | ~100-200 | Fix |
+| Evidence | ~500-2000 | Variable — Truncation bei >2000 Tokens |
+| Chat-History | ~1000-3000 | Variable — älteste Messages droppen wenn >3000 |
+| **Total Input** | **~3000-7300** | |
+| Verbleibend für Antwort | **~25K+** | Komfortabel |
+
+**Strategie bei Budget-Überschreitung:**
+1. Evidence-Texte werden auf 2000 Tokens gekürzt (Truncation mit Marker)
+2. Chat-History wird auf die letzten 6 Messages reduziert
+3. Memory bleibt immer komplett (ist bereits kuratiert)
+4. Profil bleibt immer komplett (ist kurz)
+
+### Memory-Update-Timing (DEC-024)
+
+**Async, non-blocking.** Der Memory-Update-Call wird nach dem Chat-Response gestartet, aber nicht abgewartet. Der Owner bekommt seine Antwort sofort — das Memory wird im Hintergrund aktualisiert.
+
+```
+Request → [Load Context] → [LLM Chat] → Response an Owner
+                                          |
+                                          └→ [Async: Memory Update] → DB Save
+```
+
+Warum async:
+- Memory-Update ist ein separater LLM-Call (~2-5 Sekunden)
+- Owner soll nicht warten
+- Wenn Memory-Update fehlschlägt → kein Problem, altes Memory bleibt bestehen
+- Kein Retry nötig — beim nächsten Chat wird ein neuer Update-Versuch gemacht
+
+### Profil-Redirect-Logik (DEC-025)
+
+```
+Owner loggt sich ein
+  |
+  v
+Middleware/Dashboard prüft owner_profiles für tenant_id
+  |
+  ├→ Profil existiert → Dashboard normal
+  |
+  └→ Kein Profil → Redirect zu /profile
+       |
+       └→ Profil-Formular ausfüllen (Pflicht)
+            |
+            └→ Speichern → Redirect zu /dashboard
+```
+
+**Implementierung:** Im Dashboard-Page Server Component (`page.tsx`) — DB-Abfrage ob `owner_profiles` Eintrag für `tenant_id` existiert. Wenn nicht → `redirect("/profile")`. Kein Middleware-Check (zu komplex für einen einfachen DB-Lookup).
+
+### Memory-Anzeige für Owner
+
+Einfache Read-Only-Anzeige im Workspace, zugänglich über einen Button/Link:
+
+- **Platzierung:** Im Workspace, z.B. als Collapsible-Bereich oder im Learning Center Panel
+- **Inhalt:** Memory-Text aus `run_memory`, unverändert angezeigt
+- **Überschrift:** "Was die KI sich gemerkt hat" (i18n)
+- **Leer-Zustand:** "Die KI hat noch keine Notizen zu diesem Run."
+- **Keine Bearbeitung:** Read-Only für Owner
+
+### API-Routes
+
+| Route | Methode | Zweck |
+|-------|---------|-------|
+| `/api/tenant/profile` | GET | Owner-Profil laden |
+| `/api/tenant/profile` | PUT | Owner-Profil erstellen/aktualisieren (Upsert) |
+| `/api/tenant/runs/[runId]/memory` | GET | Run-Memory laden (für Owner-Anzeige) |
+
+Memory wird nicht über eine eigene API geschrieben — das passiert server-seitig im Chat-Route-Handler via `adminClient`.
+
+### Sicherheit / DSGVO
+
+- **Profildaten auf EU-Server:** Gespeichert in Supabase PostgreSQL auf Hetzner (DE)
+- **RLS:** `owner_profiles` und `run_memory` haben Tenant-isolierte Policies
+- **Memory-Write via adminClient:** Nur der Server schreibt Memory (kein direkter User-Zugriff auf Write)
+- **Keine externen Dienste:** Profil und Memory werden nur lokal auf dem Server verarbeitet
+- **Kein Export von Profildaten:** Profil wird nicht in den ZIP-Export aufgenommen (nur Fragebogen-Antworten)
+
+### Betroffene Dateien (Übersicht für Slice-Planning)
+
+| Bereich | Dateien | Aktion |
+|---------|---------|--------|
+| DB Migration | `sql/migrations/012_owner_profiles.sql` | NEU |
+| DB Migration | `sql/migrations/013_run_memory.sql` | NEU |
+| API Route | `src/app/api/tenant/profile/route.ts` | NEU |
+| API Route | `src/app/api/tenant/runs/[runId]/memory/route.ts` | NEU |
+| Page | `src/app/profile/page.tsx` | NEU (Server Component) |
+| Page | `src/app/profile/profile-form-client.tsx` | NEU (Client Component) |
+| Komponente | `src/components/profile/leadership-select.tsx` | NEU |
+| Komponente | `src/components/profile/disc-select.tsx` | NEU |
+| Komponente | `src/components/learning-center/run-memory-view.tsx` | NEU |
+| LLM | `src/lib/llm.ts` | Erweitert: Profil-Kontext, Memory-Kontext, Memory-Update-Prompt |
+| API Route | `src/app/api/tenant/runs/[runId]/questions/[questionId]/chat/route.ts` | Erweitert: Profil+Memory laden und injizieren, async Memory-Update |
+| API Route | `src/app/api/tenant/runs/[runId]/questions/[questionId]/generate-answer/route.ts` | Erweitert: Profil+Memory laden und injizieren |
+| Page | `src/app/dashboard/page.tsx` | Erweitert: Profil-Redirect-Check |
+| Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | Erweitert: Memory-Anzeige-Button |
+| i18n | `src/messages/de.json`, `en.json`, `nl.json` | profile.* + memory.* Namespace |
