@@ -457,3 +457,116 @@ export function buildOwnerContext(profile: OwnerProfileData | null, locale?: str
 
   return lines.join("\n");
 }
+
+// ─── V2.2: Run Memory ────────────────────────────────────────────────────────
+
+const MEMORY_UPDATE_PROMPTS: Record<LLMLocale, string> = {
+  de: `Du bist ein Memory-Manager für einen M&A Exit-Readiness-Berater. Aktualisiere das folgende Memory basierend auf der neuen Konversation.
+
+REGELN:
+- Halte das Memory unter 800 Tokens
+- Behalte nur strategisch relevante Informationen
+- Fokus auf: Kernthemen, Muster, offene Punkte, Antwortstil des Kunden
+- Lösche Redundanzen und veraltete Einträge
+- Wenn der Kunde etwas korrigiert hat, aktualisiere das Memory entsprechend
+- Notiere offene Punkte, die noch angesprochen werden sollten
+- Schreibe das Memory auf Deutsch`,
+
+  en: `You are a memory manager for an M&A exit-readiness advisor. Update the following memory based on the new conversation.
+
+RULES:
+- Keep the memory under 800 tokens
+- Retain only strategically relevant information
+- Focus on: core topics, patterns, open points, customer's answer style
+- Remove redundancies and outdated entries
+- If the customer corrected something, update the memory accordingly
+- Note open points that should still be addressed
+- Write the memory in English`,
+
+  nl: `Je bent een memory-manager voor een M&A exit-readiness adviseur. Werk het volgende geheugen bij op basis van het nieuwe gesprek.
+
+REGELS:
+- Houd het geheugen onder 800 tokens
+- Bewaar alleen strategisch relevante informatie
+- Focus op: kernthema's, patronen, openstaande punten, antwoordstijl van de klant
+- Verwijder redundanties en verouderde items
+- Als de klant iets heeft gecorrigeerd, werk het geheugen dienovereenkomstig bij
+- Noteer openstaande punten die nog besproken moeten worden
+- Schrijf het geheugen in het Nederlands`,
+};
+
+/**
+ * Build memory context block for LLM system prompts.
+ * Returns empty string if no memory exists.
+ */
+export function buildMemoryContext(memoryText: string | null, locale?: string): string {
+  if (!memoryText?.trim()) return "";
+
+  const loc = (locale && locale in PROMPTS_BY_LOCALE ? locale : "de") as LLMLocale;
+  const header = loc === "en" ? "PREVIOUS CONTEXT (AI Memory):" : loc === "nl" ? "EERDERE CONTEXT (AI-geheugen):" : "BISHERIGER KONTEXT (KI-Memory):";
+
+  return `${header}\n${memoryText}`;
+}
+
+/**
+ * Update the run memory asynchronously after a chat interaction.
+ * Fire-and-forget — errors are logged but don't block the chat response.
+ *
+ * @param runId - The run to update memory for
+ * @param currentMemory - Existing memory text (empty string if none)
+ * @param chatSummary - Brief summary of the latest interaction (question + user messages)
+ * @param locale - Tenant locale for prompt language
+ */
+export async function updateRunMemory(
+  runId: string,
+  currentMemory: string,
+  chatSummary: string,
+  locale?: string,
+): Promise<void> {
+  const loc = (locale && locale in PROMPTS_BY_LOCALE ? locale : "de") as LLMLocale;
+  const prompt = MEMORY_UPDATE_PROMPTS[loc];
+
+  const memoryLabel = loc === "en" ? "CURRENT MEMORY:" : loc === "nl" ? "HUIDIG GEHEUGEN:" : "BISHERIGES MEMORY:";
+  const chatLabel = loc === "en" ? "NEW CONVERSATION (summary):" : loc === "nl" ? "NIEUW GESPREK (samenvatting):" : "NEUE KONVERSATION (Zusammenfassung):";
+  const outputLabel = loc === "en" ? "UPDATED MEMORY:" : loc === "nl" ? "BIJGEWERKT GEHEUGEN:" : "AKTUALISIERTES MEMORY:";
+  const emptyLabel = loc === "en" ? "(no previous memory)" : loc === "nl" ? "(geen eerder geheugen)" : "(kein bisheriges Memory)";
+
+  try {
+    const updatedMemory = await chatWithLLM([
+      {
+        role: "system",
+        content: prompt,
+      },
+      {
+        role: "user",
+        content: `${memoryLabel}\n${currentMemory || emptyLabel}\n\n${chatLabel}\n${chatSummary}\n\n${outputLabel}`,
+      },
+    ], { temperature: 0.2, maxTokens: 1024 });
+
+    // Write to DB via adminClient (bypasses RLS)
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const adminClient = createAdminClient();
+
+    // Read current version (0 if no memory yet)
+    const { data: existing } = await adminClient
+      .from("run_memory")
+      .select("version")
+      .eq("run_id", runId)
+      .single();
+
+    const newVersion = (existing?.version ?? 0) + 1;
+
+    await adminClient
+      .from("run_memory")
+      .upsert({
+        run_id: runId,
+        memory_text: updatedMemory.trim(),
+        version: newVersion,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "run_id" });
+  } catch (error) {
+    // Fire-and-forget: log but don't throw
+    const { captureException } = await import("@/lib/logger");
+    captureException(error, { source: "updateRunMemory", metadata: { runId } });
+  }
+}

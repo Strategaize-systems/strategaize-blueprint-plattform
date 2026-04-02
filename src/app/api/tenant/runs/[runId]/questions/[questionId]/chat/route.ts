@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
-import { chatWithLLM, getSystemPrompts, buildOwnerContext, type OwnerProfileData } from "@/lib/llm";
+import { chatWithLLM, getSystemPrompts, buildOwnerContext, buildMemoryContext, updateRunMemory, type OwnerProfileData } from "@/lib/llm";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/chat
 // Send a user message and get an LLM follow-up response
@@ -48,6 +49,16 @@ export async function POST(
     .single();
   const ownerContext = buildOwnerContext(ownerProfileData as OwnerProfileData | null, locale);
 
+  // Load run memory for session continuity (V2.2)
+  const adminClient = createAdminClient();
+  const { data: memoryData } = await adminClient
+    .from("run_memory")
+    .select("memory_text")
+    .eq("run_id", runId)
+    .single();
+  const currentMemory = memoryData?.memory_text ?? "";
+  const memoryContext = buildMemoryContext(currentMemory, locale);
+
   // Load evidence context for this question (if any documents have extracted text)
   let evidenceContext = "";
   const { data: evidenceLinks } = await supabase
@@ -73,11 +84,19 @@ export async function POST(
     }
   }
 
-  // Build LLM messages
+  // Build LLM messages: Persona + Profile + Memory + Question + Evidence
+  const systemParts = [prompts.rückfrage];
+  if (ownerContext) systemParts.push(ownerContext);
+  if (memoryContext) systemParts.push(memoryContext);
+
+  const questionLabel = locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is";
+  const typeLabel = locale === "de" ? "Typ" : "Type";
+  systemParts.push(`${questionLabel}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${typeLabel}: ${question.ebene}${evidenceContext}`);
+
   const messages = [
     {
       role: "system" as const,
-      content: `${prompts.rückfrage}${ownerContext ? `\n\n${ownerContext}` : ""}\n\n${locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is"}: "${question.fragetext}"\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : locale === "nl" ? "Type" : "Type"}: ${question.ebene}${evidenceContext}`,
+      content: systemParts.join("\n\n"),
     },
     // Include chat history for context
     ...((body.chatHistory ?? []).map((m) => ({
@@ -96,6 +115,10 @@ export async function POST(
       temperature: 0.7,
       maxTokens: 512,
     });
+
+    // Async memory update (fire-and-forget, DEC-024)
+    const chatSummary = `${locale === "de" ? "Frage" : locale === "nl" ? "Vraag" : "Question"}: ${question.fragetext}\nBlock: ${question.block}\n${locale === "de" ? "Nutzer" : locale === "nl" ? "Gebruiker" : "User"}: ${body.message}\nKI: ${response.substring(0, 300)}`;
+    updateRunMemory(runId, currentMemory, chatSummary, locale);
 
     return NextResponse.json({
       response,

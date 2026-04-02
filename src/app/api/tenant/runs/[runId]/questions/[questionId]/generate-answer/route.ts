@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
-import { chatWithLLM, getSystemPrompts, buildOwnerContext, type OwnerProfileData } from "@/lib/llm";
+import { chatWithLLM, getSystemPrompts, buildOwnerContext, buildMemoryContext, type OwnerProfileData } from "@/lib/llm";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/generate-answer
 // Takes chat history, generates a summary via local LLM (Ollama/Qwen)
@@ -46,6 +47,15 @@ export async function POST(
     .single();
   const ownerContext = buildOwnerContext(ownerProfileData as OwnerProfileData | null, locale);
 
+  // Load run memory for session continuity (V2.2)
+  const adminClient = createAdminClient();
+  const { data: memoryData } = await adminClient
+    .from("run_memory")
+    .select("memory_text")
+    .eq("run_id", runId)
+    .single();
+  const memoryContext = buildMemoryContext(memoryData?.memory_text ?? "", locale);
+
   // Load evidence context
   let evidenceContext = "";
   const { data: evidenceLinks } = await supabase
@@ -75,7 +85,7 @@ export async function POST(
   const messages = [
     {
       role: "system" as const,
-      content: `${prompts.zusammenfassung}${ownerContext ? `\n\n${ownerContext}` : ""}\n\n${locale === "de" ? "Originalfrage" : locale === "nl" ? "Oorspronkelijke vraag" : "Original question"}: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : "Type"}: ${question.ebene}${evidenceContext}`,
+      content: `${prompts.zusammenfassung}${ownerContext ? `\n\n${ownerContext}` : ""}${memoryContext ? `\n\n${memoryContext}` : ""}\n\n${locale === "de" ? "Originalfrage" : locale === "nl" ? "Oorspronkelijke vraag" : "Original question"}: ${question.fragetext}\nBlock: ${question.block} / ${question.unterbereich}\n${locale === "de" ? "Typ" : "Type"}: ${question.ebene}${evidenceContext}`,
     },
     ...((chatMessages ?? []).map((m) => ({
       role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
