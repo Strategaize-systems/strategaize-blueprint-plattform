@@ -10,15 +10,14 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: SLC-035 (DB-Schema) done — SQL geschrieben, muss auf Hetzner ausgeführt werden. Nächster Schritt: SQL ausführen, dann SLC-036 (Owner-Profil).
+- Current Focus: SLC-035 + SLC-036 done. DB-Schema + Owner-Profil implementiert. Nächster Schritt: /qa für SLC-036, dann SLC-037 (LLM Profil-Injection).
 - Current Phase: V2.2 Implementation
 
 ## Immediate Next Steps
-1. SQL-Migrationen 012 + 013 auf Hetzner ausführen (User via Supabase Studio)
-2. /backend + /frontend für SLC-036 (Owner-Profil)
-3. /backend für SLC-037 (LLM Profil-Injection)
-4. /backend für SLC-038 (Run Memory Backend)
-5. /frontend für SLC-039 (Memory Frontend)
+1. /qa für SLC-036
+2. /backend für SLC-037 (LLM Profil-Injection)
+3. /backend für SLC-038 (Run Memory Backend)
+4. /frontend für SLC-039 (Memory Frontend)
 
 ## Active Scope
 V2.2 — Personalized LLM. Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede, Führungsstil, DISC, freie Vorstellung). LLM Run Memory (kuratierte Zusammenfassung pro Run, LLM-geschrieben, max 800 Tokens). Beides wird in alle LLM-Prompts injiziert. 2 Features (FEAT-026/027), 4 Backlog-Items (BL-046 bis BL-049).

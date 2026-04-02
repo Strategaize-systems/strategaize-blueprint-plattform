@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, FileText, Play, Menu, X } from "lucide-react";
+import { LogOut, FileText, Play, Menu, X, User } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
@@ -97,11 +97,18 @@ export function DashboardClient({ profile }: { profile: Profile }) {
         </Link>
       </div>
 
-      {/* User + Abmelden */}
+      {/* User + Profil + Abmelden */}
       <div className="border-t border-white/[0.06] px-4 py-4">
         <div className="mb-2 truncate px-2 text-xs text-slate-500" title={profile.email}>
           {profile.email}
         </div>
+        <Link
+          href="/profile"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/10 to-brand-primary-dark/10 px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:from-brand-primary/20 hover:to-brand-primary-dark/20 hover:text-white mb-2"
+        >
+          <User className="h-4 w-4" />
+          {t("profile.editProfile")}
+        </Link>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/20 to-brand-primary-dark/20 px-3 py-3 text-sm font-semibold text-slate-300 transition-all hover:from-brand-primary/30 hover:to-brand-primary-dark/30 hover:text-white"

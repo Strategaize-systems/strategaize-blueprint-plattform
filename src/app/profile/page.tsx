@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DashboardClient } from "./dashboard-client";
+import { ProfileFormClient } from "./profile-form-client";
 
-export default async function DashboardPage() {
+export default async function ProfilePage() {
   const supabase = await createClient();
 
   const {
@@ -13,32 +13,22 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Get user profile
   const { data: profile } = await supabase
     .from("profiles")
     .select("id, tenant_id, email, role")
     .eq("id", user.id)
     .single();
 
-  if (!profile) {
+  if (!profile || profile.role === "strategaize_admin") {
     redirect("/login");
   }
 
-  // Admin users go to the admin dashboard
-  if (profile.role === "strategaize_admin") {
-    redirect("/admin");
-  }
-
-  // Check if owner profile exists — redirect to profile form if not
+  // Load existing owner profile if any
   const { data: ownerProfile } = await supabase
     .from("owner_profiles")
-    .select("id")
+    .select("*")
     .eq("tenant_id", profile.tenant_id)
     .single();
 
-  if (!ownerProfile) {
-    redirect("/profile");
-  }
-
-  return <DashboardClient profile={profile} />;
+  return <ProfileFormClient profile={profile} ownerProfile={ownerProfile} />;
 }
