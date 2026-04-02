@@ -90,7 +90,8 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 | MVP-1 | **released** | FEAT-001 bis FEAT-008 (Auth, Admin, Tenant, Events, Evidence, Submission, Export) |
 | V1.1 | **released** | FEAT-009 bis FEAT-018 (LLM-Chat, Review, Checkpoints, Rollen, Premium UI, Error-Logging, Doc-Parsing, Doc-Analyse, i18n) |
 | V2 | **released** | FEAT-019 (Voice Input via Whisper) |
-| V2.1 | **requirements** | FEAT-023 bis FEAT-025 (Learning Center, Video-Tutorials, Bedienungsanleitung) |
+| V2.1 | **released** | FEAT-023 bis FEAT-025 (Learning Center, Video-Tutorials, Bedienungsanleitung) |
+| V2.2 | **requirements** | FEAT-026 bis FEAT-027 (Owner-Profil, LLM Run Memory) |
 | V3 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
 
 ## V1 Scope — Core Features
@@ -298,6 +299,130 @@ V2.1 ist erfolgreich, wenn:
 5. **Content-Ready:** Echter Content kann ohne Code-Änderungen eingefügt werden (Markdown-Dateien + Video-Dateien austauschen)
 6. **Nicht-invasiv:** Das Learning Center stört die Kernfunktionalität nicht
 
+## V2.2 Scope — Personalized LLM (Owner-Profil + Run Memory)
+
+### Problem
+
+Das LLM behandelt jeden Kunden gleich und vergisst zwischen Sessions alles. Bei Frage 1 weiß es nichts über den Menschen, bei der nächsten Anmeldung startet es bei Null. Für Geschäftsführer (50-65, wenig KI-Erfahrung), die 67 Fragen über mehrere Tage beantworten, fühlt sich das unpersönlich und frustrierend an. Die Plattform soll sich anfühlen wie ein kompetenter Berater, der den Kunden kennt — nicht wie ein anonymer Bot.
+
+### Ziel
+
+Das LLM kennt den Owner persönlich (Anrede, Hintergrund, Führungsstil) und kann zwischen Sessions anknüpfen (laufendes Memory pro Run). Das verbessert sowohl die Qualität der Rückfragen als auch das Nutzererlebnis.
+
+### FEAT-026: Owner-Profil ("Frage Null") (DE/EN/NL)
+
+**Priorität:** P0 (V2.2) — Grundlage für Personalisierung
+
+Pflicht-Formular auf Tenant-Ebene, das der Owner vor dem ersten Run ausfüllt. Funktioniert wie eine "Vorstellungsrunde auf einem Seminar" — der Owner stellt sich der Plattform vor, damit das LLM ihn ab der ersten Frage persönlich ansprechen und kontextsensitiv nachfragen kann.
+
+**Profil-Bereiche:**
+
+1. **Persönliche Informationen**
+   - Name (Vor- und Nachname)
+   - Alter / Altersbereich
+   - Ausbildungshintergrund (höchster Abschluss, Fachrichtung)
+   - Beruflicher Werdegang (Kurzfassung: was vorher gemacht, wie lange Inhaber)
+
+2. **Anrede-Präferenz**
+   - Du oder Sie
+   - Anrede mit Vorname oder Nachname
+   - Wird vom LLM in allen Rückfragen, Zusammenfassungen und Bewertungen verwendet
+
+3. **Führungsstil-Selbsteinordnung**
+   - 5 Optionen mit kurzer Beschreibung:
+     - **Patriarchisch** — "Ich entscheide, die anderen führen aus"
+     - **Kooperativ** — "Ich hole Meinungen ein und entscheide dann"
+     - **Delegativ** — "Ich finde gute Leute und lasse sie machen"
+     - **Coaching** — "Ich entwickle meine Leute und begleite sie"
+     - **Visionär** — "Ich gebe die Richtung vor, das Team findet den Weg"
+   - Einfachauswahl, kein Test
+   - Impact: LLM passt Fragetiefe an (z.B. Patriarch → direktere Nachfragen zu Delegation)
+
+4. **DISC-Kommunikationsstil**
+   - 4 Optionen mit Beschreibung und Farbcode:
+     - **Dominant (Rot)** — Ergebnisorientiert, direkt, entscheidungsfreudig
+     - **Initiativ (Gelb)** — Kommunikativ, optimistisch, begeisterungsfähig
+     - **Stetig (Grün)** — Teamorientiert, geduldig, zuverlässig
+     - **Gewissenhaft (Blau)** — Analytisch, präzise, qualitätsbewusst
+   - Selbsteinordnung, kein vollständiger Test
+   - Impact: LLM passt Kommunikationsstil an (z.B. Blau → mehr Zahlen/Fakten, Gelb → mehr Ermutigung)
+
+5. **Freie Vorstellung**
+   - Textfeld oder Spracheingabe (Whisper): "Erzählen Sie kurz etwas über sich und Ihr Unternehmen"
+   - Leitfragen als Inspiration: Was treibt Sie an? Was ist Ihre größte Stärke? Was wollen Sie mit dem Exit erreichen?
+   - Max. 2000 Zeichen / ~3 Minuten Spracheingabe
+
+**Technische Anforderungen:**
+- Gespeichert auf Tenant-Ebene (nicht pro Run, nicht pro User)
+- Pflicht vor erstem Run-Zugriff (Redirect wenn nicht ausgefüllt)
+- Bearbeitbar jederzeit über Profil-Seite
+- Profil-Daten werden in alle 4 LLM-Prompt-Typen (Rückfrage, Zusammenfassung, Bewertung, Dokumentanalyse) als System-Kontext injiziert
+- Dreisprachig: Formular und Beschreibungstexte in DE/EN/NL
+
+**Akzeptanzkriterien:**
+1. Owner wird bei erstem Login zum Profil-Formular geleitet
+2. Alle 5 Bereiche sind ausfüllbar (persönlich, Anrede, Führungsstil, DISC, freie Vorstellung)
+3. Spracheingabe funktioniert im Freitext-Feld (Whisper-Integration)
+4. Profil ist gespeichert und jederzeit bearbeitbar
+5. LLM-Rückfragen verwenden die gewählte Anrede (Du/Sie + Name)
+6. LLM-Rückfragen zeigen Kontext-Bewusstsein (Profil-Infos fließen sichtbar ein)
+7. Formular in DE/EN/NL verfügbar
+8. Run-Zugriff ist ohne ausgefülltes Profil nicht möglich
+
+### FEAT-027: LLM Run Memory (DE/EN/NL)
+
+**Priorität:** P0 (V2.2) — Session-Kontinuität
+
+Das LLM schreibt nach jeder Interaktion ein kurzes Memory-Update, das auf dem Server gespeichert wird. Bei der nächsten Session wird das Memory als System-Kontext geladen — das LLM kann anknüpfen, wo der Owner aufgehört hat.
+
+**Memory-Inhalt (LLM-kuratiert, max 500-800 Tokens):**
+- Zusammenfassung der bisherigen Themen und Antworten
+- Erkannte Muster (z.B. "Owner antwortet sehr detailliert bei Finanzen, oberflächlich bei HR")
+- Offene Punkte, die das LLM noch ansprechen wollte
+- Beobachtungen zum Antwortstil
+- Kontext der letzten Interaktion (was zuletzt besprochen wurde)
+
+**Nicht im Memory:**
+- Rohe Antworten (die sind in question_events)
+- Vollständige Chat-Histories (zu groß, nicht kurativ)
+- Evidence-Inhalte (die sind separat abrufbar)
+
+**Technische Anforderungen:**
+- Gespeichert pro Run in der Datenbank (JSON-Blob oder Textfeld)
+- Neuer LLM-Prompt-Typ: "Memory Update" — nach jeder Chat-Interaktion
+- Memory wird bei jedem Chat- und Generate-Request als Teil des System-Prompts mitgeladen
+- Token-Budget: Profil (~300-500 Tokens) + Memory (~500-800 Tokens) + Question + Evidence muss innerhalb von ~8K System-Tokens bleiben, damit für Chat-History und Antwort genug Platz bleibt (Qwen 2.5 14B: 32K Context)
+- Owner kann Memory einsehen (Read-Only Anzeige im Workspace)
+
+**Akzeptanzkriterien:**
+1. Nach einer Chat-Interaktion wird das Memory automatisch aktualisiert
+2. Bei erneutem Login/Session-Start enthält der LLM-Kontext das gespeicherte Memory
+3. LLM-Rückfragen zeigen Kontinuität (z.B. "Sie haben bei Block A erwähnt, dass... — gilt das auch hier?")
+4. Memory-Anzeige ist für Owner sichtbar (einfache Darstellung)
+5. Token-Budget wird eingehalten — Antwortqualität sinkt nicht durch zu viel Kontext
+6. Memory funktioniert über Tage/Wochen hinweg (nicht nur innerhalb einer Session)
+7. Memory ist pro Run isoliert (verschiedene Runs haben eigene Memories)
+
+### V2.2 — Nicht im Scope
+
+- Mitarbeiter-Profile (erst bei echtem Multi-User-Bedarf)
+- Vollständiger DISC-Test (40+ Fragen) — Selbsteinordnung reicht
+- Cross-Question Consistency Engine (teilweise durch Memory abgedeckt)
+- System Learning / Prompt-Feedback-Loop (braucht echte Nutzerdaten)
+- Adaptive Fragestrategie basierend auf Führungsstil (Parked Idea)
+- Chat-History-Persistierung (Memory ersetzt das effektiver)
+- Profil-Import aus externen Systemen
+
+### V2.2 — Erfolgskriterien
+
+V2.2 ist erfolgreich, wenn:
+
+1. **Personalisierung spürbar:** LLM spricht den Owner korrekt an und zeigt Kontextwissen
+2. **Kontinuität erlebbar:** Owner merkt bei der zweiten Session, dass das LLM "sich erinnert"
+3. **Kein Qualitätsverlust:** Antwortqualität der LLM-Rückfragen bleibt mindestens gleich gut
+4. **Natürlicher Einstieg:** Profil-Formular fühlt sich an wie eine Vorstellungsrunde, nicht wie ein Verhör
+5. **DSGVO:** Profildaten und Memory bleiben auf dem Server (Hetzner EU), kein externer Dienst
+
 ## V3 Scope (Later)
 
 | Feature | Beschreibung |
@@ -398,6 +523,6 @@ V1 ist erfolgreich, wenn:
 ---
 
 Erstellt: 2026-03-24
-Aktualisiert: 2026-04-01 (V2.1 Requirements — Learning Center)
+Aktualisiert: 2026-04-02 (V2.2 Requirements — Personalized LLM)
 Skill: `/requirements`
 Nächster Schritt: `/architecture`

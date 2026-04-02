@@ -449,6 +449,46 @@
       "version": "V2.1",
       "description": "DSGVO-Compliance-Dokumentation fuer Blueprint Plattform erstellen mit /compliance Skill. Brandables Dokument fuer Kundenuebergabe: Datenerhebung, Speicherorte (Hetzner EU), Zugriffskontrollen (RLS), Datenweitergabe, Loeschkonzept, technische Schutzmassnahmen. Kein externer Datenabfluss (Ollama+Whisper lokal).",
       "createdAt": "2026-04-01"
+    },
+    {
+      "id": "BL-046",
+      "title": "Owner-Profil: Pflicht-Formular mit persoenlichen Infos, Fuehrungsstil, DISC (DE/EN/NL)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2.2",
+      "description": "Pflicht-Formular auf Tenant-Ebene vor erstem Run. 5 Bereiche: persoenliche Infos (Name, Alter, Ausbildung, Karriere, wie lange Inhaber), Anrede-Praeferenz (Du/Sie, Vorname/Nachname), Fuehrungsstil-Selbsteinordnung (5 Optionen), DISC-Kommunikationsstil (4 Optionen mit Farben), freie Vorstellung (Text + Whisper). Profil wird in alle 4 LLM-Prompt-Typen injiziert. Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-02"
+    },
+    {
+      "id": "BL-047",
+      "title": "Owner-Profil: LLM-Prompt-Injection fuer personalisierte Rueckfragen",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2.2",
+      "description": "Alle 4 LLM-Prompt-Typen (Rueckfrage, Zusammenfassung, Bewertung, Dokumentanalyse) erhalten Owner-Profil als System-Kontext. LLM verwendet gewaehlte Anrede (Du/Sie + Name). LLM passt Fragetiefe an Fuehrungsstil und DISC-Typ an. Token-Budget: max 300-500 Tokens fuer Profil-Kontext.",
+      "createdAt": "2026-04-02"
+    },
+    {
+      "id": "BL-048",
+      "title": "LLM Run Memory: Kontext-Datei pro Run, LLM-geschrieben",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V2.2",
+      "description": "Neuer LLM-Prompt-Typ 'Memory Update' — nach jeder Chat-Interaktion schreibt das LLM ein kuratiertes Memory (max 500-800 Tokens). Gespeichert in DB pro Run. Enthaelt: Themen-Zusammenfassung, erkannte Muster, offene Punkte, Antwortstil-Beobachtungen. Wird bei jeder neuen Session als System-Kontext geladen.",
+      "createdAt": "2026-04-02"
+    },
+    {
+      "id": "BL-049",
+      "title": "LLM Run Memory: Owner-Anzeige im Workspace",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V2.2",
+      "description": "Owner kann im Workspace sehen, was die KI sich gemerkt hat. Read-Only Anzeige des aktuellen Memory-Inhalts. Einfache Textdarstellung, ausklappbar oder im Learning Center. Dreisprachig DE/EN/NL (UI-Chrome, Memory-Inhalt bleibt in Interaktionssprache).",
+      "createdAt": "2026-04-02"
     }
   ]
 }

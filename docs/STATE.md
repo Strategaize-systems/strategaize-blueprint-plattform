@@ -9,18 +9,17 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: released
-- Current Focus: V2.1 released. Learning Center deployed und live. Plattform ruht bis echter Content (Videos, Anleitung) via /user-guide produziert wird.
-- Current Phase: Stable (V2.1)
+- High-Level State: requirements
+- Current Focus: V2.2 Requirements abgeschlossen — Owner-Profil (FEAT-026) + LLM Run Memory (FEAT-027). PRD, Feature-Specs und Backlog aktualisiert. Nächster Schritt: Architecture.
+- Current Phase: V2.2 Requirements
 
 ## Immediate Next Steps
-1. BL-045 (DSGVO Compliance) separat bearbeiten
-2. Echter Video-Content produzieren (via /user-guide + Narakeet)
-3. Echte Bedienungsanleitung erstellen (via /user-guide Skill)
-4. BL-035 (Lektorat) wenn Zeit
+1. /architecture für V2.2 Personalized LLM
+2. /slice-planning für V2.2
+3. Implementation (FEAT-026 → FEAT-027)
 
 ## Active Scope
-V2.1 — Onboarding & Hilfe. Released am 2026-04-01. In-App Learning Center mit Hilfe-Button, Video-Tutorials (4 Lektionen, Dummy-Content), Bedienungsanleitung (Markdown, durchsuchbar, Dummy-Content). Dreisprachig DE/EN/NL. 22 Features done, 31 Slices done, 4 Releases.
+V2.2 — Personalized LLM. Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede, Führungsstil, DISC, freie Vorstellung). LLM Run Memory (kuratierte Zusammenfassung pro Run, LLM-geschrieben, max 800 Tokens). Beides wird in alle LLM-Prompts injiziert. 2 Features (FEAT-026/027), 4 Backlog-Items (BL-046 bis BL-049).
 
 ## Blockers
 - aktuell keine
@@ -29,4 +28,4 @@ V2.1 — Onboarding & Hilfe. Released am 2026-04-01. In-App Learning Center mit 
 - V2.1 — 2026-04-01 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). V2.1 stabil, keine offenen Live-Issues. BL-035 (Lektorat) offen, niedrige Priorität. BL-045 (DSGVO Compliance) offen, separat. V3 (FEAT-020 Dedizierte Server) geplant, kein Zeitdruck.
+Server: Hetzner CPX62 (30GB nutzbar, 16 vCPUs). V2.1 stabil. V2.2 ist Backend+Frontend Feature (DB-Schema, LLM-Prompt-Änderungen, neues Formular). Token-Budget-Management für Qwen 2.5 14B (32K Context) muss in Architecture berücksichtigt werden. BL-035 (Lektorat) und BL-045 (DSGVO Compliance) bleiben offen.

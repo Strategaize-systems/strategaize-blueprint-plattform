@@ -29,11 +29,18 @@
       "order": 4
     },
     {
+      "id": "v2-2",
+      "name": "V2.2",
+      "status": "active",
+      "summary": "Personalized LLM — Owner-Profil (Führungsstil, DISC, Anrede) + LLM Run Memory für Session-Kontinuität",
+      "order": 5
+    },
+    {
       "id": "v3",
       "name": "V3",
       "status": "planned",
       "summary": "Dedizierte Server — Single-Tenant Deployment auf eigenem Hetzner-Server pro Kunde",
-      "order": 5
+      "order": 6
     }
   ]
 }
