@@ -10,13 +10,13 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: SLC-035 bis SLC-038 done. DB, Profil, LLM-Injection, Memory-Backend fertig. Letzter Slice: SLC-039 (Memory Frontend).
-- Current Phase: V2.2 Implementation
+- Current Focus: Alle 5 V2.2 Slices done (SLC-035 bis SLC-039). Nächster Schritt: QA SLC-039, dann Gesamt-QA, dann Deploy.
+- Current Phase: V2.2 Implementation (alle Slices done)
 
 ## Immediate Next Steps
-1. /frontend für SLC-039 (Memory Frontend + Polish)
+1. /qa für SLC-039
 2. Gesamt-QA V2.2
-3. Deploy + Live-Test
+3. Deploy auf Hetzner + Live-Test
 
 ## Active Scope
 V2.2 — Personalized LLM. Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede, Führungsstil, DISC, freie Vorstellung). LLM Run Memory (kuratierte Zusammenfassung pro Run, LLM-geschrieben, max 800 Tokens). Beides wird in alle LLM-Prompts injiziert. 2 Features (FEAT-026/027), 4 Backlog-Items (BL-046 bis BL-049).

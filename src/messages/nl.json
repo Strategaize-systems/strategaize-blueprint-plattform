@@ -228,6 +228,12 @@
     "editProfile": "Profiel bewerken",
     "profileRequired": "Vul uw profiel in voordat u begint."
   },
+  "memory": {
+    "title": "Wat de AI heeft onthouden",
+    "emptyState": "De AI heeft nog geen notities voor deze run.",
+    "lastUpdated": "Laatst bijgewerkt: {date}",
+    "version": "Versie {version}"
+  },
   "learning": {
     "helpButton": "Hulp",
     "title": "Learning Center",

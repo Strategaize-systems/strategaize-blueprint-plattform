@@ -47,6 +47,7 @@ import {
 import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
+import { RunMemoryView } from "@/components/learning-center/run-memory-view";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -1118,6 +1119,9 @@ export function RunWorkspaceClient({
                 </div>
               )}
               </div> {/* end grid */}
+
+              {/* ── KI Memory (V2.2) ── */}
+              <RunMemoryView runId={runId} />
 
               {/* ── Evidence + Checkpoints Grid (Style Guide 14.6) ── */}
               {!isAdmin && (

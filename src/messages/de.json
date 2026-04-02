@@ -228,6 +228,12 @@
     "editProfile": "Profil bearbeiten",
     "profileRequired": "Bitte füllen Sie Ihr Profil aus, bevor Sie beginnen."
   },
+  "memory": {
+    "title": "Was die KI sich gemerkt hat",
+    "emptyState": "Die KI hat noch keine Notizen zu diesem Run.",
+    "lastUpdated": "Zuletzt aktualisiert: {date}",
+    "version": "Version {version}"
+  },
   "learning": {
     "helpButton": "Hilfe",
     "title": "Learning Center",

@@ -73,7 +73,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-026 | Owner-Profil ("Frage Null") (DE/EN/NL) | planned | [Spec](FEAT-026-owner-profil.md) | 2026-04-02 |
-| FEAT-027 | LLM Run Memory (DE/EN/NL) | planned | [Spec](FEAT-027-llm-run-memory.md) | 2026-04-02 |
+| FEAT-026 | Owner-Profil ("Frage Null") (DE/EN/NL) | done | [Spec](FEAT-026-owner-profil.md) | 2026-04-02 |
+| FEAT-027 | LLM Run Memory (DE/EN/NL) | done | [Spec](FEAT-027-llm-run-memory.md) | 2026-04-02 |
 
 ## Next Available ID: FEAT-028

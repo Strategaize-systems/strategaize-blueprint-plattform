@@ -228,6 +228,12 @@
     "editProfile": "Edit Profile",
     "profileRequired": "Please complete your profile before getting started."
   },
+  "memory": {
+    "title": "What the AI remembers",
+    "emptyState": "The AI has no notes for this run yet.",
+    "lastUpdated": "Last updated: {date}",
+    "version": "Version {version}"
+  },
   "learning": {
     "helpButton": "Help",
     "title": "Learning Center",
