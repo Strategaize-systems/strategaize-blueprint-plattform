@@ -114,7 +114,34 @@ aber sequentiell ist sauberer für QA nach jedem Slice.
 5. SLC-039 (Frontend)    → Memory-Anzeige + i18n (hängt von SLC-038 ab)
 ```
 
-## V3 Slices (Geplant)
+## V3 Slices — Operational Reality Mirror (Phase 1)
+
+> 6 Slices für 4 Features. Abhängigkeitskette: SLC-040 → SLC-041 → SLC-042/043/044/045 (teilweise parallel).
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-040 | [Mirror DB-Schema](SLC-040-mirror-db-schema.md) | FEAT-028 | planned | High | 2026-04-03 |
+| SLC-041 | [Mirror RLS-Policies](SLC-041-mirror-rls.md) | FEAT-029 | planned | High | 2026-04-03 |
+| SLC-042 | [Admin: Mirror-Run-Erstellung](SLC-042-admin-mirror-runs.md) | FEAT-028 | planned | High | 2026-04-03 |
+| SLC-043 | [Mirror Invite + Onboarding](SLC-043-mirror-invite-onboarding.md) | FEAT-030 | planned | High | 2026-04-03 |
+| SLC-044 | [Mirror Workspace](SLC-044-mirror-workspace.md) | FEAT-029 | planned | High | 2026-04-03 |
+| SLC-045 | [Mirror Export](SLC-045-mirror-export.md) | FEAT-031 | planned | Medium | 2026-04-03 |
+
+## V3 Execution Order
+
+```
+1. SLC-040 (DB)          → Schema: survey_type, respondent_layer, mirror_policy_confirmations
+2. SLC-041 (DB/RLS)      → Policies survey_type-aware + Validierung (hängt von SLC-040 ab)
+3. SLC-042 (Admin)       → Run-Erstellung mit survey_type (hängt von SLC-040/041 ab)
+4. SLC-043 (Admin+Auth)  → Mirror-Invite + Policy-Seite (hängt von SLC-040/041 ab)
+5. SLC-044 (Frontend)    → Mirror-Workspace + Dashboard (hängt von SLC-040/041/043 ab)
+6. SLC-045 (Backend)     → Mirror-Export v2.0 (hängt von SLC-040/041 ab)
+
+SLC-042/043/044/045 können nach SLC-041 teilweise parallel laufen,
+aber sequentiell ist sauberer für QA und Kontext-Management.
+```
+
+## V4 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
