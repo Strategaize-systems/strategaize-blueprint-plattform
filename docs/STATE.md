@@ -9,14 +9,14 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: requirements
-- Current Focus: V3 Requirements abgeschlossen — Operational Reality Mirror Phase 1 (FEAT-028 bis FEAT-031). 4 Features, 4 Backlog-Items. Nächster Schritt: Architecture.
-- Current Phase: V3 Requirements
+- High-Level State: architecture
+- Current Focus: V3 Architecture abgeschlossen — DB-Schema (survey_type, respondent_layer, mirror_policy_confirmations), RLS-Strategie, API-Änderungen, Admin-UI, Einladungsflow, Export v2.0. 4 Decisions (DEC-027 bis DEC-030), 2 Migrations (MIG-015/016). Nächster Schritt: Slice-Planning.
+- Current Phase: V3 Architecture
 
 ## Immediate Next Steps
-1. /architecture für V3 Phase 1 (Mirror-Infrastruktur)
-2. /slice-planning für V3
-3. Implementation
+1. /slice-planning für V3 Phase 1
+2. Implementation
+3. /qa nach jedem Slice
 
 ## Active Scope
 V3 — Operational Reality Mirror Phase 1 (Infrastruktur). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle, vertraulicher Einladungsflow, getrennte Exportströme. Keine konkreten Fragen (Phase 2). 4 Features (FEAT-028 bis FEAT-031), 4 Backlog-Items (BL-050 bis BL-053).

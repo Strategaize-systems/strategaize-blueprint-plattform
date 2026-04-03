@@ -943,3 +943,319 @@ Memory wird nicht über eine eigene API geschrieben — das passiert server-seit
 | Page | `src/app/dashboard/page.tsx` | Erweitert: Profil-Redirect-Check |
 | Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | Erweitert: Memory-Anzeige-Button |
 | i18n | `src/messages/de.json`, `en.json`, `nl.json` | profile.* + memory.* Namespace |
+
+## V3: Operational Reality Mirror Architektur (Phase 1)
+
+### Architektur-Überblick
+
+V3 erweitert die Plattform um eine zweite Erhebungsschicht. Der bestehende Management View (Chef, top-down) wird ergänzt durch den Operational Reality Mirror (Mitarbeiter, bottom-up). Beide laufen parallel, werden getrennt gespeichert und erst im OS zusammengeführt.
+
+```
+                 StrategAIze Admin
+                    |
+       +------------+------------+
+       |                         |
+  Management View           Mirror View
+  (bestehend)               (V3 NEU)
+       |                         |
+  tenant_admin              mirror_respondent
+  tenant_member             (neue Rolle)
+       |                         |
+  survey_type=management    survey_type=mirror
+       |                         |
+  Katalog v1.0/DE           Katalog v1.0-mirror/DE
+       |                         |
+  Alle 9 Blöcke (A-I)      Zugewiesene Blöcke
+       |                         |
+  question_events           question_events
+  (sichtbar für Owner)      (NUR für Admin sichtbar)
+       |                         |
+  Export ZIP (v1.0)         Export ZIP (v2.0)
+       |                         |
+       +------------+------------+
+                    |
+              OS Synthese
+              (nicht Blueprint)
+```
+
+### Datenmodell-Änderungen
+
+#### Schema-Änderung: `runs` Tabelle
+
+```sql
+-- Neue Spalte
+ALTER TABLE runs ADD COLUMN survey_type TEXT NOT NULL DEFAULT 'management'
+  CHECK (survey_type IN ('management', 'mirror'));
+
+-- Neuer Index
+CREATE INDEX idx_runs_survey_type ON runs (tenant_id, survey_type, status);
+```
+
+#### Schema-Änderung: `question_catalog_snapshots` Tabelle
+
+```sql
+-- Neue Spalte
+ALTER TABLE question_catalog_snapshots ADD COLUMN survey_type TEXT NOT NULL DEFAULT 'management'
+  CHECK (survey_type IN ('management', 'mirror'));
+
+-- UNIQUE Constraint ändern: version allein reicht nicht mehr
+ALTER TABLE question_catalog_snapshots DROP CONSTRAINT question_catalog_snapshots_version_key;
+ALTER TABLE question_catalog_snapshots ADD CONSTRAINT question_catalog_snapshots_version_language_survey_type
+  UNIQUE (version, language, survey_type);
+```
+
+#### Schema-Änderung: `profiles` Tabelle
+
+```sql
+-- Role-Check erweitern um mirror_respondent
+ALTER TABLE profiles DROP CONSTRAINT profiles_role_check;
+ALTER TABLE profiles ADD CONSTRAINT profiles_role_check
+  CHECK (role IN ('strategaize_admin', 'tenant_admin', 'tenant_owner', 'tenant_member', 'mirror_respondent'));
+
+-- Neue Spalte für Respondent-Layer
+ALTER TABLE profiles ADD COLUMN respondent_layer TEXT
+  CHECK (respondent_layer IS NULL OR respondent_layer IN ('owner', 'leadership_1', 'leadership_2', 'key_staff'));
+```
+
+#### Schema-Änderung: `member_block_access` Tabelle
+
+```sql
+-- survey_type für Block-Zuweisung pro Erhebungstyp
+ALTER TABLE member_block_access ADD COLUMN survey_type TEXT NOT NULL DEFAULT 'management'
+  CHECK (survey_type IN ('management', 'mirror'));
+
+-- UNIQUE Constraint erweitern
+ALTER TABLE member_block_access DROP CONSTRAINT member_block_access_profile_id_run_id_block_key;
+ALTER TABLE member_block_access ADD CONSTRAINT member_block_access_unique
+  UNIQUE (profile_id, run_id, block, survey_type);
+```
+
+#### Neue Tabelle: `mirror_policy_confirmations`
+
+```sql
+CREATE TABLE mirror_policy_confirmations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  confirmed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  policy_version TEXT NOT NULL DEFAULT 'v1.0',
+  UNIQUE(profile_id, tenant_id)
+);
+```
+
+### RLS-Änderungen (DEC-027)
+
+Die bestehenden RLS-Policies müssen survey_type-aware werden. Kernprinzip:
+
+| Rolle | Management Runs | Mirror Runs | Mirror Events |
+|-------|----------------|-------------|---------------|
+| strategaize_admin | Alles | Alles | Alles |
+| tenant_admin | SELECT | **Nicht sichtbar** | **Nicht sichtbar** |
+| tenant_member | SELECT (Block-beschränkt) | **Nicht sichtbar** | **Nicht sichtbar** |
+| mirror_respondent | **Nicht sichtbar** | SELECT (eigene Runs) | SELECT (nur eigene), INSERT |
+
+#### Geänderte Policies
+
+**runs:** `tenant_select_own_runs` → einschränken auf `survey_type = 'management'`
+
+```sql
+-- ALT:
+USING (
+  auth.user_role() IN ('tenant_owner','tenant_member')
+  AND tenant_id = auth.user_tenant_id()
+)
+
+-- NEU:
+USING (
+  (auth.user_role() IN ('tenant_admin','tenant_member')
+   AND tenant_id = auth.user_tenant_id()
+   AND survey_type = 'management')
+  OR
+  (auth.user_role() = 'mirror_respondent'
+   AND tenant_id = auth.user_tenant_id()
+   AND survey_type = 'mirror')
+)
+```
+
+**question_events:** `tenant_select_own_question_events` → Mirror-Events nur für eigenen User
+
+```sql
+-- NEU: Mirror-Respondent sieht nur eigene Events
+USING (
+  (auth.user_role() IN ('tenant_admin','tenant_member')
+   AND tenant_id = auth.user_tenant_id()
+   AND run_id IN (SELECT id FROM runs WHERE tenant_id = auth.user_tenant_id() AND survey_type = 'management'))
+  OR
+  (auth.user_role() = 'mirror_respondent'
+   AND tenant_id = auth.user_tenant_id()
+   AND created_by = auth.uid()
+   AND run_id IN (SELECT id FROM runs WHERE tenant_id = auth.user_tenant_id() AND survey_type = 'mirror'))
+)
+```
+
+**question_events INSERT:** Mirror-Respondent darf in Mirror-Runs einfügen
+
+```sql
+-- NEU: Erweitert um mirror_respondent
+WITH CHECK (
+  (auth.user_role() IN ('tenant_admin','tenant_member')
+   AND tenant_id = auth.user_tenant_id()
+   AND run_id IN (SELECT id FROM runs WHERE tenant_id = auth.user_tenant_id() AND status != 'locked' AND survey_type = 'management'))
+  OR
+  (auth.user_role() = 'mirror_respondent'
+   AND tenant_id = auth.user_tenant_id()
+   AND run_id IN (SELECT id FROM runs WHERE tenant_id = auth.user_tenant_id() AND status != 'locked' AND survey_type = 'mirror'))
+)
+```
+
+### Admin-UI Änderungen
+
+#### Run-Erstellung
+
+```
+Admin → Runs → Neuer Run
+  |
+  +→ Tenant auswählen (bestehend)
+  +→ survey_type: [Management ▼] / [Mirror ▼]     ← NEU
+  +→ Katalog auswählen (gefiltert nach survey_type) ← GEÄNDERT
+  +→ Titel + Beschreibung (bestehend)
+  +→ Erstellen
+```
+
+#### Mirror-Teilnehmer-Verwaltung
+
+Neuer Tab/Bereich in der Tenant-Verwaltung:
+
+```
+Admin → Tenants → [Tenant X] → Mirror-Teilnehmer
+  |
+  +→ Liste bestehender Mirror-Teilnehmer (Name, Layer, Blöcke, Status)
+  +→ [+ Teilnehmer einladen]
+       |
+       +→ E-Mail
+       +→ respondent_layer: [Leadership 1 ▼] / [Leadership 2 ▼] / [Key Staff ▼]
+       +→ Zugewiesene Blöcke: [✓A] [✓B] [ C] [ D] ...
+       +→ [Einladen]
+```
+
+### Mirror-Einladungsflow
+
+```
+1. Admin klickt "Mirror-Teilnehmer einladen"
+2. System erstellt User mit:
+   - role = 'mirror_respondent'
+   - respondent_layer = 'leadership_1' (o.ä.)
+   - tenant_id = selber Tenant wie Owner
+3. System sendet Mirror-Einladungs-E-Mail (eigenes Template)
+4. Teilnehmer klickt Link → Set-Password
+5. Teilnehmer loggt sich ein
+6. System prüft: mirror_policy_confirmations vorhanden?
+   - Nein → Redirect zu /mirror/policy (Vertraulichkeits-Policy)
+   - Ja → Redirect zu /dashboard (Mirror-Dashboard)
+7. Teilnehmer bestätigt Policy → Eintrag in mirror_policy_confirmations
+8. Teilnehmer sieht Mirror-Dashboard mit zugewiesenen Runs/Blöcken
+```
+
+### Mirror-Workspace
+
+Mirror-Teilnehmer nutzen den **bestehenden Workspace** (`/runs/[id]`), aber:
+- Sieht nur Blöcke die ihm zugewiesen sind (bestehende member_block_access Logik)
+- Sieht nur Mirror-Fragen (aus Mirror-Katalog via survey_type)
+- Sieht nur eigene Antworten (RLS auf created_by)
+- Sieht NICHT: Management-Antworten, andere Mirror-Antworten
+- LLM-Rückfragen: in Phase 1 identische Prompts (Personalisierung kommt Phase 2)
+
+### Export-Architektur (DEC-028)
+
+Zwei getrennte Export-Wege:
+
+**Management-Export (bestehend, v1.0):**
+- Unverändert abwärtskompatibel
+- manifest.json enthält zusätzlich `"survey_type": "management"`
+
+**Mirror-Export (NEU, v2.0):**
+
+```json
+{
+  "contract_version": "v2.0",
+  "survey_type": "mirror",
+  "exported_at": "...",
+  "tenant_id": "...",
+  "run_id": "...",
+  "respondent_summary": {
+    "total": 5,
+    "by_layer": {
+      "leadership_1": 2,
+      "leadership_2": 1,
+      "key_staff": 2
+    }
+  },
+  "blocks": ["A", "B", "D", "F"],
+  "files": [...]
+}
+```
+
+**Entpersonalisierung:**
+- answer_revisions.json enthält `respondent_layer` statt `created_by`
+- Keine Namen, E-Mails oder User-IDs im Mirror-Export
+- Mapping `created_by → respondent_layer` passiert zur Export-Zeit
+
+**Zugriffskontrolle:**
+- Management-Export: StrategAIze-Admin (bestehend)
+- Mirror-Export: nur StrategAIze-Admin
+- Tenant-Owner kann KEINEN Mirror-Export anfordern
+
+### API-Änderungen
+
+| Route | Änderung |
+|-------|----------|
+| `POST /api/admin/runs` | `survey_type` Feld in createRunSchema, Katalog-Filter nach survey_type |
+| `GET /api/admin/runs` | Optional: Filter nach survey_type |
+| `POST /api/admin/tenants/[id]/invite` | Neue Rolle `mirror_respondent`, `respondent_layer` Feld |
+| `GET /api/admin/runs/[id]/export` | survey_type in Manifest, Mirror-Export mit Entpersonalisierung |
+| `GET /api/tenant/runs` | RLS filtert automatisch (Management für Owner, Mirror für Respondent) |
+| `POST /api/tenant/runs/[id]/questions/[id]/events` | RLS erlaubt Mirror-Respondent INSERT in Mirror-Runs |
+
+**Neue Routes:**
+| Route | Zweck |
+|-------|-------|
+| `GET /api/admin/tenants/[id]/mirror-respondents` | Liste der Mirror-Teilnehmer pro Tenant |
+| `POST /api/tenant/mirror/confirm-policy` | Vertraulichkeits-Policy bestätigen |
+| `GET /api/tenant/mirror/policy-status` | Prüfen ob Policy bereits bestätigt |
+
+### Sicherheit / Vertraulichkeit (DEC-029)
+
+- **Mirror-Rohdaten nur für StrategAIze:** RLS erzwingt, dass Tenant-Owner keine Mirror-question_events sehen
+- **Entpersonalisierter Export:** Mirror-Export enthält keine User-IDs, nur respondent_layer
+- **Policy-Pflicht:** Mirror-Teilnehmer muss Vertraulichkeits-Policy bestätigen bevor er Fragen sieht
+- **Keine Cross-Mirror-Sicht:** Mirror-Respondent sieht nur seine eigenen Events (`created_by = auth.uid()`)
+- **Kein Owner-Invite für Mirror:** Nur StrategAIze-Admin kann Mirror-Teilnehmer anlegen
+- **Logging:** Mirror-Invites werden als admin_events geloggt
+
+### i18n-Erweiterung
+
+Neue Namespaces:
+- `mirror.*` — Mirror-UI-Texte (Dashboard, Policy, Workspace-Hinweise)
+- `admin.mirror.*` — Admin-Texte für Mirror-Verwaltung
+- `email.mirror.*` — Mirror-Einladungs-E-Mail-Template
+
+### Betroffene Dateien (Übersicht für Slice-Planning)
+
+| Bereich | Dateien | Aktion |
+|---------|---------|--------|
+| DB Migration | `sql/migrations/015_mirror_infrastructure.sql` | NEU — survey_type, role-check, respondent_layer, mirror_policy_confirmations |
+| DB Migration | `sql/migrations/016_mirror_rls.sql` | NEU — RLS-Policies erweitern |
+| Validierung | `src/lib/validations.ts` | survey_type + respondent_layer in Schemas |
+| API Admin | `src/app/api/admin/runs/route.ts` | survey_type bei Run-Erstellung + Listing |
+| API Admin | `src/app/api/admin/tenants/[id]/invite/route.ts` | mirror_respondent Rolle + respondent_layer |
+| API Admin | `src/app/api/admin/tenants/[id]/mirror-respondents/route.ts` | NEU — Mirror-Teilnehmer-Liste |
+| API Admin | `src/app/api/admin/runs/[id]/export/route.ts` | survey_type in Manifest, Mirror-Entpersonalisierung |
+| API Tenant | `src/app/api/tenant/mirror/confirm-policy/route.ts` | NEU — Policy-Bestätigung |
+| API Tenant | `src/app/api/tenant/mirror/policy-status/route.ts` | NEU — Policy-Status-Check |
+| Admin UI | `src/app/admin/tenants/tenants-client.tsx` | Mirror-Teilnehmer-Tab |
+| Admin UI | `src/app/admin/runs/runs-client.tsx` (o.ä.) | survey_type Auswahl bei Run-Erstellung |
+| Frontend | `src/app/dashboard/page.tsx` | Mirror-Policy-Redirect für mirror_respondent |
+| Frontend | `src/app/mirror/policy/page.tsx` | NEU — Vertraulichkeits-Policy-Seite |
+| Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | Mirror-Hinweis wenn survey_type=mirror |
+| i18n | `src/messages/de.json`, `en.json`, `nl.json` | mirror.* + admin.mirror.* + email.mirror.* |
+| E-Mail | Nodemailer Template | Mirror-Einladungs-E-Mail (DE/EN/NL) |

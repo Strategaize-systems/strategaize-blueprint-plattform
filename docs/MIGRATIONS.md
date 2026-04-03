@@ -99,3 +99,19 @@
 - Reason: Identisches Root-Cause wie ISSUE-001 — RLS-Policies existierten, aber ohne Table-Level GRANT konnte authenticated die Tabellen nicht lesen. Dashboard-Redirect zum Profil funktionierte deshalb nicht.
 - Risk: Keines — erweitert nur Berechtigungen für die neue Tabellen
 - Rollback Notes: REVOKE ALL ON owner_profiles FROM authenticated; REVOKE ALL ON run_memory FROM authenticated;
+
+### MIG-015 — Mirror-Infrastruktur: survey_type + mirror_respondent + respondent_layer (V3)
+- Date: 2026-04-03
+- Scope: runs.survey_type Spalte + Check + Index. question_catalog_snapshots.survey_type + neuer UNIQUE Constraint (version, language, survey_type). profiles.role Check erweitert um 'mirror_respondent'. profiles.respondent_layer Spalte. member_block_access.survey_type Spalte + neuer UNIQUE Constraint. Neue Tabelle mirror_policy_confirmations.
+- Affected Areas: Gesamtes Datenmodell — runs, snapshots, profiles, member_block_access, neue Tabelle
+- Reason: V3 Operational Reality Mirror braucht survey_type-Trennung auf DB-Ebene
+- Risk: Mittel — bestehende Daten bekommen default 'management', UNIQUE Constraint-Änderungen können bei Duplikaten fehlschlagen (unwahrscheinlich)
+- Rollback Notes: ALTER TABLE runs DROP COLUMN survey_type; ALTER TABLE question_catalog_snapshots DROP COLUMN survey_type, DROP CONSTRAINT ...; ALTER TABLE profiles DROP COLUMN respondent_layer; ALTER TABLE member_block_access DROP COLUMN survey_type; DROP TABLE mirror_policy_confirmations;
+
+### MIG-016 — Mirror-RLS: survey_type-aware Policies (V3)
+- Date: 2026-04-03
+- Scope: 5-6 RLS-Policies auf runs, question_events, questions, question_catalog_snapshots erweitern um survey_type-Checks. Neue Policies für mirror_respondent INSERT auf question_events.
+- Affected Areas: RLS — Vertraulichkeitsschicht für Mirror-Daten
+- Reason: Bestehende Policies filtern nur nach tenant_id, nicht nach survey_type. Mirror-Rohdaten müssen für Tenant-Owner unsichtbar sein.
+- Risk: Mittel — Policy-Änderungen können bestehende Queries beeinflussen. Muss gründlich getestet werden.
+- Rollback Notes: Policies auf Vor-V3-Stand zurücksetzen (ALTER POLICY oder DROP + CREATE)

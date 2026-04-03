@@ -129,3 +129,23 @@
 - Status: accepted
 - Reason: Ein Unternehmen wird von einem Owner repräsentiert. Das Profil beschreibt die Person hinter dem Tenant — Führungsstil, Kommunikationspräferenz, Hintergrund. Das ist Tenant-Kontext, nicht User-Kontext. Wenn später Mitarbeiter hinzukommen, bekommen sie eigene (leichtere) Profile. UNIQUE(tenant_id) erzwingt genau ein Profil pro Tenant.
 - Consequence: owner_profiles hat UNIQUE(tenant_id). Profil wird über tenant_id geladen, nicht über user_id. Erweiterbar für Mitarbeiter-Profile in späterer Version (separate Tabelle oder Erweiterung).
+
+## DEC-027 — RLS-Strategie für Mirror-Vertraulichkeit
+- Status: accepted
+- Reason: Mirror-Rohdaten dürfen für den Tenant-Owner nicht sichtbar sein. Die bestehenden RLS-Policies filtern nur nach tenant_id, nicht nach survey_type. Lösung: Alle tenant-seitigen SELECT-Policies auf runs und question_events werden um survey_type-Checks erweitert. Tenant-Owner/Admin sieht nur survey_type='management'. mirror_respondent sieht nur survey_type='mirror' UND nur eigene Events (created_by=auth.uid()). Kein neues RLS-Konzept — nur Erweiterung der bestehenden USING-Klauseln.
+- Consequence: 5-6 RLS-Policies müssen geändert werden. Bestehende Queries funktionieren unverändert weil default survey_type='management' ist. Mirror-Respondent braucht eigene INSERT-Policy für question_events.
+
+## DEC-028 — Zwei Export-Contracts (v1.0 Management + v2.0 Mirror)
+- Status: accepted
+- Reason: Mirror-Export muss entpersonalisiert sein (keine User-IDs, keine Namen, nur respondent_layer). Das erfordert ein anderes Manifest-Format als der bestehende Management-Export (v1.0). Statt den bestehenden Export zu brechen, neuer Contract v2.0 nur für Mirror. Management-Export bleibt abwärtskompatibel.
+- Consequence: Export-Route prüft survey_type des Runs. Management → v1.0 (bestehend). Mirror → v2.0 (entpersonalisiert). Tenant-Owner kann nur Management-Export anfordern. Mirror-Export nur für StrategAIze-Admin.
+
+## DEC-029 — Mirror-Teilnehmer im selben Tenant (nicht separater Tenant)
+- Status: accepted
+- Reason: Mirror-Teilnehmer gehören zur selben Firma wie der Owner. Separater Tenant würde Cross-Tenant-Queries für die Synthese erfordern und die Export-Logik verkomplizieren. Stattdessen: selber Tenant, aber Rolle mirror_respondent mit eigenen RLS-Policies. Block-Zuweisung über bestehende member_block_access Tabelle (erweitert um survey_type).
+- Consequence: profiles.role bekommt neuen Wert 'mirror_respondent'. member_block_access bekommt survey_type Spalte. Einladung durch StrategAIze-Admin, nicht durch Tenant-Owner.
+
+## DEC-030 — Vertraulichkeits-Policy als Pflicht-Gate
+- Status: accepted
+- Reason: Mirror-Teilnehmer müssen verstehen, dass ihre Antworten vertraulich behandelt werden und nicht personenbezogen an den Inhaber zurückgehen. Ohne explizite Bestätigung fehlt die rechtliche und ethische Grundlage. Implementierung: Eigene Tabelle mirror_policy_confirmations + Redirect beim Dashboard-Login wenn nicht bestätigt.
+- Consequence: Neue Tabelle mirror_policy_confirmations. Neue Seite /mirror/policy. Dashboard-Redirect für mirror_respondent wenn Policy nicht bestätigt. Policy-Version tracked für spätere Aktualisierungen.
