@@ -91,8 +91,9 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 | V1.1 | **released** | FEAT-009 bis FEAT-018 (LLM-Chat, Review, Checkpoints, Rollen, Premium UI, Error-Logging, Doc-Parsing, Doc-Analyse, i18n) |
 | V2 | **released** | FEAT-019 (Voice Input via Whisper) |
 | V2.1 | **released** | FEAT-023 bis FEAT-025 (Learning Center, Video-Tutorials, Bedienungsanleitung) |
-| V2.2 | **requirements** | FEAT-026 bis FEAT-027 (Owner-Profil, LLM Run Memory) |
-| V3 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
+| V2.2 | **released** | FEAT-026 bis FEAT-027 (Owner-Profil, LLM Run Memory) |
+| V3 | **requirements** | FEAT-028 bis FEAT-031 (Operational Reality Mirror — Phase 1 Infrastruktur) |
+| V4 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
 
 ## V1 Scope — Core Features
 
@@ -423,7 +424,129 @@ V2.2 ist erfolgreich, wenn:
 4. **Natürlicher Einstieg:** Profil-Formular fühlt sich an wie eine Vorstellungsrunde, nicht wie ein Verhör
 5. **DSGVO:** Profildaten und Memory bleiben auf dem Server (Hetzner EU), kein externer Dienst
 
-## V3 Scope (Later)
+## V3 Scope — Operational Reality Mirror (Phase 1: Infrastruktur)
+
+### Problem
+
+Der Blueprint wird bisher ausschließlich aus der Chef-Perspektive (top-down) beantwortet. Für eine realistische Exit-Readiness-Analyse braucht StrategAIze auch die operative Sicht (bottom-up): Wie werden Entscheidungen tatsächlich getroffen? Wo weichen formale Regeln von gelebter Praxis ab? Wo gibt es Schattenlogiken, Eskalationsmuster, unklare Zuständigkeiten?
+
+Diese zweite Perspektive — der "Operational Reality Mirror" — wird getrennt vom Management View erhoben, getrennt gespeichert, und erst im Operating System zusammengeführt und entpersonalisiert.
+
+### Ziel
+
+Die Blueprint-Plattform unterstützt zwei getrennte Erhebungsschichten:
+1. **Management View** — bestehender Blueprint (Chef, top-down, offiziell)
+2. **Operational Reality Mirror** — neuer vertraulicher Layer (Mitarbeiter, bottom-up)
+
+Phase 1 baut die technische Infrastruktur dafür. Konkrete Mirror-Fragen kommen in Phase 2.
+
+### FEAT-028: Mirror-Infrastruktur (DB-Schema + survey_type)
+
+**Priorität:** P0 (V3 Phase 1) — Grundlage für alles
+
+Erweiterung des Datenmodells um `survey_type` auf Runs und Fragenkatalogen. Gleiche Block-Struktur (A-I), aber separater Katalog pro Survey-Typ.
+
+- `runs.survey_type`: `management` (default) oder `mirror`
+- `question_catalog_snapshots.survey_type`: `management` oder `mirror`
+- UNIQUE Constraint anpassen: Version + Language + survey_type
+- Bestehende Daten bleiben unverändert (default `management`)
+- RLS-Policies erweitern: Mirror-Rohdaten unsichtbar für Tenant-Owner
+- GRANTs für neue Tabellen/Spalten
+
+**Akzeptanzkriterien:**
+1. Runs können mit survey_type `management` oder `mirror` erstellt werden
+2. Bestehende Runs funktionieren unverändert (default management)
+3. Mirror-Runs sind für Tenant-Owner nicht sichtbar (RLS)
+4. StrategAIze-Admin sieht alle Runs (beide Typen)
+5. Fragenkataloge sind nach survey_type getrennt
+
+### FEAT-029: Mirror-Rollen und Sichtbarkeit
+
+**Priorität:** P0 (V3 Phase 1) — Vertraulichkeit
+
+Neue Rolle `mirror_respondent` mit eingeschränkter Sichtbarkeit. Mirror-Teilnehmer sehen nur ihre eigenen Fragen und Antworten.
+
+- Neue Rolle `mirror_respondent` in profiles.role
+- Respondent-Layer: `owner`, `leadership_1`, `leadership_2`, `key_staff`
+- `profiles.respondent_layer` Spalte (optional, für spätere Auswertung)
+- Mirror-Teilnehmer sehen: nur zugewiesene Mirror-Fragen, nur eigene Eingaben
+- Mirror-Teilnehmer sehen NICHT: Management-View-Antworten, andere Mirror-Antworten, Gesamtbericht
+- Inhaber sieht NICHT: Mirror-Rohantworten, wer was beantwortet hat
+- StrategAIze-Admin sieht: alles (Rohdaten, Qualitätsprüfung)
+
+**Akzeptanzkriterien:**
+1. mirror_respondent kann nur zugewiesene Mirror-Fragen beantworten
+2. mirror_respondent sieht keine Management-View-Daten
+3. mirror_respondent sieht keine anderen Mirror-Antworten
+4. Tenant-Owner sieht keine Mirror-Rohdaten
+5. StrategAIze-Admin kann Mirror-Runs und -Antworten einsehen
+6. Block-Zuweisung pro Mirror-Teilnehmer funktioniert (nicht alle Blöcke)
+
+### FEAT-030: Mirror-Einladung und Onboarding
+
+**Priorität:** P0 (V3 Phase 1) — Zugang für Teilnehmer
+
+Separater Einladungsflow für Mirror-Teilnehmer, gesteuert von StrategAIze-Admin (NICHT vom Tenant-Owner).
+
+- Admin-UI: Mirror-Teilnehmer anlegen mit Rolle, respondent_layer, Block-Zuweisung
+- Separate Einladungs-E-Mail für Mirror (nicht dieselbe wie Management-Invite)
+- Vertraulichkeits-Policy als Pflicht-Seite beim ersten Login des Mirror-Teilnehmers
+- Mirror-Teilnehmer wird dem selben Tenant zugeordnet, aber mit Rolle `mirror_respondent`
+- Hinweis für Inhaber: "Es findet eine strukturelle Realitätserhebung statt" (keine Details, keine Namen)
+- Dreisprachig DE/EN/NL
+
+**Akzeptanzkriterien:**
+1. StrategAIze-Admin kann Mirror-Teilnehmer anlegen und einladen
+2. Einladungs-E-Mail ist inhaltlich für Mirror angepasst
+3. Mirror-Teilnehmer sieht Vertraulichkeits-Policy beim ersten Login
+4. Mirror-Teilnehmer kann Policy bestätigen und dann seine Fragen beantworten
+5. Tenant-Owner kann KEINE Mirror-Teilnehmer anlegen oder einladen
+6. Block-Zuweisung pro Mirror-Teilnehmer konfigurierbar
+
+### FEAT-031: Getrennte Exportströme (Management + Mirror)
+
+**Priorität:** P1 (V3 Phase 1) — OS-Schnittstelle
+
+Separate Export-ZIPs für Management View und Mirror, mit survey_type-Metadaten für OS-Verarbeitung.
+
+- Admin-Export: Auswahl ob Management-ZIP, Mirror-ZIP oder beides
+- Export-Manifest enthält `survey_type` und `respondent_layer` Metadaten
+- Mirror-Export: enthält Rohdaten, aber NICHT personenbezogen (nur respondent_layer, kein Name)
+- Inhaber kann keinen Mirror-Export anfordern (nur StrategAIze-Admin)
+- Getrennte Data Contract Version für Mirror (v2.0)
+
+**Akzeptanzkriterien:**
+1. Management-Export funktioniert wie bisher (abwärtskompatibel)
+2. Mirror-Export enthält Antworten nach Block, mit respondent_layer
+3. Mirror-Export enthält KEINE Namen oder E-Mail-Adressen der Teilnehmer
+4. Export-Manifest hat survey_type Feld
+5. Nur StrategAIze-Admin kann Mirror-Export erstellen
+
+### V3 Phase 1 — Nicht im Scope
+
+- Konkrete Mirror-Fragen pro Block (Phase 2)
+- JSON-Fragebögen für Mirror (Phase 2)
+- Mirror-LLM-Rückfragen (Phase 2)
+- Mirror-Profil für Teilnehmer (Phase 2)
+- Synthese / Vergleich Management vs. Mirror (OS-Scope)
+- Entpersonalisierte Reports (OS-Scope)
+- Heatmap / Visualisierung (OS-Scope)
+- Mitarbeiter-Rankings (explizit ausgeschlossen)
+- Personenbezogene Vergleichsreports (explizit ausgeschlossen)
+- Dedizierte Server pro Kunde (verschoben auf V4)
+
+### V3 Phase 1 — Erfolgskriterien
+
+V3 Phase 1 ist erfolgreich, wenn:
+
+1. **Strukturelle Trennung:** Management und Mirror sind technisch sauber getrennt
+2. **Vertraulichkeit:** Mirror-Rohdaten sind für den Inhaber nicht sichtbar
+3. **Administrierbarkeit:** StrategAIze kann Mirror-Teilnehmer verwalten und einladen
+4. **Abwärtskompatibilität:** Bestehende Management-Runs funktionieren unverändert
+5. **Export-Ready:** Getrennte Exporte mit sauberen Metadaten für OS-Verarbeitung
+6. **Dummy-testbar:** Das System kann mit einem Test-Mirror-Katalog durchgespielt werden (ohne echte Fragen)
+
+## V4 Scope (Later)
 
 | Feature | Beschreibung |
 |---------|-------------|
@@ -523,6 +646,6 @@ V1 ist erfolgreich, wenn:
 ---
 
 Erstellt: 2026-03-24
-Aktualisiert: 2026-04-02 (V2.2 Requirements — Personalized LLM)
+Aktualisiert: 2026-04-03 (V3 Requirements — Operational Reality Mirror Phase 1)
 Skill: `/requirements`
 Nächster Schritt: `/architecture`

@@ -236,7 +236,7 @@
       "type": "feature",
       "priority": "medium",
       "status": "deferred",
-      "version": "V3",
+      "version": "V4",
       "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Deployment-Automatisierung, Coolify-Template, vorkonfigurierte Env-Vars. Verschoben auf V3 — aktuelles Multi-Tenant mit RLS reicht. Nur bei konkretem Kundenbedarf.",
       "createdAt": "2026-03-28"
     },
@@ -489,6 +489,46 @@
       "version": "V2.2",
       "description": "Owner kann im Workspace sehen, was die KI sich gemerkt hat. Read-Only Anzeige des aktuellen Memory-Inhalts. Einfache Textdarstellung, ausklappbar oder im Learning Center. Dreisprachig DE/EN/NL (UI-Chrome, Memory-Inhalt bleibt in Interaktionssprache).",
       "createdAt": "2026-04-02"
+    },
+    {
+      "id": "BL-050",
+      "title": "Mirror-Infrastruktur: survey_type auf runs + question_catalog_snapshots",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3",
+      "description": "DB-Schema erweitern um survey_type (management/mirror) auf runs und question_catalog_snapshots. UNIQUE Constraints anpassen. RLS-Policies erweitern fuer Mirror-Vertraulichkeit. Bestehende Daten bleiben unveraendert (default management).",
+      "createdAt": "2026-04-03"
+    },
+    {
+      "id": "BL-051",
+      "title": "Mirror-Rollen: mirror_respondent + respondent_layer + Sichtbarkeit",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3",
+      "description": "Neue Rolle mirror_respondent mit eingeschraenkter Sichtbarkeit. respondent_layer Spalte (owner/leadership_1/leadership_2/key_staff). RLS-Policies: Mirror-Teilnehmer sieht nur eigene Fragen, Owner sieht keine Mirror-Rohdaten, Admin sieht alles.",
+      "createdAt": "2026-04-03"
+    },
+    {
+      "id": "BL-052",
+      "title": "Mirror-Einladung: Admin-Flow + Vertraulichkeits-Policy + E-Mail",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3",
+      "description": "Separater Einladungsflow fuer Mirror-Teilnehmer, gesteuert von StrategAIze-Admin. Mirror-Teilnehmer-Tab in Admin-UI. Separate Einladungs-E-Mail. Vertraulichkeits-Policy als Pflicht-Seite beim ersten Login. Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-03"
+    },
+    {
+      "id": "BL-053",
+      "title": "Getrennte Exportstroeme: Management-ZIP + Mirror-ZIP",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V3",
+      "description": "Separate Export-ZIPs fuer Management und Mirror. Mirror-Export entpersonalisiert (nur respondent_layer, keine Namen). Neuer Data Contract v2.0 fuer Mirror. Nur StrategAIze-Admin kann Mirror-Export erstellen.",
+      "createdAt": "2026-04-03"
     }
   ]
 }

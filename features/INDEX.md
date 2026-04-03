@@ -48,7 +48,16 @@
 |----|---------|--------|---------|
 | FEAT-019 | Voice Input (Whisper) | deployed | 2026-03-31 |
 
-## V3 Features (Geplant)
+## V3 Features (Operational Reality Mirror — Phase 1)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-028 | Mirror-Infrastruktur (DB-Schema + survey_type) | planned | [Spec](FEAT-028-mirror-infrastructure.md) | 2026-04-03 |
+| FEAT-029 | Mirror-Rollen und Sichtbarkeit | planned | [Spec](FEAT-029-mirror-roles.md) | 2026-04-03 |
+| FEAT-030 | Mirror-Einladung und Onboarding | planned | [Spec](FEAT-030-mirror-onboarding.md) | 2026-04-03 |
+| FEAT-031 | Getrennte Exportströme (Management + Mirror) | planned | [Spec](FEAT-031-mirror-export.md) | 2026-04-03 |
+
+## V4 Features (Geplant)
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
@@ -76,4 +85,4 @@
 | FEAT-026 | Owner-Profil ("Frage Null") (DE/EN/NL) | deployed | [Spec](FEAT-026-owner-profil.md) | 2026-04-02 |
 | FEAT-027 | LLM Run Memory (DE/EN/NL) | deployed | [Spec](FEAT-027-llm-run-memory.md) | 2026-04-02 |
 
-## Next Available ID: FEAT-028
+## Next Available ID: FEAT-032
