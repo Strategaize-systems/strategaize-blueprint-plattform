@@ -30,6 +30,23 @@ export default async function DashboardPage() {
     redirect("/admin");
   }
 
+  // Mirror respondents: check policy confirmation, skip owner profile check
+  if (profile.role === "mirror_respondent") {
+    const adminClient = createAdminClient();
+    const { data: policyConfirmation } = await adminClient
+      .from("mirror_policy_confirmations")
+      .select("confirmed_at")
+      .eq("profile_id", user.id)
+      .eq("tenant_id", profile.tenant_id)
+      .single();
+
+    if (!policyConfirmation) {
+      redirect("/mirror/policy");
+    }
+
+    return <DashboardClient profile={profile} />;
+  }
+
   // Check if owner profile exists — redirect to profile form if not
   // Uses adminClient because authenticated role may lack table-level GRANT
   const adminClient = createAdminClient();

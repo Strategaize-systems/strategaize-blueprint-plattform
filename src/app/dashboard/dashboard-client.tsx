@@ -40,6 +40,7 @@ interface Run {
 export function DashboardClient({ profile }: { profile: Profile }) {
   const t = useTranslations();
   const locale = useLocale();
+  const isMirror = profile.role === "mirror_respondent";
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -102,13 +103,15 @@ export function DashboardClient({ profile }: { profile: Profile }) {
         <div className="mb-2 truncate px-2 text-xs text-slate-500" title={profile.email}>
           {profile.email}
         </div>
-        <Link
-          href="/profile"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/10 to-brand-primary-dark/10 px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:from-brand-primary/20 hover:to-brand-primary-dark/20 hover:text-white mb-2"
-        >
-          <User className="h-4 w-4" />
-          {t("profile.editProfile")}
-        </Link>
+        {!isMirror && (
+          <Link
+            href="/profile"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/10 to-brand-primary-dark/10 px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:from-brand-primary/20 hover:to-brand-primary-dark/20 hover:text-white mb-2"
+          >
+            <User className="h-4 w-4" />
+            {t("profile.editProfile")}
+          </Link>
+        )}
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary/20 to-brand-primary-dark/20 px-3 py-3 text-sm font-semibold text-slate-300 transition-all hover:from-brand-primary/30 hover:to-brand-primary-dark/30 hover:text-white"
@@ -154,8 +157,8 @@ export function DashboardClient({ profile }: { profile: Profile }) {
         <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
           <div className="flex items-center justify-between px-8 py-5 pl-14 lg:pl-8">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t("dashboard.title")}</h1>
-              <p className="text-sm text-slate-500 mt-0.5">{t("dashboard.subtitle")}</p>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{isMirror ? t("mirror.dashboardTitle") : t("dashboard.title")}</h1>
+              <p className="text-sm text-slate-500 mt-0.5">{isMirror ? t("mirror.dashboardSubtitle") : t("dashboard.subtitle")}</p>
             </div>
           </div>
         </header>

@@ -52,9 +52,9 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-028 | Mirror-Infrastruktur (DB-Schema + survey_type) | planned | [Spec](FEAT-028-mirror-infrastructure.md) | 2026-04-03 |
-| FEAT-029 | Mirror-Rollen und Sichtbarkeit | planned | [Spec](FEAT-029-mirror-roles.md) | 2026-04-03 |
-| FEAT-030 | Mirror-Einladung und Onboarding | planned | [Spec](FEAT-030-mirror-onboarding.md) | 2026-04-03 |
+| FEAT-028 | Mirror-Infrastruktur (DB-Schema + survey_type) | done | [Spec](FEAT-028-mirror-infrastructure.md) | 2026-04-03 |
+| FEAT-029 | Mirror-Rollen und Sichtbarkeit | done | [Spec](FEAT-029-mirror-roles.md) | 2026-04-03 |
+| FEAT-030 | Mirror-Einladung und Onboarding | done | [Spec](FEAT-030-mirror-onboarding.md) | 2026-04-03 |
 | FEAT-031 | Getrennte Exportströme (Management + Mirror) | planned | [Spec](FEAT-031-mirror-export.md) | 2026-04-03 |
 
 ## V4 Features (Geplant)

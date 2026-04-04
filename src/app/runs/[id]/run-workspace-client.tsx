@@ -44,7 +44,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square, ShieldCheck } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 import { RunMemoryView } from "@/components/learning-center/run-memory-view";
@@ -100,9 +100,11 @@ interface Submission {
 export function RunWorkspaceClient({
   runId,
   isAdmin,
+  isMirrorRespondent = false,
 }: {
   runId: string;
   isAdmin: boolean;
+  isMirrorRespondent?: boolean;
 }) {
   const t = useTranslations();
   const locale = useLocale();
@@ -883,6 +885,16 @@ export function RunWorkspaceClient({
             </div>
           </div>
         </header>
+
+        {/* Mirror confidentiality banner */}
+        {isMirrorRespondent && (
+          <div className="flex-shrink-0 px-6 pt-3">
+            <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
+              <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+              {t("mirror.confidentialityBanner")}
+            </div>
+          </div>
+        )}
 
         {/* Message bar */}
         {message && (

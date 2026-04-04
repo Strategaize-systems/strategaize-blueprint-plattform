@@ -33,5 +33,5 @@ export default async function RunPage({
     redirect(`/admin/runs/${runId}`);
   }
 
-  return <RunWorkspaceClient runId={runId} isAdmin={false} />;
+  return <RunWorkspaceClient runId={runId} isAdmin={false} isMirrorRespondent={profile.role === "mirror_respondent"} />;
 }

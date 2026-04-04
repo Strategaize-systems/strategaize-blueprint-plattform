@@ -495,7 +495,7 @@
       "title": "Mirror-Infrastruktur: survey_type auf runs + question_catalog_snapshots",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V3",
       "description": "DB-Schema erweitern um survey_type (management/mirror) auf runs und question_catalog_snapshots. UNIQUE Constraints anpassen. RLS-Policies erweitern fuer Mirror-Vertraulichkeit. Bestehende Daten bleiben unveraendert (default management).",
       "createdAt": "2026-04-03"
@@ -505,7 +505,7 @@
       "title": "Mirror-Rollen: mirror_respondent + respondent_layer + Sichtbarkeit",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V3",
       "description": "Neue Rolle mirror_respondent mit eingeschraenkter Sichtbarkeit. respondent_layer Spalte (owner/leadership_1/leadership_2/key_staff). RLS-Policies: Mirror-Teilnehmer sieht nur eigene Fragen, Owner sieht keine Mirror-Rohdaten, Admin sieht alles.",
       "createdAt": "2026-04-03"
@@ -515,7 +515,7 @@
       "title": "Mirror-Einladung: Admin-Flow + Vertraulichkeits-Policy + E-Mail",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V3",
       "description": "Separater Einladungsflow fuer Mirror-Teilnehmer, gesteuert von StrategAIze-Admin. Mirror-Teilnehmer-Tab in Admin-UI. Separate Einladungs-E-Mail. Vertraulichkeits-Policy als Pflicht-Seite beim ersten Login. Dreisprachig DE/EN/NL.",
       "createdAt": "2026-04-03"
