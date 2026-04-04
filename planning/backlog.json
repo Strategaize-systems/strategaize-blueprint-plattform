@@ -525,7 +525,7 @@
       "title": "Getrennte Exportstroeme: Management-ZIP + Mirror-ZIP",
       "type": "feature",
       "priority": "medium",
-      "status": "in_progress",
+      "status": "done",
       "version": "V3",
       "description": "Separate Export-ZIPs fuer Management und Mirror. Mirror-Export entpersonalisiert (nur respondent_layer, keine Namen). Neuer Data Contract v2.0 fuer Mirror. Nur StrategAIze-Admin kann Mirror-Export erstellen.",
       "createdAt": "2026-04-03"

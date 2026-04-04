@@ -125,7 +125,7 @@ aber sequentiell ist sauberer für QA nach jedem Slice.
 | SLC-042 | [Admin: Mirror-Run-Erstellung](SLC-042-admin-mirror-runs.md) | FEAT-028 | done | High | 2026-04-03 |
 | SLC-043 | [Mirror Invite + Onboarding](SLC-043-mirror-invite-onboarding.md) | FEAT-030 | done | High | 2026-04-03 |
 | SLC-044 | [Mirror Workspace](SLC-044-mirror-workspace.md) | FEAT-029 | done | High | 2026-04-03 |
-| SLC-045 | [Mirror Export](SLC-045-mirror-export.md) | FEAT-031 | planned | Medium | 2026-04-03 |
+| SLC-045 | [Mirror Export](SLC-045-mirror-export.md) | FEAT-031 | done | Medium | 2026-04-03 |
 
 ## V3 Execution Order
 

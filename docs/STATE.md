@@ -10,15 +10,14 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: SLC-040 bis SLC-044 done (5/6 Slices). Nächster Schritt: SLC-045 (Mirror Export), dann BL-054 (Admin Mirror-Tab), Gesamt-QA, /final-check + Deploy.
+- Current Focus: Alle 6 V3 Slices done (SLC-040–045). Nächster Schritt: BL-054 (Admin Mirror-Tab), dann Gesamt-QA V3, /final-check + Deploy.
 - Current Phase: V3 Implementation
 
 ## Immediate Next Steps
-1. /qa SLC-044 (Mirror Workspace)
-2. /backend SLC-045 (Mirror Export — v2.0 Contract, Entpersonalisierung)
-3. BL-054 (Admin-UI: Mirror-Teilnehmer Tab)
-4. /qa Gesamt-QA V3 Phase 1
-5. /final-check + Deploy
+1. /qa SLC-045 (Mirror Export)
+2. BL-054 (Admin-UI: Mirror-Teilnehmer Tab)
+3. /qa Gesamt-QA V3 Phase 1
+4. /final-check + Deploy
 
 ## Active Scope
 V3 — Operational Reality Mirror Phase 1 (Infrastruktur). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle, vertraulicher Einladungsflow, getrennte Exportströme. Keine konkreten Fragen (Phase 2). 4 Features (FEAT-028 bis FEAT-031), 4 Backlog-Items (BL-050 bis BL-053).

@@ -17,7 +17,7 @@ export async function GET(
   // Load run
   const { data: run, error: runError } = await adminClient!
     .from("runs")
-    .select("id, tenant_id, title, description, status, catalog_snapshot_id, contract_version, created_at, submitted_at")
+    .select("id, tenant_id, title, description, status, survey_type, catalog_snapshot_id, contract_version, created_at, submitted_at")
     .eq("id", runId)
     .single();
 
@@ -94,6 +94,22 @@ export async function GET(
     .eq("run_id", runId)
     .order("submitted_at", { ascending: true });
 
+  // Mirror depersonalization: map profile_id → respondent_layer
+  const isMirror = run.survey_type === "mirror";
+  let respondentLayerMap = new Map<string, string>();
+
+  if (isMirror) {
+    const { data: profiles } = await adminClient!
+      .from("profiles")
+      .select("id, respondent_layer")
+      .eq("tenant_id", run.tenant_id)
+      .eq("role", "mirror_respondent");
+
+    respondentLayerMap = new Map(
+      (profiles ?? []).map((p) => [p.id, p.respondent_layer ?? "unknown"])
+    );
+  }
+
   // Build frage_id map for export (question UUID -> frage_id)
   const questionIdToFrageId = new Map(
     (questions ?? []).map((q) => [q.id, q.frage_id])
@@ -127,7 +143,8 @@ export async function GET(
   // === Build JSON content ===
 
   const manifestJson = {
-    contract_version: "v1.0",
+    contract_version: isMirror ? "v2.0" : "v1.0",
+    survey_type: run.survey_type ?? "management",
     exported_at: exportedAt,
     exported_by: user!.email ?? user!.id,
     tenant_id: run.tenant_id,
@@ -152,6 +169,7 @@ export async function GET(
     title: run.title,
     description: run.description,
     status: run.status,
+    survey_type: run.survey_type ?? "management",
     catalog_snapshot_id: run.catalog_snapshot_id,
     contract_version: run.contract_version,
     blueprint_version: snapshot?.blueprint_version ?? "unknown",
@@ -184,6 +202,10 @@ export async function GET(
     position: q.position,
   }));
 
+  // Helper: depersonalize created_by for mirror exports
+  const depersonalize = (profileId: string | null) =>
+    isMirror ? (respondentLayerMap.get(profileId ?? "") ?? "unknown") : profileId;
+
   // answer_revisions.json = SoT (all events, sorted ascending)
   const answerRevisionsJson = allEvents.map((e) => ({
     id: e.id,
@@ -194,7 +216,9 @@ export async function GET(
     event_type: e.event_type,
     payload: e.payload,
     created_at: e.created_at,
-    created_by: e.created_by,
+    ...(isMirror
+      ? { respondent_layer: depersonalize(e.created_by) }
+      : { created_by: e.created_by }),
   }));
 
   // answers.json = derived (latest answer per question)
@@ -205,7 +229,9 @@ export async function GET(
     answer_text: a.answer_text,
     answered_at: a.answered_at,
     answer_source: "platform_input",
-    created_by: a.created_by,
+    ...(isMirror
+      ? { respondent_layer: depersonalize(a.created_by) }
+      : { created_by: a.created_by }),
     derived_from_event_id: a.event_id,
     derived_at: exportedAt,
   }));
@@ -224,7 +250,9 @@ export async function GET(
     note_text: e.note_text,
     storage_uri: e.file_path ?? null,
     created_at: e.created_at,
-    created_by: e.created_by,
+    ...(isMirror
+      ? { respondent_layer: depersonalize(e.created_by) }
+      : { created_by: e.created_by }),
   }));
 
   const evidenceLinksJson = evidenceLinks.map((l) => ({
@@ -243,7 +271,9 @@ export async function GET(
     id: s.id,
     run_id: s.run_id,
     tenant_id: s.tenant_id,
-    submitted_by: s.submitted_by,
+    ...(isMirror
+      ? { respondent_layer: depersonalize(s.submitted_by) }
+      : { submitted_by: s.submitted_by }),
     submitted_at: s.submitted_at,
     snapshot_version: s.snapshot_version,
     note: s.note,
@@ -305,7 +335,8 @@ export async function GET(
     p_run_id: runId,
     p_tenant_id: run.tenant_id,
     p_payload: {
-      contract_version: "v1.0",
+      contract_version: isMirror ? "v2.0" : "v1.0",
+      survey_type: run.survey_type ?? "management",
       total_events: allEvents.length,
       total_evidence: allEvidenceItems.length,
     },

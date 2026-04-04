@@ -49,6 +49,7 @@ interface Run {
   title: string;
   description: string | null;
   status: string;
+  survey_type?: string;
   created_at: string;
   submitted_at: string | null;
   questions: Question[];
@@ -182,6 +183,11 @@ export function RunDetailClient({
             <div className="flex items-center gap-3">
               <h2 className="text-3xl font-bold text-slate-900">{run.title}</h2>
               <StatusBadge status={run.status} />
+              {run.survey_type === "mirror" && (
+                <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+                  Mirror
+                </Badge>
+              )}
             </div>
             {run.description && (
               <p className="text-sm text-muted-foreground mt-1">{run.description}</p>
@@ -196,7 +202,7 @@ export function RunDetailClient({
               onClick={handleExport}
               disabled={exporting}
             >
-              {exporting ? "Exportiert..." : "Export ZIP"}
+              {exporting ? "Exportiert..." : run.survey_type === "mirror" ? "Mirror-Export ZIP" : "Export ZIP"}
             </Button>
             {!isLocked && (
               <AlertDialog>

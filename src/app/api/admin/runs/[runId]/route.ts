@@ -17,7 +17,7 @@ export async function GET(
     .from("runs")
     .select(
       `
-      id, tenant_id, title, description, status,
+      id, tenant_id, title, description, status, survey_type,
       catalog_snapshot_id, contract_version,
       created_at, submitted_at
     `
