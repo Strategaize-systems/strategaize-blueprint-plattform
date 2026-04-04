@@ -535,7 +535,7 @@
       "title": "Admin-UI: Mirror-Teilnehmer Tab in Tenant-Verwaltung",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V3",
       "description": "Dedizierter Tab in der Admin Tenant-Verwaltung fuer Mirror-Teilnehmer. Liste mit E-Mail, respondent_layer, zugewiesene Bloecke, Invite-Status. Einladen-Dialog mit Rolle mirror_respondent, respondent_layer Auswahl, Block-Checkboxen. API existiert bereits (GET /mirror-respondents + bestehende Invite-Route). Nur UI fehlt.",
       "createdAt": "2026-04-04"

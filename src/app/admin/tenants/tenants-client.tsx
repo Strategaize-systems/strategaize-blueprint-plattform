@@ -45,12 +45,22 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Pencil, Trash2, UserMinus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, ChevronRight, Pencil, Trash2, UserMinus, ShieldCheck } from "lucide-react";
 
 interface TenantUser {
   id: string;
   email: string;
   role: string;
+  confirmed: boolean;
+  created_at: string;
+}
+
+interface MirrorRespondent {
+  id: string;
+  email: string;
+  respondent_layer: string | null;
+  blocks: string[];
   confirmed: boolean;
   created_at: string;
 }
@@ -106,7 +116,23 @@ export function TenantsClient({ email }: { email: string }) {
   const [usersLoading, setUsersLoading] = useState(false);
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
+  // Mirror respondent state
+  const [mirrorRespondents, setMirrorRespondents] = useState<MirrorRespondent[]>([]);
+  const [mirrorLoading, setMirrorLoading] = useState(false);
+  const [mirrorInviteOpen, setMirrorInviteOpen] = useState(false);
+  const [mirrorInviteTenantId, setMirrorInviteTenantId] = useState<string | null>(null);
+  const [mirrorInviteTenantName, setMirrorInviteTenantName] = useState("");
+  const [mirrorEmail, setMirrorEmail] = useState("");
+  const [mirrorLayer, setMirrorLayer] = useState<string>("key_staff");
+  const [mirrorBlocks, setMirrorBlocks] = useState<string[]>([]);
+  const [mirrorInviting, setMirrorInviting] = useState(false);
+
   const ALL_BLOCKS = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+  const LAYER_OPTIONS = [
+    { value: "leadership_1", label: "Geschäftsführung / C-Level" },
+    { value: "leadership_2", label: "Bereichsleitung / 2. Ebene" },
+    { value: "key_staff", label: "Schlüsselmitarbeiter" },
+  ];
 
   const loadTenants = useCallback(async () => {
     try {
@@ -144,6 +170,70 @@ export function TenantsClient({ email }: { email: string }) {
     }
     setExpandedTenantId(tenantId);
     loadUsers(tenantId);
+    loadMirrorRespondents(tenantId);
+  }
+
+  // ─── Mirror Respondents ──────────────────────────────────────────────
+  async function loadMirrorRespondents(tenantId: string) {
+    setMirrorLoading(true);
+    try {
+      const res = await fetch(`/api/admin/tenants/${tenantId}/mirror-respondents`);
+      if (res.ok) {
+        const data = await res.json();
+        setMirrorRespondents(data.respondents ?? []);
+      }
+    } finally {
+      setMirrorLoading(false);
+    }
+  }
+
+  function openMirrorInvite(tenantId: string, tenantName: string) {
+    setMirrorInviteTenantId(tenantId);
+    setMirrorInviteTenantName(tenantName);
+    setMirrorEmail("");
+    setMirrorLayer("key_staff");
+    setMirrorBlocks([]);
+    setMirrorInviteOpen(true);
+  }
+
+  function toggleMirrorBlock(block: string) {
+    setMirrorBlocks((prev) =>
+      prev.includes(block) ? prev.filter((b) => b !== block) : [...prev, block]
+    );
+  }
+
+  async function handleMirrorInvite() {
+    if (!mirrorEmail.trim() || !mirrorInviteTenantId) return;
+    setMirrorInviting(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/tenants/${mirrorInviteTenantId}/invite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: mirrorEmail.trim(),
+          role: "mirror_respondent",
+          respondentLayer: mirrorLayer,
+          surveyType: "mirror",
+          ...(mirrorBlocks.length > 0 ? { allowedBlocks: mirrorBlocks } : {}),
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessage({ text: data.message, type: "success" });
+        setMirrorInviteOpen(false);
+        loadMirrorRespondents(mirrorInviteTenantId);
+      } else {
+        const data = await res.json();
+        setMessage({ text: data.error?.message ?? "Fehler beim Einladen", type: "error" });
+      }
+    } catch {
+      setMessage({ text: "Netzwerkfehler", type: "error" });
+    } finally {
+      setMirrorInviting(false);
+    }
   }
 
   // ─── Create ─────────────────────────────────────────────────────────
@@ -465,41 +555,104 @@ export function TenantsClient({ email }: { email: string }) {
                   </div>
                   <CollapsibleContent>
                     <div className="px-6 pb-5 border-t border-slate-100 pt-3">
-                      {usersLoading ? (
-                        <Skeleton className="h-16 w-full" />
-                      ) : tenantUsers.length === 0 ? (
-                        <p className="text-sm text-slate-400 py-2">Keine User in diesem Tenant.</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {tenantUsers.map((user) => (
-                            <div
-                              key={user.id}
-                              className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2.5 border border-slate-200"
-                            >
-                              <div className="flex items-center gap-3">
-                                <span className="text-sm font-medium text-slate-900">{user.email}</span>
-                                <Badge variant={user.role === "tenant_admin" ? "default" : "outline"} className="text-[10px]">
-                                  {user.role === "tenant_admin" ? "Admin" : "Mitarbeiter"}
-                                </Badge>
-                                {user.confirmed ? (
-                                  <Badge variant="default" className="text-[10px] bg-brand-success">Aktiv</Badge>
-                                ) : (
-                                  <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Eingeladen</Badge>
-                                )}
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                disabled={removingUserId === user.id}
-                                onClick={() => handleRemoveUser(tenant.id, user.id)}
-                              >
-                                <UserMinus className="h-4 w-4" />
-                              </Button>
+                      <Tabs defaultValue="users">
+                        <TabsList className="mb-3">
+                          <TabsTrigger value="users">User ({tenantUsers.length})</TabsTrigger>
+                          <TabsTrigger value="mirror">
+                            <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
+                            Mirror ({mirrorRespondents.length})
+                          </TabsTrigger>
+                        </TabsList>
+
+                        {/* User Tab */}
+                        <TabsContent value="users">
+                          {usersLoading ? (
+                            <Skeleton className="h-16 w-full" />
+                          ) : tenantUsers.length === 0 ? (
+                            <p className="text-sm text-slate-400 py-2">Keine User in diesem Tenant.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {tenantUsers.map((user) => (
+                                <div
+                                  key={user.id}
+                                  className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2.5 border border-slate-200"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-sm font-medium text-slate-900">{user.email}</span>
+                                    <Badge variant={user.role === "tenant_admin" ? "default" : "outline"} className="text-[10px]">
+                                      {user.role === "tenant_admin" ? "Admin" : "Mitarbeiter"}
+                                    </Badge>
+                                    {user.confirmed ? (
+                                      <Badge variant="default" className="text-[10px] bg-brand-success">Aktiv</Badge>
+                                    ) : (
+                                      <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Eingeladen</Badge>
+                                    )}
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    disabled={removingUserId === user.id}
+                                    onClick={() => handleRemoveUser(tenant.id, user.id)}
+                                  >
+                                    <UserMinus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          )}
+                        </TabsContent>
+
+                        {/* Mirror Tab */}
+                        <TabsContent value="mirror">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="text-xs text-slate-500">Vertrauliche Mirror-Teilnehmer für die Realitätserhebung</p>
+                            <Button size="sm" variant="outline" onClick={() => openMirrorInvite(tenant.id, tenant.name)}>
+                              Mirror einladen
+                            </Button>
+                          </div>
+                          {mirrorLoading ? (
+                            <Skeleton className="h-16 w-full" />
+                          ) : mirrorRespondents.length === 0 ? (
+                            <p className="text-sm text-slate-400 py-2">Keine Mirror-Teilnehmer. Klicken Sie &quot;Mirror einladen&quot; um zu beginnen.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {mirrorRespondents.map((r) => (
+                                <div
+                                  key={r.id}
+                                  className="flex items-center justify-between rounded-lg bg-amber-50/50 px-4 py-2.5 border border-amber-200"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-sm font-medium text-slate-900">{r.email}</span>
+                                    <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">
+                                      {r.respondent_layer ?? "—"}
+                                    </Badge>
+                                    {r.blocks.length > 0 && (
+                                      <span className="text-[10px] text-slate-500">
+                                        Blöcke: {r.blocks.join(", ")}
+                                      </span>
+                                    )}
+                                    {r.confirmed ? (
+                                      <Badge variant="default" className="text-[10px] bg-brand-success">Aktiv</Badge>
+                                    ) : (
+                                      <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Eingeladen</Badge>
+                                    )}
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    disabled={removingUserId === r.id}
+                                    onClick={() => handleRemoveUser(tenant.id, r.id)}
+                                  >
+                                    <UserMinus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </CollapsibleContent>
                 </div>
@@ -653,6 +806,72 @@ export function TenantsClient({ email }: { email: string }) {
                 disabled={inviting || !inviteEmail.trim() || (inviteRole === "tenant_member" && inviteBlocks.length === 0)}
               >
                 {inviting ? "Wird gesendet..." : "Einladung senden"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        {/* Mirror Invite Dialog */}
+        <Dialog open={mirrorInviteOpen} onOpenChange={setMirrorInviteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Mirror-Teilnehmer einladen</DialogTitle>
+              <DialogDescription>
+                Vertrauliche Einladung für &quot;{mirrorInviteTenantName}&quot;. Der Teilnehmer muss die Vertraulichkeits-Policy bestätigen.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="mirror-email">E-Mail-Adresse</Label>
+                <Input
+                  id="mirror-email"
+                  type="email"
+                  value={mirrorEmail}
+                  onChange={(e) => setMirrorEmail(e.target.value)}
+                  placeholder="name@unternehmen.de"
+                  onKeyDown={(e) => e.key === "Enter" && handleMirrorInvite()}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Organisationsebene</Label>
+                <Select value={mirrorLayer} onValueChange={setMirrorLayer}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LAYER_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Zugewiesene Blöcke</Label>
+                <p className="text-xs text-slate-500">Wählen Sie die Blöcke für die Mirror-Erhebung.</p>
+                <div className="flex flex-wrap gap-2">
+                  {ALL_BLOCKS.map((block) => (
+                    <button
+                      key={block}
+                      type="button"
+                      onClick={() => toggleMirrorBlock(block)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        mirrorBlocks.includes(block)
+                          ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm"
+                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                      }`}
+                    >
+                      Block {block}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setMirrorInviteOpen(false)}>Abbrechen</Button>
+              <Button
+                onClick={handleMirrorInvite}
+                disabled={mirrorInviting || !mirrorEmail.trim()}
+              >
+                {mirrorInviting ? "Wird gesendet..." : "Mirror-Einladung senden"}
               </Button>
             </DialogFooter>
           </DialogContent>
