@@ -121,7 +121,7 @@ aber sequentiell ist sauberer für QA nach jedem Slice.
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
 | SLC-040 | [Mirror DB-Schema](SLC-040-mirror-db-schema.md) | FEAT-028 | done | High | 2026-04-03 |
-| SLC-041 | [Mirror RLS-Policies](SLC-041-mirror-rls.md) | FEAT-029 | planned | High | 2026-04-03 |
+| SLC-041 | [Mirror RLS-Policies](SLC-041-mirror-rls.md) | FEAT-029 | done | High | 2026-04-03 |
 | SLC-042 | [Admin: Mirror-Run-Erstellung](SLC-042-admin-mirror-runs.md) | FEAT-028 | planned | High | 2026-04-03 |
 | SLC-043 | [Mirror Invite + Onboarding](SLC-043-mirror-invite-onboarding.md) | FEAT-030 | planned | High | 2026-04-03 |
 | SLC-044 | [Mirror Workspace](SLC-044-mirror-workspace.md) | FEAT-029 | planned | High | 2026-04-03 |

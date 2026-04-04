@@ -12,8 +12,10 @@ export const createTenantSchema = z.object({
 
 export const inviteTenantUserSchema = z.object({
   email: z.string().email("Ungültige E-Mail-Adresse"),
-  role: z.enum(["tenant_admin", "tenant_member"]).optional().default("tenant_member"),
+  role: z.enum(["tenant_admin", "tenant_member", "mirror_respondent"]).optional().default("tenant_member"),
   allowedBlocks: z.array(z.enum(["A", "B", "C", "D", "E", "F", "G", "H", "I"])).optional(),
+  respondentLayer: z.enum(["owner", "leadership_1", "leadership_2", "key_staff"]).optional(),
+  surveyType: z.enum(["management", "mirror"]).optional().default("management"),
 });
 
 // === Admin: Runs ===
@@ -21,6 +23,7 @@ export const inviteTenantUserSchema = z.object({
 export const createRunSchema = z.object({
   tenant_id: z.string().uuid("Ungültige Tenant-ID"),
   catalog_snapshot_id: z.string().uuid("Ungültige Katalog-Snapshot-ID"),
+  survey_type: z.enum(["management", "mirror"]).optional().default("management"),
   title: z
     .string()
     .min(1, "Titel darf nicht leer sein")
@@ -51,6 +54,7 @@ export const importCatalogSchema = z.object({
   version: z.string().min(1, "Version darf nicht leer sein"),
   blueprint_version: z.string().min(1, "Blueprint-Version darf nicht leer sein"),
   language: z.enum(["de", "en", "nl"]).default("de"),
+  survey_type: z.enum(["management", "mirror"]).optional().default("management"),
   questions: z
     .array(questionImportItem)
     .min(1, "Mindestens eine Frage erforderlich"),

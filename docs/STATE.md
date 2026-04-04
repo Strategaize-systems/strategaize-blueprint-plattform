@@ -10,7 +10,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: SLC-040 (Mirror DB-Schema) done — SQL geschrieben, muss auf Hetzner ausgeführt werden. Nächster Schritt: SQL ausführen, dann SLC-041 (RLS).
+- Current Focus: SLC-040 + SLC-041 done. DB-Schema + RLS + Validierung. Nächster Schritt: SLC-042 (Admin Mirror-Runs).
 - Current Phase: V3 Implementation
 
 ## Immediate Next Steps
