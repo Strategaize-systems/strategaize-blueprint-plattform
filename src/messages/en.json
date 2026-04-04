@@ -236,6 +236,20 @@
     "lastUpdated": "Last updated: {date}",
     "version": "Version {version}"
   },
+  "mirror": {
+    "policyTitle": "Confidentiality Agreement",
+    "policySubtitle": "Please read and confirm the following principles.",
+    "policyIntro": "As part of the exit-readiness analysis, StrategAIze conducts a structural reality assessment. Your participation is confidential and serves exclusively for organisational positioning.",
+    "policyPoint1": "Your answers will not be shared with management on a personal basis.",
+    "policyPoint2": "The evaluation is aggregated and depersonalised — patterns and structures are analysed, not individual opinions.",
+    "policyPoint3": "This is not an employee evaluation and will not be used for employment law or disciplinary purposes.",
+    "policyPoint4": "The goal is better transparency and organisational clarity as a basis for strategic decisions.",
+    "policyClosing": "By confirming, you agree to these principles.",
+    "policyConfirm": "I understand and agree",
+    "confidentialityBanner": "Your answers are treated confidentially and will not be shared on a personal basis.",
+    "dashboardTitle": "Your Mirror Assessments",
+    "dashboardSubtitle": "Confidential assessment — your answers are only visible to StrategAIze"
+  },
   "learning": {
     "helpButton": "Help",
     "title": "Learning Center",

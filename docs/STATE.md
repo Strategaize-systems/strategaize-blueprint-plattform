@@ -10,7 +10,7 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: SLC-040/041/042 done. DB + RLS + Admin-Run-Erstellung. Nächster Schritt: SLC-043 (Mirror Invite).
+- Current Focus: SLC-040 bis SLC-043 done. DB + RLS + Admin-Runs + Invite/Onboarding. Nächster Schritt: SLC-044 (Mirror Workspace).
 - Current Phase: V3 Implementation
 
 ## Immediate Next Steps

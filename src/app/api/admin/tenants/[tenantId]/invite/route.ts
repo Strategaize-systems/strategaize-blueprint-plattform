@@ -35,7 +35,7 @@ export async function POST(
   const parsed = inviteTenantUserSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { email, role: inviteRole, allowedBlocks } = parsed.data;
+  const { email, role: inviteRole, allowedBlocks, respondentLayer, surveyType } = parsed.data;
   const emailLower = email.toLowerCase();
   let isReinvite = false;
 
@@ -92,6 +92,8 @@ export async function POST(
           tenant_id: tenantId,
           role,
           ...(allowedBlocks && allowedBlocks.length > 0 ? { allowed_blocks: allowedBlocks } : {}),
+          ...(respondentLayer ? { respondent_layer: respondentLayer } : {}),
+          ...(surveyType ? { survey_type: surveyType } : {}),
         },
         redirectTo,
       },

@@ -236,6 +236,20 @@
     "lastUpdated": "Zuletzt aktualisiert: {date}",
     "version": "Version {version}"
   },
+  "mirror": {
+    "policyTitle": "Vertraulichkeitsvereinbarung",
+    "policySubtitle": "Bitte lesen und bestätigen Sie die folgenden Grundsätze.",
+    "policyIntro": "Im Rahmen der Exit-Readiness-Analyse führt StrategAIze eine strukturelle Realitätserhebung durch. Ihre Teilnahme ist vertraulich und dient ausschließlich der organisatorischen Standortbestimmung.",
+    "policyPoint1": "Ihre Antworten werden nicht personenbezogen an die Geschäftsführung zurückgegeben.",
+    "policyPoint2": "Die Auswertung erfolgt verdichtet und entpersonalisiert — es werden Muster und Strukturen analysiert, keine Einzelmeinungen.",
+    "policyPoint3": "Es handelt sich nicht um eine Mitarbeiterbewertung und keine arbeitsrechtliche oder disziplinarische Nutzung.",
+    "policyPoint4": "Ziel ist eine bessere Transparenz und Organisationsklarheit als Grundlage für strategische Entscheidungen.",
+    "policyClosing": "Mit der Bestätigung erklären Sie sich mit diesen Grundsätzen einverstanden.",
+    "policyConfirm": "Ich habe verstanden und stimme zu",
+    "confidentialityBanner": "Ihre Antworten werden vertraulich behandelt und nicht personenbezogen weitergegeben.",
+    "dashboardTitle": "Ihre Mirror-Assessments",
+    "dashboardSubtitle": "Vertrauliche Erhebung — Ihre Antworten sind nur für StrategAIze sichtbar"
+  },
   "learning": {
     "helpButton": "Hilfe",
     "title": "Learning Center",

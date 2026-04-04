@@ -236,6 +236,20 @@
     "lastUpdated": "Laatst bijgewerkt: {date}",
     "version": "Versie {version}"
   },
+  "mirror": {
+    "policyTitle": "Vertrouwelijkheidsovereenkomst",
+    "policySubtitle": "Lees en bevestig de volgende principes.",
+    "policyIntro": "In het kader van de exit-readiness analyse voert StrategAIze een structurele realiteitsmeting uit. Uw deelname is vertrouwelijk en dient uitsluitend voor organisatorische positionering.",
+    "policyPoint1": "Uw antwoorden worden niet persoonlijk aan het management teruggekoppeld.",
+    "policyPoint2": "De evaluatie is geaggregeerd en gedepersonaliseerd — patronen en structuren worden geanalyseerd, geen individuele meningen.",
+    "policyPoint3": "Dit is geen medewerkersbeoordeling en wordt niet gebruikt voor arbeidsrechtelijke of disciplinaire doeleinden.",
+    "policyPoint4": "Het doel is betere transparantie en organisatorische duidelijkheid als basis voor strategische beslissingen.",
+    "policyClosing": "Door te bevestigen gaat u akkoord met deze principes.",
+    "policyConfirm": "Ik begrijp het en ga akkoord",
+    "confidentialityBanner": "Uw antwoorden worden vertrouwelijk behandeld en niet persoonlijk gedeeld.",
+    "dashboardTitle": "Uw Mirror-assessments",
+    "dashboardSubtitle": "Vertrouwelijke meting — uw antwoorden zijn alleen zichtbaar voor StrategAIze"
+  },
   "learning": {
     "helpButton": "Hulp",
     "title": "Learning Center",
