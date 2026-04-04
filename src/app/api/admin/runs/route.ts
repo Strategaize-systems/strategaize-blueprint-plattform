@@ -12,11 +12,13 @@ export async function GET(request: Request) {
   const tenantFilter = searchParams.get("tenant_id");
   const statusFilter = searchParams.get("status");
 
+  const surveyTypeFilter = searchParams.get("survey_type");
+
   let query = adminClient!
     .from("runs")
     .select(
       `
-      id, tenant_id, title, status, contract_version,
+      id, tenant_id, title, status, survey_type, contract_version,
       created_at, submitted_at,
       catalog_snapshot_id,
       tenants!inner(name),
@@ -28,6 +30,7 @@ export async function GET(request: Request) {
 
   if (tenantFilter) query = query.eq("tenant_id", tenantFilter);
   if (statusFilter) query = query.eq("status", statusFilter);
+  if (surveyTypeFilter) query = query.eq("survey_type", surveyTypeFilter);
 
   const { data: runs, error } = await query;
 
@@ -78,6 +81,7 @@ export async function GET(request: Request) {
       tenant_name: tenantData?.name ?? null,
       title: r.title,
       status: r.status,
+      survey_type: (r as Record<string, unknown>).survey_type ?? "management",
       catalog_version: catalogData?.version ?? null,
       question_count: catalogData?.question_count ?? 0,
       answered_count: answeredByRun.get(r.id) ?? 0,
@@ -107,7 +111,7 @@ export async function POST(request: Request) {
   const parsed = createRunSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { tenant_id, catalog_snapshot_id, title, description } = parsed.data;
+  const { tenant_id, catalog_snapshot_id, survey_type, title, description } = parsed.data;
 
   // Validate tenant exists
   const { data: tenant } = await adminClient!
@@ -120,10 +124,10 @@ export async function POST(request: Request) {
     return errorResponse("NOT_FOUND", "Tenant not found", 404);
   }
 
-  // Validate catalog snapshot exists
+  // Validate catalog snapshot exists and matches survey_type
   const { data: snapshot } = await adminClient!
     .from("question_catalog_snapshots")
-    .select("id")
+    .select("id, survey_type")
     .eq("id", catalog_snapshot_id)
     .single();
 
@@ -131,39 +135,46 @@ export async function POST(request: Request) {
     return errorResponse("NOT_FOUND", "Catalog snapshot not found", 404);
   }
 
+  if (survey_type && snapshot.survey_type !== survey_type) {
+    return errorResponse("CONFLICT", `Catalog snapshot survey_type (${snapshot.survey_type}) does not match requested survey_type (${survey_type})`, 400);
+  }
+
   const { data: run, error } = await adminClient!
     .from("runs")
     .insert({
       tenant_id,
       catalog_snapshot_id,
+      survey_type: survey_type ?? "management",
       title,
       description: description ?? null,
       status: "collecting",
-      contract_version: "v1.0",
+      contract_version: survey_type === "mirror" ? "v2.0" : "v1.0",
       created_by: user!.id,
     })
-    .select("id, tenant_id, catalog_snapshot_id, title, status, contract_version, created_at")
+    .select("id, tenant_id, catalog_snapshot_id, title, status, survey_type, contract_version, created_at")
     .single();
 
   if (error) {
     return errorResponse("INTERNAL_ERROR", error.message, 500);
   }
 
-  // Copy block access from existing runs to the new run for tenant_members.
-  // When a member was invited with allowed_blocks, entries were created for
-  // runs that existed at invite time. New runs need the same block entries.
+  // Copy block access from existing runs to the new run.
+  // For management runs: copy from tenant_members.
+  // For mirror runs: copy from mirror_respondents.
+  const copyRole = (survey_type ?? "management") === "mirror" ? "mirror_respondent" : "tenant_member";
   const { data: existingMembers } = await adminClient!
     .from("profiles")
     .select("id")
     .eq("tenant_id", tenant_id)
-    .eq("role", "tenant_member");
+    .eq("role", copyRole);
 
   if (existingMembers && existingMembers.length > 0) {
-    // Find another run of this tenant to copy block access from
+    // Find another run of this tenant with same survey_type to copy block access from
     const { data: otherRuns } = await adminClient!
       .from("runs")
       .select("id")
       .eq("tenant_id", tenant_id)
+      .eq("survey_type", survey_type ?? "management")
       .neq("id", run.id)
       .limit(1);
 
@@ -181,10 +192,11 @@ export async function POST(request: Request) {
             profile_id: member.id,
             run_id: run.id,
             block: a.block,
+            survey_type: survey_type ?? "management",
           }));
           await adminClient!
             .from("member_block_access")
-            .upsert(newEntries, { onConflict: "profile_id,run_id,block" });
+            .upsert(newEntries, { onConflict: "profile_id,run_id,block,survey_type" });
         }
       }
     }

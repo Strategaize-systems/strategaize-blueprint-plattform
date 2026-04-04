@@ -38,6 +38,7 @@ interface Run {
   tenant_name: string | null;
   title: string;
   status: string;
+  survey_type: string;
   catalog_version: string | null;
   question_count: number;
   answered_count: number;
@@ -73,6 +74,7 @@ export function RunsClient({ email }: { email: string }) {
   const [newTenantId, setNewTenantId] = useState("");
   const [newSnapshotId, setNewSnapshotId] = useState("");
   const [newTitle, setNewTitle] = useState("");
+  const [newSurveyType, setNewSurveyType] = useState<"management" | "mirror">("management");
   const [creating, setCreating] = useState(false);
 
   const loadRuns = useCallback(async () => {
@@ -120,6 +122,7 @@ export function RunsClient({ email }: { email: string }) {
         body: JSON.stringify({
           tenant_id: newTenantId,
           catalog_snapshot_id: newSnapshotId,
+          survey_type: newSurveyType,
           title: newTitle.trim(),
         }),
       });
@@ -129,6 +132,7 @@ export function RunsClient({ email }: { email: string }) {
         setNewTenantId("");
         setNewSnapshotId("");
         setNewTitle("");
+        setNewSurveyType("management");
         setCreateOpen(false);
         await loadRuns();
       } else {
@@ -162,6 +166,33 @@ export function RunsClient({ email }: { email: string }) {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label>Survey-Typ</Label>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setNewSurveyType("management")}
+                      className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
+                        newSurveyType === "management"
+                          ? "border-brand-primary bg-brand-primary/5 text-brand-primary ring-1 ring-brand-primary"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      Management
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewSurveyType("mirror")}
+                      className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
+                        newSurveyType === "mirror"
+                          ? "border-amber-500 bg-amber-50 text-amber-700 ring-1 ring-amber-500"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      Mirror
+                    </button>
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label>Tenant</Label>
                   <Select value={newTenantId} onValueChange={setNewTenantId}>
@@ -270,7 +301,14 @@ export function RunsClient({ email }: { email: string }) {
                           {run.tenant_name ?? "Unbekannt"} &middot; Katalog v{run.catalog_version}
                         </p>
                       </div>
-                      <StatusBadge status={run.status} />
+                      <div className="flex items-center gap-2">
+                        {run.survey_type === "mirror" && (
+                          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                            Mirror
+                          </span>
+                        )}
+                        <StatusBadge status={run.status} />
+                      </div>
                     </div>
                   </div>
                   <div className="px-6 pb-5">
