@@ -39,20 +39,21 @@ export async function POST(request: Request) {
   const parsed = importCatalogSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { version, blueprint_version, language, questions } = parsed.data;
+  const { version, blueprint_version, language, survey_type, questions } = parsed.data;
 
-  // Check version+language uniqueness
+  // Check version+language+survey_type uniqueness
   const { data: existing } = await adminClient!
     .from("question_catalog_snapshots")
     .select("id")
     .eq("version", version)
     .eq("language", language)
+    .eq("survey_type", survey_type)
     .single();
 
   if (existing) {
     return errorResponse(
       "CONFLICT",
-      `Katalog-Version "${version}" (${language.toUpperCase()}) existiert bereits`,
+      `Katalog-Version "${version}" (${language.toUpperCase()}, ${survey_type}) existiert bereits`,
       409
     );
   }
@@ -83,11 +84,12 @@ export async function POST(request: Request) {
       version,
       blueprint_version,
       language,
+      survey_type,
       hash,
       question_count: questions.length,
       created_by: user!.id,
     })
-    .select("id, version, blueprint_version, language, question_count, hash, created_at")
+    .select("id, version, blueprint_version, language, survey_type, question_count, hash, created_at")
     .single();
 
   if (snapError) {
