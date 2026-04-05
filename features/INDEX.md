@@ -85,4 +85,12 @@
 | FEAT-026 | Owner-Profil ("Frage Null") (DE/EN/NL) | deployed | [Spec](FEAT-026-owner-profil.md) | 2026-04-02 |
 | FEAT-027 | LLM Run Memory (DE/EN/NL) | deployed | [Spec](FEAT-027-llm-run-memory.md) | 2026-04-02 |
 
-## Next Available ID: FEAT-032
+## V3.1 Features (Mirror Usability)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-032 | GF Mirror-Nominierungsformular | planned | [Spec](FEAT-032-mirror-nominations.md) | 2026-04-05 |
+| FEAT-033 | Verbessertes Mirror-Onboarding (E-Mail + Policy) | planned | [Spec](FEAT-033-mirror-onboarding-v2.md) | 2026-04-05 |
+| FEAT-034 | Mirror-Run Deadline | planned | [Spec](FEAT-034-mirror-deadline.md) | 2026-04-05 |
+
+## Next Available ID: FEAT-035

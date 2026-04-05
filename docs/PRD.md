@@ -18,11 +18,20 @@ Unternehmer, die ihr Unternehmen in den nächsten 3–5 Jahren verkaufen wollen,
 - Wollen ihren Fortschritt sehen und frühere Antworten nachvollziehen können
 - Können weitere Personen aus ihrer Organisation einladen (z.B. CFO, COO)
 
-### Sekundär: Organisationsmitglieder
+### Sekundär: Organisationsmitglieder (Management View)
 
 - Werden vom Hauptkunden eingeladen
 - Beantworten spezifische Fragen aus ihrem Verantwortungsbereich
 - Haben eingeschränkte Rechte je nach Rolle
+
+### Sekundär: Mirror-Teilnehmer (Operational Reality Mirror)
+
+- Werden von Strategaize-Admin eingeladen (GF schlägt vor, Admin führt aus)
+- Beantworten vertrauliche Fragen zur strukturellen Realität des Unternehmens
+- Drei Ebenen: Geschäftsführung/C-Level (L1), Bereichsleitung (L2), Schlüsselmitarbeiter (KS)
+- Antworten werden nicht personenbezogen an GF zurückgegeben
+- Export entpersonalisiert (nur Organisationsebene, keine Namen)
+- Nutzen KI-Assistenten für Verständnisfragen (kein Direktkontakt zu Strategaize)
 
 ### Tertiär: Strategaize-Berater (intern)
 

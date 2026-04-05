@@ -539,6 +539,46 @@
       "version": "V3",
       "description": "Dedizierter Tab in der Admin Tenant-Verwaltung fuer Mirror-Teilnehmer. Liste mit E-Mail, respondent_layer, zugewiesene Bloecke, Invite-Status. Einladen-Dialog mit Rolle mirror_respondent, respondent_layer Auswahl, Block-Checkboxen. API existiert bereits (GET /mirror-respondents + bestehende Invite-Route). Nur UI fehlt.",
       "createdAt": "2026-04-04"
+    },
+    {
+      "id": "BL-055",
+      "title": "GF Mirror-Nominierungsformular (Teilnehmer vorschlagen)",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Tenant-Admin bekommt Formular zum Vorschlagen von Mirror-Teilnehmern (Name, Ebene, Abteilung, E-Mail). Neue Tabelle mirror_nominations. Admin sieht Vorschlaege im Mirror-Tab und kann daraus einladen.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-056",
+      "title": "Mirror-Einladungs-E-Mail: separates Template mit Kontext",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Eigenes E-Mail-Template fuer Mirror-Invites: Wer ist Strategaize, warum kontaktiert, was erwartet, Zeitaufwand, Vertraulichkeit, KI-Hinweis, Deadline wenn gesetzt. sendMirrorInviteEmail() getrennt von sendInviteEmail(). Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-057",
+      "title": "Policy-Seite erweitern: Erklaerungsblock + Video-Platzhalter",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Policy-Seite bekommt Erklaerungsblock (Was ist die Realitaetserhebung, wie funktioniert es) und Video-Platzhalter. Hinweis auf KI-Assistenten. Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-058",
+      "title": "Mirror-Run Deadline: due_date auf Runs + Dashboard-Anzeige",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V3.1",
+      "description": "runs.due_date DATE nullable. Admin setzt bei Run-Erstellung. Teilnehmer sieht Deadline im Dashboard. Visueller Hinweis bei < 3 Tage oder ueberschritten. due_date im Export.",
+      "createdAt": "2026-04-05"
     }
   ]
 }

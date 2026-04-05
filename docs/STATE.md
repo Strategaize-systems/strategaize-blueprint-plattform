@@ -14,9 +14,10 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 - Current Phase: V3 Implementation
 
 ## Immediate Next Steps
-1. /qa Gesamt-QA V3 Phase 1
-2. /final-check
-3. /deploy
+1. V3 Live-Test mit Mirror-Fragenkatalogen (User erstellt Kataloge)
+2. /final-check V3
+3. /deploy V3 (REL-006)
+4. /architecture V3.1 (Mirror Usability: FEAT-032, 033, 034)
 
 ## Active Scope
 V3 — Operational Reality Mirror Phase 1 (Infrastruktur). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle, vertraulicher Einladungsflow, getrennte Exportströme. Keine konkreten Fragen (Phase 2). 4 Features (FEAT-028 bis FEAT-031), 4 Backlog-Items (BL-050 bis BL-053).
