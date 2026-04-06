@@ -5,8 +5,8 @@
 - **Framework:** Next.js 16 (App Router), TypeScript
 - **Styling:** Tailwind CSS + shadcn/ui (copy-paste components)
 - **Backend:** Supabase Self-Hosted (PostgreSQL + GoTrue Auth + PostgREST + Storage)
-- **LLM:** Ollama + Qwen 2.5 14B (lokal, DSGVO)
-- **Speech-to-Text:** Whisper ASR Webservice (lokal, DSGVO) — V2
+- **LLM:** Claude Sonnet 4.6 via AWS Bedrock (eu-central-1 Frankfurt, DSGVO)
+- **Speech-to-Text:** Whisper ASR Webservice Large-v3 (lokal, DSGVO) — V2
 - **Deployment:** Self-Hosted auf Hetzner VM via Coolify + Docker Compose
 - **API Gateway:** Kong (deklarative Config, Key-Auth für Supabase-Services)
 - **i18n:** next-intl (DE/EN/NL), Cookie-basiertes Locale
@@ -28,7 +28,7 @@ Coolify Caddy (Reverse Proxy, TLS)
   |       |       |
   |       |       +---> adminClient (service_role, BYPASSRLS)
   |       |       +---> userClient (authenticated, RLS-enforced)
-  |       |       +---> Ollama (http://ollama:11434) — LLM Chat
+  |       |       +---> AWS Bedrock (eu-central-1) — LLM Chat (Claude Sonnet 4.6)
   |       |       +---> Whisper (http://whisper:9000) — Transkription (V2)
   |       |
   |       +---> Middleware (Session via Kong → GoTrue)
@@ -44,12 +44,10 @@ Coolify Caddy (Reverse Proxy, TLS)
   |       |
   |       +---> PostgreSQL (Port 5432, intern only)
   |
-  +---> Ollama (Port 11434, intern only) — LLM
-  |
   +---> Whisper (Port 9000, intern only) — Speech-to-Text (V2)
 ```
 
-## Docker Compose Services (12 — ab V2)
+## Docker Compose Services (11 — ab V3)
 
 | Service | Zweck | Extern erreichbar |
 |---------|-------|-------------------|
@@ -62,8 +60,9 @@ Coolify Caddy (Reverse Proxy, TLS)
 | `supabase-realtime` | WebSocket Subscriptions | Nein (via Kong) |
 | `supabase-meta` | DB Metadata API | Nein (via Kong) |
 | `supabase-studio` | DB Admin UI | Nein (SSH Tunnel) |
-| `ollama` | LLM (Qwen 2.5 14B) | Nein (nur intern) |
-| `whisper` | Speech-to-Text (Whisper Small) | Nein (nur intern) |
+| `whisper` | Speech-to-Text (Whisper Large-v3) | Nein (nur intern) |
+
+**LLM:** Claude Sonnet 4.6 läuft nicht als Docker-Service, sondern als API-Call an AWS Bedrock (eu-central-1 Frankfurt). Keine lokale GPU/CPU-Last für LLM-Inferenz.
 
 Alle Services kommunizieren über das Docker-interne Netzwerk `strategaize-net`.
 

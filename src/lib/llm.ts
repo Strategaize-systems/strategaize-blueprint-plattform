@@ -1,47 +1,50 @@
-// LLM integration via Ollama REST API
-// Runs locally on Hetzner — no external API calls (DSGVO-konform)
+// LLM integration via AWS Bedrock (Claude Sonnet 4.6)
+// Runs on AWS eu-central-1 (Frankfurt) — DSGVO-konform (EU region, no training data)
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_URL || "http://ollama:11434";
-const MODEL = process.env.LLM_MODEL || "qwen2.5:14b";
+import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
+
+const MODEL_ID = process.env.LLM_MODEL || "eu.anthropic.claude-sonnet-4-6-20250514-v1:0";
+
+const bedrockClient = new BedrockRuntimeClient({
+  region: process.env.AWS_REGION || "eu-central-1",
+});
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-interface OllamaResponse {
-  message: {
-    role: string;
-    content: string;
-  };
-  done: boolean;
-}
-
 export async function chatWithLLM(
   messages: ChatMessage[],
   options?: { temperature?: number; maxTokens?: number }
 ): Promise<string> {
-  const res = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: MODEL,
-      messages,
-      stream: false,
-      options: {
-        temperature: options?.temperature ?? 0.7,
-        num_predict: options?.maxTokens ?? 1024,
-      },
-    }),
+  // Separate system messages from conversation messages
+  const systemMessages = messages.filter((m) => m.role === "system");
+  const conversationMessages = messages.filter((m) => m.role !== "system");
+
+  const command = new ConverseCommand({
+    modelId: MODEL_ID,
+    system: systemMessages.length > 0
+      ? systemMessages.map((m) => ({ text: m.content }))
+      : undefined,
+    messages: conversationMessages.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: [{ text: m.content }],
+    })),
+    inferenceConfig: {
+      temperature: options?.temperature ?? 0.7,
+      maxTokens: options?.maxTokens ?? 1024,
+    },
   });
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Ollama error: ${res.status} — ${errorText}`);
+  const response = await bedrockClient.send(command);
+
+  const outputContent = response.output?.message?.content;
+  if (!outputContent || outputContent.length === 0) {
+    throw new Error("Bedrock: empty response");
   }
 
-  const data = (await res.json()) as OllamaResponse;
-  return data.message.content;
+  return outputContent[0].text ?? "";
 }
 
 // Supported locales for LLM prompts

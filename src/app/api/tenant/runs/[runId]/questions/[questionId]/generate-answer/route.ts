@@ -129,7 +129,7 @@ export async function POST(
 
     return NextResponse.json({
       generatedAnswer,
-      model: process.env.LLM_MODEL || "qwen2.5:14b",
+      model: process.env.LLM_MODEL || "claude-sonnet-4.6",
     });
   } catch (error) {
     const { captureException } = await import("@/lib/logger");
