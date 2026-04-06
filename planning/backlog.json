@@ -579,6 +579,46 @@
       "version": "V3.1",
       "description": "runs.due_date DATE nullable. Admin setzt bei Run-Erstellung. Teilnehmer sieht Deadline im Dashboard. Visueller Hinweis bei < 3 Tage oder ueberschritten. due_date im Export.",
       "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-059",
+      "title": "Mirror Policy-Text: rechtliche Absicherung und Formulierung ueberarbeiten",
+      "type": "improvement",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Vertraulichkeitsvereinbarung ueberarbeiten: 1) Text zu Exit-Readiness ggf. neutraler formulieren, 2) Arbeitsrechtliche Absicherung pruefen (Betriebsrat, Mitbestimmung, DSGVO-Einwilligung), 3) Ggf. zusaetzliche Dokumente/Vereinbarungen als rechtliche Absicherung vorbereiten, 4) Formulierungen so waehlen dass kein Angriffspunkt fuer Widerspruch entsteht. Recherche-Aufgabe, kein reines Coding.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-060",
+      "title": "Mirror-Profil: Tabelle + Formular + Redirect nach Policy",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Neue Tabelle mirror_profiles (pro User, nicht pro Tenant). Schlankes Profil: Name, Anrede (Du/Sie), Funktion, Abteilung, Fuehrungsstil (nur L1/L2), Kommunikationsstil (angepasst fuer KS), optionale Vorstellung. Redirect nach Policy-Bestaetigung zum Profil-Formular. Felder respondent_layer-abhaengig: L1/L2 sehen Fuehrungsstil+DISC wie GF, KS sieht vereinfachte Version. Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-061",
+      "title": "Mirror LLM-Kontext: buildMirrorContext() mit Profil-Daten",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Neuer buildMirrorContext() in llm.ts analog zu buildOwnerContext(). Liest mirror_profiles statt owner_profiles. Chat-Route erkennt mirror_respondent und nutzt Mirror-Kontext. Anrede, Name, Funktion, Kommunikationsstil fliessen in LLM-Prompts ein. Dreisprachig.",
+      "createdAt": "2026-04-05"
+    },
+    {
+      "id": "BL-062",
+      "title": "Learning Center: rollenbasierte Inhalte fuer Mirror-Teilnehmer",
+      "type": "feature",
+      "priority": "medium",
+      "status": "open",
+      "version": "V3.1",
+      "description": "Learning Center zeigt unterschiedliche Inhalte je nach Rolle. Mirror-Teilnehmer sehen angepasste Anleitung (Wie beantworte ich Fragen, Was passiert mit meinen Antworten, KI-Assistent nutzen). Keine Videos ueber Mitarbeiter einladen oder Owner-Profil. Technisch: role-Check, separate i18n-Keys oder Markdown. Dreisprachig DE/EN/NL.",
+      "createdAt": "2026-04-05"
     }
   ]
 }
