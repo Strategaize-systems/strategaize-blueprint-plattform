@@ -17,8 +17,6 @@ volumes:
     driver: local
   storage-data:
     driver: local
-  ollama-models:
-    driver: local
 
 services:
 
@@ -285,22 +283,7 @@ services:
   #     - strategaize-net
 
   # ============================================================
-  # OLLAMA — Lokales LLM (Qwen 2.5 14B, DSGVO-konform)
-  # ============================================================
-  ollama:
-    image: ollama/ollama:latest
-    restart: unless-stopped
-    expose:
-      - "11434"
-    volumes:
-      - ollama-models:/root/.ollama
-    networks:
-      - strategaize-net
-    environment:
-      - OLLAMA_HOST=0.0.0.0
-
-  # ============================================================
-  # V2: WHISPER — Speech-to-Text (Whisper Small, DSGVO-konform)
+  # WHISPER — Speech-to-Text (Whisper Large-v3, DSGVO-konform)
   # ============================================================
   whisper:
     image: onerahmet/openai-whisper-asr-webservice:latest
@@ -308,7 +291,7 @@ services:
     expose:
       - "9000"
     environment:
-      - ASR_MODEL=small
+      - ASR_MODEL=large-v3
       - ASR_ENGINE=openai_whisper
     networks:
       - strategaize-net
