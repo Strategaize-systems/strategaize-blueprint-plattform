@@ -1,5 +1,12 @@
 # Releases
 
+### REL-006 — V3 Operational Reality Mirror + LLM-Migration
+- Date: 2026-04-05
+- Scope: Operational Reality Mirror Phase 1 (Infrastruktur) + LLM-Migration Ollama/Qwen → AWS Bedrock Claude Sonnet 4.6. 4 Features (FEAT-028 bis FEAT-031), 6 Slices (SLC-040 bis SLC-045), BL-054 (Admin Mirror-Tab). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle mit RLS-Isolation, vertraulicher Einladungsflow mit Policy-Bestätigung, getrennte entpersonalisierte Exportströme (Data Contract v2.0). LLM von Qwen 2.5 14B lokal auf Claude Sonnet 4.6 via AWS Bedrock (eu-central-1 Frankfurt) migriert — 10x schneller, deutlich bessere Antwortqualität. Whisper von small auf large-v3 upgraded. Ollama-Service komplett entfernt (12 → 11 Docker Services, ~12 GB RAM frei).
+- Summary: Strukturelle Erweiterung der Plattform um eine vertrauliche Mitarbeiter-Erhebung. Mirror-Teilnehmer (L1/L2/KS) werden vom Admin eingeladen, bestätigen eine Vertraulichkeits-Policy und beantworten ebenenspezifische Fragen. Antworten sind für den Geschäftsführer nicht sichtbar (RLS). Export entpersonalisiert (respondent_layer statt Namen/E-Mails). 3 SQL-Migrationen (MIG-015/016/017), 20 geänderte Source-Dateien, 4 Decisions (DEC-025 bis DEC-028). LLM-Migration bringt sofort spürbare Qualitäts- und Geschwindigkeitsverbesserung für alle Nutzer.
+- Risks: Keine automatisierten Tests (ISSUE-002, bekanntes Restrisiko seit MVP-1). Bedrock-Abhängigkeit — kein lokaler LLM-Fallback bei AWS-Ausfall. Policy-Text braucht rechtliche Überarbeitung (BL-059). Mirror-Profil fehlt noch (V3.1).
+- Rollback Notes: Stufe 1: Coolify Container-Rollback auf V2.2. Stufe 2: DB-Rollback der Mirror-Tabellen (DROP TABLE mirror_policy_confirmations; ALTER TABLE runs DROP COLUMN survey_type; ALTER TABLE profiles DROP COLUMN respondent_layer; etc.). Stufe 3: LLM_MODEL auf qwen2.5:14b + OLLAMA_URL setzen, Ollama-Service wieder in docker-compose.
+
 ### REL-005 — V2.2 Personalized LLM (Owner-Profil + Run Memory)
 - Date: 2026-04-02
 - Scope: Owner-Profil als Pflicht-Formular auf Tenant-Ebene (persönliche Infos, Anrede-Präferenz, Führungsstil-Ranking, DISC-Kommunikationsstil, freie Vorstellung mit Whisper). LLM Run Memory für Session-Kontinuität (async update nach Chat, kuratiertes Memory max 800 Tokens). Profil + Memory werden in alle LLM-Prompts injiziert. Memory-Anzeige für Owner im Workspace. 2 neue DB-Tabellen (owner_profiles, run_memory). 5 Slices, 4 Decisions, 3 Migrationen.
