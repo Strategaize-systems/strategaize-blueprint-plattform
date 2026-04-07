@@ -64,7 +64,7 @@ export function createRateLimiter(config: RateLimiterConfig) {
 
 // Pre-configured limiters for auth endpoints
 export const loginLimiter = createRateLimiter({
-  maxAttempts: 5,
+  maxAttempts: 20,
   windowMs: 15 * 60 * 1000, // 15 minutes
 });
 
