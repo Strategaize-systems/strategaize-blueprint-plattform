@@ -243,10 +243,14 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                             const due = new Date(run.due_date);
                             const now = new Date();
                             const daysLeft = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                            const color = daysLeft < 0 ? "text-red-600 font-semibold" : daysLeft <= 3 ? "text-amber-600 font-semibold" : "text-slate-500";
-                            const label = daysLeft < 0 ? t("deadline.overdue") : t("deadline.dueDate");
+                            const badgeClass = daysLeft < 0
+                              ? "bg-red-100 text-red-700 border border-red-300"
+                              : daysLeft <= 3
+                                ? "bg-amber-100 text-amber-700 border border-amber-300"
+                                : "bg-slate-100 text-slate-600 border border-slate-200";
+                            const label = daysLeft < 0 ? t("deadline.overdue") : daysLeft <= 3 ? t("deadline.dueSoon") : t("deadline.dueDate");
                             return (
-                              <span className={color}>
+                              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold ${badgeClass}`}>
                                 {label}: {due.toLocaleDateString(locale)}
                               </span>
                             );
