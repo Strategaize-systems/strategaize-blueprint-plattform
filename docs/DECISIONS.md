@@ -149,3 +149,23 @@
 - Status: accepted
 - Reason: Mirror-Teilnehmer müssen verstehen, dass ihre Antworten vertraulich behandelt werden und nicht personenbezogen an den Inhaber zurückgehen. Ohne explizite Bestätigung fehlt die rechtliche und ethische Grundlage. Implementierung: Eigene Tabelle mirror_policy_confirmations + Redirect beim Dashboard-Login wenn nicht bestätigt.
 - Consequence: Neue Tabelle mirror_policy_confirmations. Neue Seite /mirror/policy. Dashboard-Redirect für mirror_respondent wenn Policy nicht bestätigt. Policy-Version tracked für spätere Aktualisierungen.
+
+## DEC-031 — Mirror-Profil auf User-Ebene (nicht Tenant-Ebene)
+- Status: accepted
+- Reason: Im Gegensatz zum Owner-Profil (1 pro Tenant) braucht jeder Mirror-Teilnehmer ein eigenes Profil. Die Felder sind respondent_layer-abhängig: L1/L2 sehen Führungsstil+DISC, KS bekommt vereinfachte Version. Eigene Tabelle mirror_profiles statt owner_profiles erweitern.
+- Consequence: Neue Tabelle mirror_profiles mit profile_id (UNIQUE, nicht tenant_id). Eigene API-Routen. buildMirrorContext() separat von buildOwnerContext(). Redirect-Chain: Policy → Profil → Dashboard.
+
+## DEC-032 — Nominations als Hybrid-Modell (GF schlägt vor, Admin lädt ein)
+- Status: accepted
+- Reason: GF kennt sein Organigramm, soll aber nicht den technischen Invite-Prozess steuern. Klare Trennung: GF erfasst Daten, Admin führt Einladung aus. Vermeidet Komplexität einer GF-Invite-UI mit GoTrue-Integration.
+- Consequence: Neue Tabelle mirror_nominations. Separate Route /mirror/nominations für tenant_admin. Admin sieht Nominations im Mirror-Tab und kann daraus einladen. Status-Tracking nominated → invited.
+
+## DEC-033 — Separate Mirror-Invite-E-Mail mit Kontext
+- Status: accepted
+- Reason: Mirror-Teilnehmer kennen Strategaize nicht. Generische Einladungs-E-Mail reicht nicht. Eigenes Template mit: wer, warum, was erwartet, Zeitaufwand, Vertraulichkeit, KI-Hinweis.
+- Consequence: sendMirrorInviteEmail() in email.ts. MIRROR_INVITE_TEMPLATES dreisprachig. Automatische Auswahl bei Invite basierend auf Rolle.
+
+## DEC-034 — Nominations-Seite als separate Route (nicht Dashboard-Inline)
+- Status: accepted
+- Reason: Dashboard soll sauber bleiben und nur Runs zeigen. Nominations sind ein eigener Workflow. Sidebar-Navigation bekommt neuen Eintrag für tenant_admin.
+- Consequence: Neue Route /mirror/nominations. Sidebar-Erweiterung für tenant_admin.

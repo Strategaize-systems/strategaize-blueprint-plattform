@@ -115,3 +115,11 @@
 - Reason: Bestehende Policies filtern nur nach tenant_id, nicht nach survey_type. Mirror-Rohdaten müssen für Tenant-Owner unsichtbar sein.
 - Risk: Mittel — Policy-Änderungen können bestehende Queries beeinflussen. Muss gründlich getestet werden.
 - Rollback Notes: Policies auf Vor-V3-Stand zurücksetzen (ALTER POLICY oder DROP + CREATE)
+
+### MIG-018 — Mirror Usability: mirror_nominations + mirror_profiles + due_date (V3.1)
+- Date: 2026-04-07
+- Scope: Neue Tabelle mirror_nominations (tenant_id, name, email, respondent_layer, department, status, created_by). Neue Tabelle mirror_profiles (profile_id UNIQUE, tenant_id, display_name, address_formal, department, position_title, leadership_style, disc_style, introduction). Neue Spalte runs.due_date (DATE nullable). RLS-Policies für beide neuen Tabellen. GRANTs für authenticated + service_role.
+- Affected Areas: Tenant-Dashboard (Nominations), Mirror-Onboarding (Profil-Redirect), Admin Run-Erstellung (Deadline), LLM-Prompts (Mirror-Kontext), Export (due_date)
+- Reason: V3.1 Mirror Usability — GF-Nominierungsformular, Mirror-Profil für LLM-Personalisierung, Run-Deadline für Zeitrahmen
+- Risk: Gering — rein additive Änderungen, keine bestehenden Tabellen modifiziert (außer runs.due_date nullable)
+- Rollback Notes: DROP TABLE mirror_nominations; DROP TABLE mirror_profiles; ALTER TABLE runs DROP COLUMN due_date;

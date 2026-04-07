@@ -1258,3 +1258,217 @@ Neue Namespaces:
 | Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | Mirror-Hinweis wenn survey_type=mirror |
 | i18n | `src/messages/de.json`, `en.json`, `nl.json` | mirror.* + admin.mirror.* + email.mirror.* |
 | E-Mail | Nodemailer Template | Mirror-Einladungs-E-Mail (DE/EN/NL) |
+
+## V3.1: Mirror Usability Architektur
+
+### Überblick
+
+V3.1 baut auf der V3-Infrastruktur auf und macht den Mirror-Flow für den Realeinsatz nutzbar: GF schlägt Teilnehmer direkt in der Plattform vor, Mirror-Teilnehmer bekommen ein eigenes Profil und kontextreiche Onboarding-E-Mail, Runs haben optionale Deadlines.
+
+Keine neuen Docker-Services. Keine neuen externen Abhängigkeiten. Nur DB-Erweiterungen + Frontend + API.
+
+### Architektur-Bausteine
+
+```
+GF-Dashboard                    Admin Mirror-Tab              Mirror-Teilnehmer
+     |                                |                             |
+     v                                v                             v
+ Nominations                    Invite from                    Mirror-Profil
+ (Add/Edit/Delete)              Nomination                     (Pflicht nach Policy)
+     |                                |                             |
+     v                                v                             v
+ mirror_nominations             profiles + GoTrue              mirror_profiles
+ (neue Tabelle)                 (bestehend)                    (neue Tabelle)
+                                                                    |
+                                                                    v
+                                                               buildMirrorContext()
+                                                               → LLM Chat-Prompts
+```
+
+### DB-Erweiterungen (MIG-018)
+
+#### Neue Tabelle: `mirror_nominations`
+
+```sql
+CREATE TABLE mirror_nominations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  respondent_layer TEXT NOT NULL CHECK (respondent_layer IN ('leadership_1', 'leadership_2', 'key_staff')),
+  department TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'nominated' CHECK (status IN ('nominated', 'invited')),
+  created_by UUID NOT NULL REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+**RLS:**
+- tenant_admin: SELECT/INSERT/UPDATE/DELETE WHERE tenant_id = eigener Tenant
+- mirror_respondent: kein Zugriff
+- strategaize_admin: BYPASSRLS (adminClient)
+
+#### Neue Tabelle: `mirror_profiles`
+
+```sql
+CREATE TABLE mirror_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id UUID NOT NULL UNIQUE REFERENCES profiles(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  display_name TEXT,
+  address_formal BOOLEAN NOT NULL DEFAULT true,
+  department TEXT,
+  position_title TEXT,
+  leadership_style TEXT,  -- nur für L1/L2
+  disc_style TEXT,        -- angepasst für KS
+  introduction TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+**RLS:**
+- mirror_respondent: SELECT/INSERT/UPDATE WHERE profile_id = eigene ID
+- strategaize_admin: BYPASSRLS (adminClient)
+- tenant_admin/tenant_member: kein Zugriff (Vertraulichkeit)
+
+#### Erweiterung: `runs.due_date`
+
+```sql
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS due_date DATE;
+```
+
+### API-Routen
+
+#### Neue Routen
+
+| Route | Methode | Auth | Zweck |
+|-------|---------|------|-------|
+| `/api/tenant/mirror/nominations` | GET | tenant_admin | Eigene Nominations auflisten |
+| `/api/tenant/mirror/nominations` | POST | tenant_admin | Nomination erstellen |
+| `/api/tenant/mirror/nominations/[id]` | PATCH | tenant_admin | Nomination bearbeiten |
+| `/api/tenant/mirror/nominations/[id]` | DELETE | tenant_admin | Nomination löschen |
+| `/api/tenant/mirror/profile` | GET | mirror_respondent | Eigenes Mirror-Profil laden |
+| `/api/tenant/mirror/profile` | PUT | mirror_respondent | Mirror-Profil erstellen/updaten |
+
+#### Erweiterte Routen
+
+| Route | Änderung |
+|-------|----------|
+| `/api/admin/tenants/[id]/mirror-respondents` | Nominations-Liste mit aufnehmen |
+| `/api/admin/runs` POST | `due_date` Parameter |
+| `/api/admin/runs/[id]/export` | `due_date` im Manifest + run.json |
+
+### Frontend-Komponenten
+
+#### GF-Dashboard: Nominations
+
+- Neuer Bereich auf `/dashboard` (nur für tenant_admin sichtbar, nur wenn Tenant Mirror-Runs hat)
+- Oder separate Route `/mirror/nominations`
+- Einfache Tabelle: Name, Ebene, Abteilung, E-Mail + Add/Edit/Delete
+- Kein Invite-Status sichtbar
+
+**Entscheidung: Separate Route `/mirror/nominations` statt Dashboard-Integration.** Hält das Dashboard sauber und verhindert Verwirrung mit den Runs. Sidebar bekommt neuen Nav-Punkt für tenant_admin.
+
+#### Mirror-Profil: Pflicht-Formular
+
+- Neue Route `/mirror/profile`
+- Redirect-Chain: Login → Policy → **Mirror-Profil** → Dashboard
+- Felder respondent_layer-abhängig:
+  - **L1/L2:** Name, Anrede, Abteilung, Position, Führungsstil (Ranking), DISC (Auswahl), optionale Vorstellung
+  - **KS:** Name, Anrede, Abteilung, Position, vereinfachter Kommunikationsstil, optionale Vorstellung
+- Formular-Struktur analog zu `/profile` (Owner-Profil), aber schlankere Felder
+
+#### Mirror-Onboarding: E-Mail
+
+- Neues Template `MIRROR_INVITE_TEMPLATES` in `email.ts`
+- Eigene Funktion `sendMirrorInviteEmail()`
+- Automatische Auswahl: wenn `role === "mirror_respondent"` → Mirror-Template
+
+#### Policy-Seite: Erweiterung
+
+- Bestehende `/mirror/policy` Seite erweitern
+- Erklärungsblock oben (3 Absätze: Was, Warum, Wie)
+- Video-Platzhalter (HTML5 `<video>` oder Platzhalter-Bild)
+- Hinweis auf KI-Assistenten
+- Neue i18n-Keys: `mirror.policyExplanation*`, `mirror.videoPlaceholder`
+
+#### Run-Deadline: Dashboard + Admin
+
+- Admin Run-Erstellung: DatePicker für `due_date`
+- Admin Run-Detail: Deadline-Anzeige
+- Tenant/Mirror Dashboard: Deadline-Badge unter Run-Titel
+  - Grün: > 3 Tage
+  - Orange: ≤ 3 Tage
+  - Rot: überschritten
+
+### LLM-Integration: buildMirrorContext()
+
+Analog zu `buildOwnerContext()` — liest `mirror_profiles` statt `owner_profiles`:
+
+```typescript
+export function buildMirrorContext(profile: MirrorProfileData | null, locale?: string): string {
+  if (!profile) return "";
+  // Name, Anrede, Abteilung, Position, Kommunikationsstil
+  // Kein age_range, education, years_as_owner (nicht relevant für Mirror)
+}
+```
+
+**Chat-Route Anpassung:** Wenn `profile.role === "mirror_respondent"` → `buildMirrorContext()` statt `buildOwnerContext()`.
+
+### Learning Center: Rollenbasierte Inhalte
+
+- Bestehende Learning Center Shell bleibt unverändert
+- Neue i18n-Keys für Mirror-spezifische Inhalte: `learning.mirror.*`
+- Role-Check in `LearningCenterPanel`: wenn mirror_respondent → andere Tab-Inhalte
+- Mirror sieht: "Wie beantworte ich Fragen?", "KI-Assistent nutzen", "Vertraulichkeit"
+- Mirror sieht NICHT: "Mitarbeiter einladen", "Profil bearbeiten" (Owner-Profil)
+
+### Datenflüsse
+
+#### Nomination → Invite Flow
+
+```
+1. GF öffnet /mirror/nominations
+2. GF fügt Teilnehmer hinzu (Name, Ebene, Abteilung, E-Mail)
+3. POST /api/tenant/mirror/nominations → mirror_nominations INSERT
+4. Admin öffnet Tenant → Mirror-Tab → sieht Nominations
+5. Admin klickt "Aus Vorschlag einladen" → Invite-Dialog vorausgefüllt
+6. POST /api/admin/tenants/[id]/invite → GoTrue + sendMirrorInviteEmail()
+7. Nomination-Status → "invited"
+```
+
+#### Mirror-Profil-Redirect-Chain
+
+```
+1. Mirror-Teilnehmer setzt Passwort
+2. Login → Dashboard-Page
+3. Prüfung: mirror_policy_confirmations? → Nein → /mirror/policy
+4. Policy bestätigt → Prüfung: mirror_profiles? → Nein → /mirror/profile
+5. Profil ausgefüllt → /dashboard
+6. Bei jedem LLM-Call: mirror_profiles geladen → buildMirrorContext() → System-Prompt
+```
+
+### Betroffene Dateien (geschätzt)
+
+| Bereich | Dateien | Änderung |
+|---------|---------|----------|
+| DB | `sql/migrations/018_v31_mirror_usability.sql` | mirror_nominations, mirror_profiles, runs.due_date |
+| API Tenant | `src/app/api/tenant/mirror/nominations/route.ts` | NEU — CRUD |
+| API Tenant | `src/app/api/tenant/mirror/nominations/[id]/route.ts` | NEU — PATCH/DELETE |
+| API Tenant | `src/app/api/tenant/mirror/profile/route.ts` | NEU — GET/PUT |
+| API Admin | `src/app/api/admin/runs/route.ts` | due_date Parameter |
+| API Admin | `src/app/api/admin/runs/[id]/export/route.ts` | due_date im Export |
+| Frontend | `src/app/mirror/nominations/page.tsx` | NEU — GF Nominations-Seite |
+| Frontend | `src/app/mirror/profile/page.tsx` | NEU — Mirror-Profil-Formular |
+| Frontend | `src/app/mirror/policy/page.tsx` | Erweiterung: Erklärungsblock + Video |
+| Frontend | `src/app/dashboard/page.tsx` | Mirror-Profil-Redirect nach Policy |
+| Frontend | `src/app/dashboard/dashboard-client.tsx` | Sidebar Nav für tenant_admin, Deadline-Badge |
+| Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | Deadline in Header |
+| Frontend | `src/components/learning-center/learning-center-panel.tsx` | Rollenbasierte Inhalte |
+| Backend | `src/lib/llm.ts` | buildMirrorContext() + MirrorProfileData Interface |
+| Backend | `src/lib/email.ts` | sendMirrorInviteEmail() + MIRROR_INVITE_TEMPLATES |
+| Backend | `src/lib/validations.ts` | nominationSchema, mirrorProfileSchema |
+| i18n | `src/messages/de.json`, `en.json`, `nl.json` | mirror.nominations.*, mirror.profile.*, mirror.policyExplanation.*, learning.mirror.* |
+| Admin UI | `src/app/admin/tenants/tenants-client.tsx` | Nominations in Mirror-Tab anzeigen |
+| Admin UI | `src/app/admin/runs/runs-client.tsx` | DatePicker für due_date |
