@@ -13,7 +13,7 @@ export async function GET() {
     .from("runs")
     .select(
       `
-      id, title, description, status, created_at, submitted_at,
+      id, title, description, status, due_date, created_at, submitted_at,
       question_catalog_snapshots!inner(question_count)
     `
     )
@@ -46,6 +46,7 @@ export async function GET() {
         title: r.title,
         description: r.description,
         status: r.status,
+        due_date: (r as Record<string, unknown>).due_date ?? null,
         question_count: catalogData?.question_count ?? 0,
         answered_count: answeredCount ?? 0,
         evidence_count: evidenceCount ?? 0,

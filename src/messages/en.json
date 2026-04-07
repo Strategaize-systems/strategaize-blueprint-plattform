@@ -274,6 +274,11 @@
     "profileIntroductionPlaceholder": "Tell us briefly about yourself and your role in the company.",
     "profileSave": "Save profile and continue"
   },
+  "deadline": {
+    "dueDate": "Due",
+    "overdue": "Overdue",
+    "dueSoon": "Due soon"
+  },
   "learning": {
     "helpButton": "Help",
     "title": "Learning Center",

@@ -17,7 +17,7 @@ export async function GET(
   // Load run
   const { data: run, error: runError } = await adminClient!
     .from("runs")
-    .select("id, tenant_id, title, description, status, survey_type, catalog_snapshot_id, contract_version, created_at, submitted_at")
+    .select("id, tenant_id, title, description, status, survey_type, catalog_snapshot_id, contract_version, due_date, created_at, submitted_at")
     .eq("id", runId)
     .single();
 
@@ -152,6 +152,7 @@ export async function GET(
     run_id: run.id,
     run_title: run.title,
     run_status: run.status,
+    run_due_date: run.due_date ?? null,
     blueprint_version: snapshot?.blueprint_version ?? "unknown",
     catalog_snapshot_hash: snapshot?.hash ?? "unknown",
     total_questions: allQuestions.length,
@@ -173,6 +174,7 @@ export async function GET(
     catalog_snapshot_id: run.catalog_snapshot_id,
     contract_version: run.contract_version,
     blueprint_version: snapshot?.blueprint_version ?? "unknown",
+    due_date: run.due_date ?? null,
     created_at: run.created_at,
     submitted_at: run.submitted_at,
   };

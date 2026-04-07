@@ -274,6 +274,11 @@
     "profileIntroductionPlaceholder": "Erzählen Sie kurz etwas über sich und Ihre Rolle im Unternehmen.",
     "profileSave": "Profil speichern und weiter"
   },
+  "deadline": {
+    "dueDate": "Fällig",
+    "overdue": "Überfällig",
+    "dueSoon": "Bald fällig"
+  },
   "learning": {
     "helpButton": "Hilfe",
     "title": "Learning Center",

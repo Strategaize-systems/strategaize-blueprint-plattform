@@ -111,7 +111,7 @@ export async function POST(request: Request) {
   const parsed = createRunSchema.safeParse(body);
   if (!parsed.success) return validationError(parsed.error);
 
-  const { tenant_id, catalog_snapshot_id, survey_type, title, description } = parsed.data;
+  const { tenant_id, catalog_snapshot_id, survey_type, title, description, due_date } = parsed.data;
 
   // Validate tenant exists
   const { data: tenant } = await adminClient!
@@ -147,11 +147,12 @@ export async function POST(request: Request) {
       survey_type: survey_type ?? "management",
       title,
       description: description ?? null,
+      due_date: due_date ?? null,
       status: "collecting",
       contract_version: survey_type === "mirror" ? "v2.0" : "v1.0",
       created_by: user!.id,
     })
-    .select("id, tenant_id, catalog_snapshot_id, title, status, survey_type, contract_version, created_at")
+    .select("id, tenant_id, catalog_snapshot_id, title, status, survey_type, contract_version, due_date, created_at")
     .single();
 
   if (error) {

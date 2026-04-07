@@ -274,6 +274,11 @@
     "profileIntroductionPlaceholder": "Vertel kort iets over uzelf en uw rol in het bedrijf.",
     "profileSave": "Profiel opslaan en doorgaan"
   },
+  "deadline": {
+    "dueDate": "Deadline",
+    "overdue": "Verlopen",
+    "dueSoon": "Bijna verlopen"
+  },
   "learning": {
     "helpButton": "Hulp",
     "title": "Learning Center",

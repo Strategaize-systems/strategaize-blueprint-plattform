@@ -30,6 +30,7 @@ interface Run {
   title: string;
   description: string | null;
   status: string;
+  due_date: string | null;
   question_count: number;
   answered_count: number;
   evidence_count: number;
@@ -204,7 +205,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                           answered={run.answered_count}
                           total={run.question_count}
                         />
-                        <div className="flex gap-4 text-xs text-slate-500 mt-3">
+                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 mt-3">
                           <span>
                             <span className="font-semibold text-brand-primary">{run.evidence_count}</span> {t("dashboard.evidenceLabel")}
                           </span>
@@ -216,6 +217,18 @@ export function DashboardClient({ profile }: { profile: Profile }) {
                               {t("dashboard.submitted", { date: new Date(run.submitted_at).toLocaleDateString(locale) })}
                             </span>
                           )}
+                          {run.due_date && (() => {
+                            const due = new Date(run.due_date);
+                            const now = new Date();
+                            const daysLeft = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                            const color = daysLeft < 0 ? "text-red-600 font-semibold" : daysLeft <= 3 ? "text-amber-600 font-semibold" : "text-slate-500";
+                            const label = daysLeft < 0 ? t("deadline.overdue") : t("deadline.dueDate");
+                            return (
+                              <span className={color}>
+                                {label}: {due.toLocaleDateString(locale)}
+                              </span>
+                            );
+                          })()}
                         </div>
                       </CardContent>
                     </Card>

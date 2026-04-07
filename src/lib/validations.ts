@@ -45,6 +45,7 @@ export const createRunSchema = z.object({
     .min(1, "Titel darf nicht leer sein")
     .max(200, "Titel darf maximal 200 Zeichen lang sein"),
   description: z.string().max(2000).optional().nullable(),
+  due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Datum im Format YYYY-MM-DD").optional().nullable(),
 });
 
 // === Admin: Catalog Import ===
