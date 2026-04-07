@@ -147,7 +147,7 @@ aber sequentiell ist sauberer für QA und Kontext-Management.
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-046 | [V3.1 DB-Schema](SLC-046-v31-db-schema.md) | FEAT-032, 033, 034 | planned | High | 2026-04-07 |
+| SLC-046 | [V3.1 DB-Schema](SLC-046-v31-db-schema.md) | FEAT-032, 033, 034 | done | High | 2026-04-07 |
 | SLC-047 | [Nominations Backend](SLC-047-nominations-backend.md) | FEAT-032 | planned | High | 2026-04-07 |
 | SLC-048 | [Nominations Frontend](SLC-048-nominations-frontend.md) | FEAT-032 | planned | High | 2026-04-07 |
 | SLC-049 | [Mirror-Profil](SLC-049-mirror-profile.md) | FEAT-033 | planned | High | 2026-04-07 |
