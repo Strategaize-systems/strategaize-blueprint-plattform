@@ -26,7 +26,9 @@
     "subtitle": "Strategische Unternehmensanalyse",
     "analysis": "Analyse",
     "runs": "Runs",
-    "runsDescription": "Ihre Assessments"
+    "runsDescription": "Ihre Assessments",
+    "mirrorNominations": "Mirror-Teilnehmer",
+    "mirrorNominationsDescription": "Vorschläge verwalten"
   },
   "blocks": {
     "A": "Grundverständnis",
@@ -272,7 +274,36 @@
     "profileCommunicationStyle": "Kommunikationsstil",
     "profileIntroduction": "Kurze Vorstellung (optional)",
     "profileIntroductionPlaceholder": "Erzählen Sie kurz etwas über sich und Ihre Rolle im Unternehmen.",
-    "profileSave": "Profil speichern und weiter"
+    "profileSave": "Profil speichern und weiter",
+    "nominations": {
+      "title": "Mirror-Teilnehmer vorschlagen",
+      "subtitle": "Schlagen Sie Mitarbeiter für die vertrauliche Realitätserhebung vor. StrategAIze übernimmt die Einladung.",
+      "add": "Teilnehmer hinzufügen",
+      "addTitle": "Teilnehmer hinzufügen",
+      "editTitle": "Teilnehmer bearbeiten",
+      "dialogDescription": "Geben Sie die Daten des Teilnehmers ein.",
+      "fieldName": "Name",
+      "fieldNamePlaceholder": "z.B. Herr Schmidt",
+      "fieldEmail": "E-Mail-Adresse",
+      "fieldEmailPlaceholder": "name@unternehmen.de",
+      "fieldLayer": "Organisationsebene",
+      "fieldDepartment": "Abteilung",
+      "fieldDepartmentPlaceholder": "z.B. Vertrieb, Finanzen, IT",
+      "layerL1": "Geschäftsführung / C-Level",
+      "layerL2": "Bereichsleitung / 2. Ebene",
+      "layerKS": "Schlüsselmitarbeiter",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "create": "Hinzufügen",
+      "saving": "Wird gespeichert...",
+      "created": "Teilnehmer hinzugefügt",
+      "updated": "Teilnehmer aktualisiert",
+      "deleted": "Teilnehmer entfernt",
+      "error": "Fehler",
+      "networkError": "Netzwerkfehler",
+      "empty": "Noch keine Teilnehmer vorgeschlagen. Klicken Sie auf \"Teilnehmer hinzufügen\".",
+      "statusInvited": "Eingeladen"
+    }
   },
   "deadline": {
     "dueDate": "Fällig",

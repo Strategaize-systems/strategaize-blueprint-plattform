@@ -56,6 +56,16 @@ interface TenantUser {
   created_at: string;
 }
 
+interface MirrorNomination {
+  id: string;
+  name: string;
+  email: string;
+  respondent_layer: string;
+  department: string;
+  status: string;
+  created_at: string;
+}
+
 interface MirrorRespondent {
   id: string;
   email: string;
@@ -116,8 +126,9 @@ export function TenantsClient({ email }: { email: string }) {
   const [usersLoading, setUsersLoading] = useState(false);
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
-  // Mirror respondent state
+  // Mirror respondent + nominations state
   const [mirrorRespondents, setMirrorRespondents] = useState<MirrorRespondent[]>([]);
+  const [mirrorNominations, setMirrorNominations] = useState<MirrorNomination[]>([]);
   const [mirrorLoading, setMirrorLoading] = useState(false);
   const [mirrorInviteOpen, setMirrorInviteOpen] = useState(false);
   const [mirrorInviteTenantId, setMirrorInviteTenantId] = useState<string | null>(null);
@@ -181,10 +192,20 @@ export function TenantsClient({ email }: { email: string }) {
       if (res.ok) {
         const data = await res.json();
         setMirrorRespondents(data.respondents ?? []);
+        setMirrorNominations(data.nominations ?? []);
       }
     } finally {
       setMirrorLoading(false);
     }
+  }
+
+  function inviteFromNomination(nom: MirrorNomination, tenantId: string, tenantName: string) {
+    setMirrorInviteTenantId(tenantId);
+    setMirrorInviteTenantName(tenantName);
+    setMirrorEmail(nom.email);
+    setMirrorLayer(nom.respondent_layer);
+    setMirrorBlocks([]);
+    setMirrorInviteOpen(true);
   }
 
   function openMirrorInvite(tenantId: string, tenantName: string) {
@@ -649,6 +670,38 @@ export function TenantsClient({ email }: { email: string }) {
                                   </Button>
                                 </div>
                               ))}
+                            </div>
+                          )}
+
+                          {/* Nominations from GF */}
+                          {mirrorNominations.length > 0 && (
+                            <div className="mt-4 pt-3 border-t border-amber-100">
+                              <p className="text-xs font-semibold text-amber-700 mb-2">Vorschläge vom GF ({mirrorNominations.length})</p>
+                              <div className="space-y-2">
+                                {mirrorNominations.map((nom) => (
+                                  <div
+                                    key={nom.id}
+                                    className="flex items-center justify-between rounded-lg bg-amber-50/30 px-4 py-2.5 border border-amber-100"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-sm font-medium text-slate-900">{nom.name}</span>
+                                      <span className="text-xs text-slate-500">{nom.email}</span>
+                                      <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700">
+                                        {nom.respondent_layer}
+                                      </Badge>
+                                      <span className="text-[10px] text-slate-400">{nom.department}</span>
+                                      {nom.status === "invited" && (
+                                        <Badge variant="default" className="text-[10px] bg-brand-success">Eingeladen</Badge>
+                                      )}
+                                    </div>
+                                    {nom.status !== "invited" && (
+                                      <Button size="sm" variant="outline" className="text-xs" onClick={() => inviteFromNomination(nom, tenant.id, tenant.name)}>
+                                        Einladen
+                                      </Button>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </TabsContent>

@@ -26,7 +26,9 @@
     "subtitle": "Strategic Business Assessment",
     "analysis": "Analysis",
     "runs": "Runs",
-    "runsDescription": "Your Assessments"
+    "runsDescription": "Your Assessments",
+    "mirrorNominations": "Mirror Participants",
+    "mirrorNominationsDescription": "Manage suggestions"
   },
   "blocks": {
     "A": "Fundamentals",
@@ -272,7 +274,36 @@
     "profileCommunicationStyle": "Communication style",
     "profileIntroduction": "Brief introduction (optional)",
     "profileIntroductionPlaceholder": "Tell us briefly about yourself and your role in the company.",
-    "profileSave": "Save profile and continue"
+    "profileSave": "Save profile and continue",
+    "nominations": {
+      "title": "Suggest Mirror Participants",
+      "subtitle": "Suggest employees for the confidential reality assessment. StrategAIze handles the invitation.",
+      "add": "Add participant",
+      "addTitle": "Add participant",
+      "editTitle": "Edit participant",
+      "dialogDescription": "Enter the participant details.",
+      "fieldName": "Name",
+      "fieldNamePlaceholder": "e.g. Mr Smith",
+      "fieldEmail": "Email address",
+      "fieldEmailPlaceholder": "name@company.com",
+      "fieldLayer": "Organisation level",
+      "fieldDepartment": "Department",
+      "fieldDepartmentPlaceholder": "e.g. Sales, Finance, IT",
+      "layerL1": "C-Level / Executive",
+      "layerL2": "Department Head / 2nd Level",
+      "layerKS": "Key Staff",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Add",
+      "saving": "Saving...",
+      "created": "Participant added",
+      "updated": "Participant updated",
+      "deleted": "Participant removed",
+      "error": "Error",
+      "networkError": "Network error",
+      "empty": "No participants suggested yet. Click \"Add participant\".",
+      "statusInvited": "Invited"
+    }
   },
   "deadline": {
     "dueDate": "Due",

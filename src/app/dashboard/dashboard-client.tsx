@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, FileText, Play, Menu, X, User } from "lucide-react";
+import { LogOut, FileText, Play, Menu, X, User, ShieldCheck } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
@@ -84,7 +84,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
       <div className="h-3" />
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-1">
+      <div className="flex-1 overflow-y-auto px-3 py-1 space-y-1.5">
         <Link
           href="/dashboard"
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-all duration-200 bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white shadow-[0_8px_16px_-4px_rgba(68,84,184,0.35)]"
@@ -97,6 +97,20 @@ export function DashboardClient({ profile }: { profile: Profile }) {
             </div>
           </div>
         </Link>
+        {profile.role === "tenant_admin" && (
+          <Link
+            href="/mirror/nominations"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-all duration-200 text-slate-300 hover:bg-white/[0.06]"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-bold leading-snug">{t("sidebar.mirrorNominations")}</div>
+              <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 mt-0.5">
+                {t("sidebar.mirrorNominationsDescription")}
+              </div>
+            </div>
+          </Link>
+        )}
       </div>
 
       {/* User + Profil + Abmelden */}

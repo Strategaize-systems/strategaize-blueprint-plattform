@@ -26,7 +26,9 @@
     "subtitle": "Strategische Bedrijfsanalyse",
     "analysis": "Analyse",
     "runs": "Runs",
-    "runsDescription": "Uw Assessments"
+    "runsDescription": "Uw Assessments",
+    "mirrorNominations": "Mirror-deelnemers",
+    "mirrorNominationsDescription": "Voorstellen beheren"
   },
   "blocks": {
     "A": "Basiskennis",
@@ -272,7 +274,36 @@
     "profileCommunicationStyle": "Communicatiestijl",
     "profileIntroduction": "Korte introductie (optioneel)",
     "profileIntroductionPlaceholder": "Vertel kort iets over uzelf en uw rol in het bedrijf.",
-    "profileSave": "Profiel opslaan en doorgaan"
+    "profileSave": "Profiel opslaan en doorgaan",
+    "nominations": {
+      "title": "Mirror-deelnemers voorstellen",
+      "subtitle": "Stel medewerkers voor voor de vertrouwelijke realiteitsmeting. StrategAIze verzorgt de uitnodiging.",
+      "add": "Deelnemer toevoegen",
+      "addTitle": "Deelnemer toevoegen",
+      "editTitle": "Deelnemer bewerken",
+      "dialogDescription": "Vul de gegevens van de deelnemer in.",
+      "fieldName": "Naam",
+      "fieldNamePlaceholder": "bijv. Dhr. Jansen",
+      "fieldEmail": "E-mailadres",
+      "fieldEmailPlaceholder": "naam@bedrijf.nl",
+      "fieldLayer": "Organisatieniveau",
+      "fieldDepartment": "Afdeling",
+      "fieldDepartmentPlaceholder": "bijv. Verkoop, Financiën, IT",
+      "layerL1": "Directie / C-Level",
+      "layerL2": "Afdelingsmanager / 2e lijn",
+      "layerKS": "Sleutelmedewerker",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "create": "Toevoegen",
+      "saving": "Wordt opgeslagen...",
+      "created": "Deelnemer toegevoegd",
+      "updated": "Deelnemer bijgewerkt",
+      "deleted": "Deelnemer verwijderd",
+      "error": "Fout",
+      "networkError": "Netwerkfout",
+      "empty": "Nog geen deelnemers voorgesteld. Klik op \"Deelnemer toevoegen\".",
+      "statusInvited": "Uitgenodigd"
+    }
   },
   "deadline": {
     "dueDate": "Deadline",
