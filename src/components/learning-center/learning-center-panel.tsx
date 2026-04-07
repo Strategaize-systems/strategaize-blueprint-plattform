@@ -19,11 +19,12 @@ import { type Tutorial } from "@/config/tutorials";
 interface LearningCenterPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isMirror?: boolean;
 }
 
 type Tab = "videos" | "guide";
 
-export function LearningCenterPanel({ open, onOpenChange }: LearningCenterPanelProps) {
+export function LearningCenterPanel({ open, onOpenChange, isMirror = false }: LearningCenterPanelProps) {
   const t = useTranslations("learning");
   const [activeTab, setActiveTab] = useState<Tab>("videos");
   const [selectedTutorial, setSelectedTutorial] = useState<Tutorial | null>(null);
@@ -76,18 +77,38 @@ export function LearningCenterPanel({ open, onOpenChange }: LearningCenterPanelP
         {/* Tab Content */}
         <ScrollArea className="flex-1">
           <div className="p-6">
-            {activeTab === "videos" && (
-              selectedTutorial ? (
-                <VideoPlayer
-                  tutorial={selectedTutorial}
-                  onBack={() => setSelectedTutorial(null)}
-                />
-              ) : (
-                <VideoTutorials onSelect={setSelectedTutorial} />
-              )
-            )}
-            {activeTab === "guide" && (
-              <UserGuide />
+            {isMirror ? (
+              /* Mirror-specific content: simplified guide */
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-slate-900">{t("mirror.howToAnswer")}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{t("mirror.howToAnswerText")}</p>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-slate-900">{t("mirror.aiAssistant")}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{t("mirror.aiAssistantText")}</p>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-slate-900">{t("mirror.confidentiality")}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{t("mirror.confidentialityText")}</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {activeTab === "videos" && (
+                  selectedTutorial ? (
+                    <VideoPlayer
+                      tutorial={selectedTutorial}
+                      onBack={() => setSelectedTutorial(null)}
+                    />
+                  ) : (
+                    <VideoTutorials onSelect={setSelectedTutorial} />
+                  )
+                )}
+                {activeTab === "guide" && (
+                  <UserGuide />
+                )}
+              </>
             )}
           </div>
         </ScrollArea>

@@ -259,6 +259,7 @@ export function DashboardClient({ profile }: { profile: Profile }) {
       <LearningCenterPanel
         open={learningCenterOpen}
         onOpenChange={setLearningCenterOpen}
+        isMirror={isMirror}
       />
     </div>
   );

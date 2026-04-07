@@ -315,6 +315,14 @@
     "title": "Learning Center",
     "tabVideos": "Video Tutorials",
     "tabGuide": "User Guide",
+    "mirror": {
+      "howToAnswer": "How do I answer questions?",
+      "howToAnswerText": "Answer the questions freely in your own words. There are no right or wrong answers. Describe your daily work as concretely as possible — with examples, situations, and processes.",
+      "aiAssistant": "The AI Assistant",
+      "aiAssistantText": "An AI assistant guides you through the questions. It asks follow-up questions when something is unclear or when more details would help. You can also ask it directly if you don't understand a question.",
+      "confidentiality": "Confidentiality",
+      "confidentialityText": "Your answers are treated confidentially and will not be shared with management on a personal basis. The evaluation is aggregated and depersonalised."
+    },
     "close": "Close",
     "videoNotReady": "This video is being prepared.",
     "guideNotReady": "The user guide is being prepared.",

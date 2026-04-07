@@ -1351,6 +1351,7 @@ export function RunWorkspaceClient({
       <LearningCenterPanel
         open={learningCenterOpen}
         onOpenChange={setLearningCenterOpen}
+        isMirror={isMirrorRespondent}
       />
     </div>
   );

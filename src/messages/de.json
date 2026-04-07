@@ -315,6 +315,14 @@
     "title": "Learning Center",
     "tabVideos": "Video-Tutorials",
     "tabGuide": "Bedienungsanleitung",
+    "mirror": {
+      "howToAnswer": "Wie beantworte ich Fragen?",
+      "howToAnswerText": "Beantworten Sie die Fragen frei in Ihren eigenen Worten. Es gibt keine richtigen oder falschen Antworten. Beschreiben Sie Ihren Arbeitsalltag so konkret wie möglich — mit Beispielen, Situationen und Abläufen.",
+      "aiAssistant": "Der KI-Assistent",
+      "aiAssistantText": "Ein KI-Assistent begleitet Sie durch die Fragen. Er stellt Rückfragen, wenn etwas unklar ist oder wenn mehr Details helfen würden. Sie können ihn auch direkt fragen, wenn Sie eine Frage nicht verstehen.",
+      "confidentiality": "Vertraulichkeit",
+      "confidentialityText": "Ihre Antworten werden vertraulich behandelt und nicht personenbezogen an die Geschäftsführung weitergegeben. Die Auswertung erfolgt verdichtet und entpersonalisiert."
+    },
     "close": "Schließen",
     "videoNotReady": "Dieses Video wird vorbereitet.",
     "guideNotReady": "Die Anleitung wird vorbereitet.",
