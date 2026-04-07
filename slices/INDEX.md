@@ -141,6 +141,36 @@ SLC-042/043/044/045 können nach SLC-041 teilweise parallel laufen,
 aber sequentiell ist sauberer für QA und Kontext-Management.
 ```
 
+## V3.1 Slices — Mirror Usability
+
+> 7 Slices für 3 Features + 5 Backlog-Items. Abhängigkeitskette: SLC-046 → SLC-047/049/050/051 (parallel nach DB) → SLC-048 (nach 047) → SLC-052 (nach 049).
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-046 | [V3.1 DB-Schema](SLC-046-v31-db-schema.md) | FEAT-032, 033, 034 | planned | High | 2026-04-07 |
+| SLC-047 | [Nominations Backend](SLC-047-nominations-backend.md) | FEAT-032 | planned | High | 2026-04-07 |
+| SLC-048 | [Nominations Frontend](SLC-048-nominations-frontend.md) | FEAT-032 | planned | High | 2026-04-07 |
+| SLC-049 | [Mirror-Profil](SLC-049-mirror-profile.md) | FEAT-033 | planned | High | 2026-04-07 |
+| SLC-050 | [Mirror-Onboarding](SLC-050-mirror-onboarding.md) | FEAT-033 | planned | High | 2026-04-07 |
+| SLC-051 | [Run-Deadline](SLC-051-run-deadline.md) | FEAT-034 | planned | Medium | 2026-04-07 |
+| SLC-052 | [Learning Center Mirror](SLC-052-learning-center-mirror.md) | FEAT-033 | planned | Medium | 2026-04-07 |
+
+## V3.1 Execution Order
+
+```
+1. SLC-046 (DB)          → Schema: mirror_nominations, mirror_profiles, runs.due_date
+2. SLC-047 (Backend)     → Nominations API CRUD (hängt von SLC-046 ab)
+3. SLC-049 (Full-Stack)  → Mirror-Profil API + Formular + LLM-Kontext (hängt von SLC-046 ab)
+4. SLC-050 (Backend+UI)  → Mirror E-Mail + Policy-Erweiterung (hängt von SLC-046 ab)
+5. SLC-051 (Full-Stack)  → Run-Deadline Admin + Dashboard (hängt von SLC-046 ab)
+6. SLC-048 (Frontend)    → Nominations GF-Seite + Admin-Integration (hängt von SLC-047 ab)
+7. SLC-052 (Frontend)    → Learning Center Mirror-Inhalte (hängt von SLC-049 ab)
+
+SLC-047/049/050/051 können nach SLC-046 parallel laufen.
+SLC-048 braucht SLC-047. SLC-052 braucht SLC-049.
+Sequentiell ist sauberer für QA.
+```
+
 ## V4 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |
