@@ -9,17 +9,19 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: released
-- Current Focus: V3 released (REL-006). LLM auf Claude Sonnet 4.6 via Bedrock migriert. Nächster Zyklus: V3.1 Mirror Usability.
-- Current Phase: Stable (V3)
+- High-Level State: implementing
+- Current Focus: V3.1 Implementation — SLC-046+047 done (2/7 Slices). DB-Schema + Nominations API fertig. Nächster Slice: SLC-049 (Mirror-Profil).
+- Current Phase: V3.1 Implementation
 
 ## Immediate Next Steps
-1. /slice-planning V3.1 (Architecture done — 2 neue Tabellen, 6 neue API-Routen, ~20 Dateien)
-2. Implementation V3.1
-3. QA + Final-Check + Deploy V3.1
+1. SLC-049 (Mirror-Profil: API + Formular + LLM-Kontext)
+2. SLC-050 (Mirror-Onboarding: E-Mail + Policy)
+3. SLC-051 (Run-Deadline)
+4. SLC-048 (Nominations Frontend)
+5. SLC-052 (Learning Center Mirror)
 
 ## Active Scope
-V3 — Operational Reality Mirror Phase 1 (Infrastruktur). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle, vertraulicher Einladungsflow, getrennte Exportströme. Keine konkreten Fragen (Phase 2). 4 Features (FEAT-028 bis FEAT-031), 4 Backlog-Items (BL-050 bis BL-053).
+V3.1 — Mirror Usability. GF-Nominierungsformular, Mirror-Profil mit LLM-Personalisierung, verbessertes Onboarding (E-Mail + Policy), Run-Deadline, rollenbasiertes Learning Center. 3 Features (FEAT-032 bis FEAT-034), 8 Backlog-Items (BL-055 bis BL-062).
 
 ## Blockers
 - aktuell keine
@@ -28,4 +30,4 @@ V3 — Operational Reality Mirror Phase 1 (Infrastruktur). Zweite Erhebungsschic
 - V3 — 2026-04-05 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62. V2.2 stabil. V3 ist eine strukturelle Erweiterung (~15 Dateien betroffen: 5 DB-Tabellen, 9 RLS-Policies, 11+ API-Routes). FEAT-020 (Dedizierte Server) auf V4 verschoben. BL-035 (Lektorat) und BL-045 (DSGVO) offen.
+Server: Hetzner CPX62. LLM auf Claude Sonnet 4.6 via AWS Bedrock (eu-central-1). Whisper auf large-v3. Ollama entfernt. V3 released (REL-006). V3.1 in Arbeit: 7 Slices, 2 done (DB + Nominations API). FEAT-020 (Dedizierte Server) auf V4. BL-035 (Lektorat), BL-045 (DSGVO), BL-059 (Policy-Text Recht) offen.

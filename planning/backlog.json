@@ -545,7 +545,7 @@
       "title": "GF Mirror-Nominierungsformular (Teilnehmer vorschlagen)",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "in_progress",
       "version": "V3.1",
       "description": "Tenant-Admin bekommt Formular zum Vorschlagen von Mirror-Teilnehmern (Name, Ebene, Abteilung, E-Mail). Neue Tabelle mirror_nominations. Admin sieht Vorschlaege im Mirror-Tab und kann daraus einladen.",
       "createdAt": "2026-04-05"
