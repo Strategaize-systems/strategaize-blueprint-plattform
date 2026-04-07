@@ -470,6 +470,84 @@ export function buildOwnerContext(profile: OwnerProfileData | null, locale?: str
   return lines.join("\n");
 }
 
+// ─── V3.1: Mirror Profile Context ───────────────────────────────────────────
+
+export interface MirrorProfileData {
+  display_name: string | null;
+  address_formal: boolean;
+  department: string | null;
+  position_title: string | null;
+  leadership_style: string | null;
+  disc_style: string | null;
+  introduction: string | null;
+}
+
+const MIRROR_PROFILE_HEADERS: Record<LLMLocale, { title: string; address: string }> = {
+  de: { title: "PROFIL DES TEILNEHMERS:", address: "ANREDE-REGELN:" },
+  en: { title: "PARTICIPANT PROFILE:", address: "ADDRESS RULES:" },
+  nl: { title: "DEELNEMERSPROFIEL:", address: "AANSPREEKREGELS:" },
+};
+
+/**
+ * Build a formatted mirror profile context block for LLM system prompts.
+ * Returns empty string if no profile data available.
+ * Slimmer than buildOwnerContext — no age, education, years_as_owner.
+ */
+export function buildMirrorContext(profile: MirrorProfileData | null, locale?: string): string {
+  if (!profile) return "";
+
+  const loc = (locale && locale in PROMPTS_BY_LOCALE ? locale : "de") as LLMLocale;
+  const headers = MIRROR_PROFILE_HEADERS[loc];
+  const rules = ADDRESS_RULES[loc];
+
+  const lines: string[] = [];
+  lines.push(headers.title);
+
+  if (profile.display_name) {
+    const addressStyle = profile.address_formal ? rules.sie : rules.du;
+    lines.push(`- Name: ${profile.display_name}`);
+    lines.push("");
+    lines.push(headers.address);
+    lines.push(`- ${addressStyle}`);
+  }
+
+  if (profile.department) {
+    const deptLabel = loc === "en" ? "Department" : loc === "nl" ? "Afdeling" : "Abteilung";
+    lines.push(`- ${deptLabel}: ${profile.department}`);
+  }
+
+  if (profile.position_title) {
+    const posLabel = loc === "en" ? "Position" : loc === "nl" ? "Functie" : "Position";
+    lines.push(`- ${posLabel}: ${profile.position_title}`);
+  }
+
+  if (profile.leadership_style) {
+    const styleLabel = loc === "en" ? "Leadership style" : loc === "nl" ? "Leiderschapsstijl" : "Führungsstil";
+    const ranked = profile.leadership_style.split(",").filter(Boolean);
+    const rankedLabels = ranked
+      .map((s, i) => {
+        const label = LEADERSHIP_LABELS[s]?.[loc];
+        return label ? `${i + 1}. ${label}` : null;
+      })
+      .filter(Boolean);
+    if (rankedLabels.length > 0) {
+      lines.push(`- ${styleLabel}: ${rankedLabels.join("; ")}`);
+    }
+  }
+
+  if (profile.disc_style && DISC_LABELS[profile.disc_style]) {
+    const discLabel = loc === "en" ? "Communication" : loc === "nl" ? "Communicatie" : "Kommunikation";
+    lines.push(`- ${discLabel}: ${DISC_LABELS[profile.disc_style][loc]}`);
+  }
+
+  if (profile.introduction) {
+    const introLabel = loc === "en" ? "About themselves" : loc === "nl" ? "Over zichzelf" : "Über sich";
+    lines.push(`- ${introLabel}: "${profile.introduction}"`);
+  }
+
+  return lines.join("\n");
+}
+
 // ─── V2.2: Run Memory ────────────────────────────────────────────────────────
 
 const MEMORY_UPDATE_PROMPTS: Record<LLMLocale, string> = {

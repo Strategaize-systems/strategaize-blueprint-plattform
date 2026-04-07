@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     redirect("/admin");
   }
 
-  // Mirror respondents: check policy confirmation, skip owner profile check
+  // Mirror respondents: check policy → check mirror profile → dashboard
   if (profile.role === "mirror_respondent") {
     const adminClient = createAdminClient();
     const { data: policyConfirmation } = await adminClient
@@ -42,6 +42,17 @@ export default async function DashboardPage() {
 
     if (!policyConfirmation) {
       redirect("/mirror/policy");
+    }
+
+    // Check if mirror profile exists — redirect to profile form if not
+    const { data: mirrorProfile } = await adminClient
+      .from("mirror_profiles")
+      .select("id")
+      .eq("profile_id", user.id)
+      .single();
+
+    if (!mirrorProfile) {
+      redirect("/mirror/profile");
     }
 
     return <DashboardClient profile={profile} />;

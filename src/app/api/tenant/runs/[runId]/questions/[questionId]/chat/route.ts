@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireTenant, errorResponse, getTenantLocale } from "@/lib/api-utils";
-import { chatWithLLM, getSystemPrompts, buildOwnerContext, buildMemoryContext, updateRunMemory, type OwnerProfileData } from "@/lib/llm";
+import { chatWithLLM, getSystemPrompts, buildOwnerContext, buildMirrorContext, buildMemoryContext, updateRunMemory, type OwnerProfileData, type MirrorProfileData } from "@/lib/llm";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // POST /api/tenant/runs/[runId]/questions/[questionId]/chat
@@ -41,13 +41,24 @@ export async function POST(
   const locale = await getTenantLocale(supabase, profile!.tenant_id);
   const prompts = getSystemPrompts(locale);
 
-  // Load owner profile for personalized context (V2.2)
-  const { data: ownerProfileData } = await supabase
-    .from("owner_profiles")
-    .select("*")
-    .eq("tenant_id", profile!.tenant_id)
-    .single();
-  const ownerContext = buildOwnerContext(ownerProfileData as OwnerProfileData | null, locale);
+  // Load profile for personalized context (V2.2 owner / V3.1 mirror)
+  let profileContext = "";
+  if (profile!.role === "mirror_respondent") {
+    const adminClient2 = createAdminClient();
+    const { data: mirrorProfileData } = await adminClient2
+      .from("mirror_profiles")
+      .select("*")
+      .eq("profile_id", profile!.id)
+      .single();
+    profileContext = buildMirrorContext(mirrorProfileData as MirrorProfileData | null, locale);
+  } else {
+    const { data: ownerProfileData } = await supabase
+      .from("owner_profiles")
+      .select("*")
+      .eq("tenant_id", profile!.tenant_id)
+      .single();
+    profileContext = buildOwnerContext(ownerProfileData as OwnerProfileData | null, locale);
+  }
 
   // Load run memory for session continuity (V2.2)
   const adminClient = createAdminClient();
@@ -86,7 +97,7 @@ export async function POST(
 
   // Build LLM messages: Persona + Profile + Memory + Question + Evidence
   const systemParts = [prompts.rückfrage];
-  if (ownerContext) systemParts.push(ownerContext);
+  if (profileContext) systemParts.push(profileContext);
   if (memoryContext) systemParts.push(memoryContext);
 
   const questionLabel = locale === "de" ? "Die aktuelle Frage lautet" : locale === "nl" ? "De huidige vraag is" : "The current question is";
