@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, errorResponse, validationError } from "@/lib/api-utils";
 import { inviteTenantUserSchema } from "@/lib/validations";
-import { sendInviteEmail } from "@/lib/email";
+import { sendInviteEmail, sendMirrorInviteEmail } from "@/lib/email";
 
 // POST /api/admin/tenants/[tenantId]/invite — Invite a user to a tenant
 export async function POST(
@@ -117,13 +117,23 @@ export async function POST(
   const verifyUrl = `${appUrl}/auth/callback?token_hash=${hashedToken}&type=invite&locale=${tenantLocale}`;
 
   // Send invite email via our own SMTP (bypasses GoTrue's broken URL generation)
+  // Mirror respondents get a separate, context-rich email template
   try {
-    await sendInviteEmail({
-      to: email,
-      tenantName: tenant.name,
-      verifyUrl,
-      locale: tenant.language ?? "de",
-    });
+    if (role === "mirror_respondent") {
+      await sendMirrorInviteEmail({
+        to: email,
+        tenantName: tenant.name,
+        verifyUrl,
+        locale: tenant.language ?? "de",
+      });
+    } else {
+      await sendInviteEmail({
+        to: email,
+        tenantName: tenant.name,
+        verifyUrl,
+        locale: tenant.language ?? "de",
+      });
+    }
   } catch (emailError) {
     return errorResponse(
       "INTERNAL_ERROR",

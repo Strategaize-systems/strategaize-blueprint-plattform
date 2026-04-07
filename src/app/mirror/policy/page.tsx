@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Loader2 } from "lucide-react";
+import { ShieldCheck, Loader2, MessageCircle, Play } from "lucide-react";
 
 export default function MirrorPolicyPage() {
   const t = useTranslations("mirror");
@@ -26,7 +26,7 @@ export default function MirrorPolicyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
       <div className="max-w-xl w-full">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -41,8 +41,29 @@ export default function MirrorPolicyPage() {
           <p className="mt-2 text-sm text-slate-500">{t("policySubtitle")}</p>
         </div>
 
+        {/* Explanation Block */}
+        <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-5 mb-4 space-y-3">
+          <h3 className="text-sm font-bold text-brand-primary-dark">{t("policyExplainTitle")}</h3>
+          <p className="text-sm text-slate-600 leading-relaxed">{t("policyExplainWhat")}</p>
+          <p className="text-sm text-slate-600 leading-relaxed">{t("policyExplainHow")}</p>
+          <p className="text-sm text-slate-600 leading-relaxed">{t("policyExplainResult")}</p>
+          <div className="flex items-center gap-2 text-xs text-brand-primary">
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>{t("policyExplainAI")}</span>
+          </div>
+        </div>
+
+        {/* Video Placeholder */}
+        <div className="rounded-xl border border-slate-200 bg-white p-6 mb-4 flex flex-col items-center justify-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+            <Play className="h-5 w-5 text-slate-400" />
+          </div>
+          <p className="text-sm font-medium text-slate-500">{t("policyVideoPlaceholder")}</p>
+        </div>
+
         {/* Policy Content */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
+          <h3 className="text-sm font-bold text-slate-900">{t("policyConfidentialityTitle")}</h3>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>{t("policyIntro")}</p>
             <ul className="list-disc pl-5 space-y-2">

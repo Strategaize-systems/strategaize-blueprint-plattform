@@ -239,6 +239,13 @@
   "mirror": {
     "policyTitle": "Confidentiality Agreement",
     "policySubtitle": "Please read and confirm the following principles.",
+    "policyExplainTitle": "What is the Reality Assessment?",
+    "policyExplainWhat": "StrategAIze conducts a structural analysis that examines the company from different perspectives. Your view from day-to-day operations is particularly valuable.",
+    "policyExplainHow": "You answer questions about your area of work — freely, in your own words. There are no right or wrong answers. It's about your honest assessment.",
+    "policyExplainResult": "The results flow into an aggregated and depersonalised overall analysis. Your answers will not be passed on as individual opinions.",
+    "policyExplainAI": "An AI assistant guides you through the questions and helps with any clarifications.",
+    "policyVideoPlaceholder": "Explainer video is being prepared",
+    "policyConfidentialityTitle": "Confidentiality Principles",
     "policyIntro": "As part of the exit-readiness analysis, StrategAIze conducts a structural reality assessment. Your participation is confidential and serves exclusively for organisational positioning.",
     "policyPoint1": "Your answers will not be shared with management on a personal basis.",
     "policyPoint2": "The evaluation is aggregated and depersonalised — patterns and structures are analysed, not individual opinions.",

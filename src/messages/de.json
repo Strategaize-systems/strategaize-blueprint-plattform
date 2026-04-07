@@ -239,6 +239,13 @@
   "mirror": {
     "policyTitle": "Vertraulichkeitsvereinbarung",
     "policySubtitle": "Bitte lesen und bestätigen Sie die folgenden Grundsätze.",
+    "policyExplainTitle": "Was ist die Realitätserhebung?",
+    "policyExplainWhat": "StrategAIze führt eine strukturelle Analyse durch, die das Unternehmen aus verschiedenen Perspektiven beleuchtet. Ihre Sicht aus dem operativen Alltag ist dabei besonders wertvoll.",
+    "policyExplainHow": "Sie beantworten Fragen zu Ihrem Arbeitsbereich — frei, in Ihren eigenen Worten. Es gibt keine richtigen oder falschen Antworten. Es geht um Ihre ehrliche Einschätzung.",
+    "policyExplainResult": "Die Ergebnisse fließen verdichtet und entpersonalisiert in eine Gesamtanalyse ein. Ihre Antworten werden nicht als Einzelmeinung weitergegeben.",
+    "policyExplainAI": "Ein KI-Assistent begleitet Sie durch die Fragen und hilft bei Unklarheiten.",
+    "policyVideoPlaceholder": "Erklärvideo wird vorbereitet",
+    "policyConfidentialityTitle": "Vertraulichkeitsgrundsätze",
     "policyIntro": "Im Rahmen der Exit-Readiness-Analyse führt StrategAIze eine strukturelle Realitätserhebung durch. Ihre Teilnahme ist vertraulich und dient ausschließlich der organisatorischen Standortbestimmung.",
     "policyPoint1": "Ihre Antworten werden nicht personenbezogen an die Geschäftsführung zurückgegeben.",
     "policyPoint2": "Die Auswertung erfolgt verdichtet und entpersonalisiert — es werden Muster und Strukturen analysiert, keine Einzelmeinungen.",

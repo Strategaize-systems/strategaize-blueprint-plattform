@@ -239,6 +239,13 @@
   "mirror": {
     "policyTitle": "Vertrouwelijkheidsovereenkomst",
     "policySubtitle": "Lees en bevestig de volgende principes.",
+    "policyExplainTitle": "Wat is de realiteitsmeting?",
+    "policyExplainWhat": "StrategAIze voert een structurele analyse uit die het bedrijf vanuit verschillende perspectieven belicht. Uw kijk vanuit de dagelijkse operatie is bijzonder waardevol.",
+    "policyExplainHow": "U beantwoordt vragen over uw werkgebied — vrij, in uw eigen woorden. Er zijn geen goede of foute antwoorden. Het gaat om uw eerlijke inschatting.",
+    "policyExplainResult": "De resultaten vloeien geaggregeerd en gedepersonaliseerd in een totaalanalyse. Uw antwoorden worden niet als individuele mening doorgegeven.",
+    "policyExplainAI": "Een AI-assistent begeleidt u door de vragen en helpt bij onduidelijkheden.",
+    "policyVideoPlaceholder": "Uitlegvideo wordt voorbereid",
+    "policyConfidentialityTitle": "Vertrouwelijkheidsprincipes",
     "policyIntro": "In het kader van de exit-readiness analyse voert StrategAIze een structurele realiteitsmeting uit. Uw deelname is vertrouwelijk en dient uitsluitend voor organisatorische positionering.",
     "policyPoint1": "Uw antwoorden worden niet persoonlijk aan het management teruggekoppeld.",
     "policyPoint2": "De evaluatie is geaggregeerd en gedepersonaliseerd — patronen en structuren worden geanalyseerd, geen individuele meningen.",
