@@ -93,4 +93,11 @@
 | FEAT-033 | Verbessertes Mirror-Onboarding (E-Mail + Policy) | planned | [Spec](FEAT-033-mirror-onboarding-v2.md) | 2026-04-05 |
 | FEAT-034 | Mirror-Run Deadline | planned | [Spec](FEAT-034-mirror-deadline.md) | 2026-04-05 |
 
-## Next Available ID: FEAT-035
+## V3.2 Features (Mirror Smart Input)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | planned | — | 2026-04-07 |
+| FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
+
+## Next Available ID: FEAT-037
