@@ -89,9 +89,9 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-032 | GF Mirror-Nominierungsformular | done | [Spec](FEAT-032-mirror-nominations.md) | 2026-04-05 |
-| FEAT-033 | Verbessertes Mirror-Onboarding (E-Mail + Policy) | done | [Spec](FEAT-033-mirror-onboarding-v2.md) | 2026-04-05 |
-| FEAT-034 | Mirror-Run Deadline | done | [Spec](FEAT-034-mirror-deadline.md) | 2026-04-05 |
+| FEAT-032 | GF Mirror-Nominierungsformular | deployed | [Spec](FEAT-032-mirror-nominations.md) | 2026-04-05 |
+| FEAT-033 | Verbessertes Mirror-Onboarding (E-Mail + Policy) | deployed | [Spec](FEAT-033-mirror-onboarding-v2.md) | 2026-04-05 |
+| FEAT-034 | Mirror-Run Deadline | deployed | [Spec](FEAT-034-mirror-deadline.md) | 2026-04-05 |
 
 ## V3.2 Features (Mirror Smart Input)
 

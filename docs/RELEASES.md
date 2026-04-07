@@ -1,5 +1,12 @@
 # Releases
 
+### REL-007 — V3.1 Mirror Usability
+- Date: 2026-04-07
+- Scope: Mirror Usability für Realeinsatz. 3 Features (FEAT-032 bis FEAT-034), 7 Slices (SLC-046 bis SLC-052), 8 Backlog-Items. GF-Nominierungsformular (Teilnehmer in Plattform vorschlagen). Mirror-Profil (Pflicht nach Policy, Layer-abhängige Felder, LLM-Personalisierung via buildMirrorContext). Verbessertes Mirror-Onboarding (eigenes E-Mail-Template mit Kontext + erweiterte Policy-Seite mit Erklärungsblock + Video-Platzhalter). Run-Deadline (DatePicker bei Erstellung, Pill-Badge im Dashboard). Rollenbasiertes Learning Center (Mirror sieht angepasste Hilfe statt Owner-Videos). 1 DB-Migration (MIG-018: mirror_nominations, mirror_profiles, runs.due_date). 6 Bugfixes nach Live-Test.
+- Summary: V3.1 macht den Mirror-Flow für den Realeinsatz nutzbar. Der GF schlägt Teilnehmer direkt in der Plattform vor. Mirror-Teilnehmer bekommen ein eigenes Profil das ins LLM fließt. Die Einladungs-E-Mail erklärt Kontext und Vertraulichkeit. Runs haben optionale Deadlines. Das Learning Center zeigt Mirror-spezifische Hilfe. 5 neue Decisions (DEC-031 bis DEC-034), 1 Migration.
+- Risks: Keine automatisierten Tests (ISSUE-002). Rate-Limit temporär auf 20 erhöht (für Testing, vor Kundeneinsatz zurücksetzen). Policy-Text rechtliche Überarbeitung offen (BL-059).
+- Rollback Notes: Coolify Container-Rollback auf V3. DB: DROP TABLE mirror_nominations; DROP TABLE mirror_profiles; ALTER TABLE runs DROP COLUMN due_date;
+
 ### REL-006 — V3 Operational Reality Mirror + LLM-Migration
 - Date: 2026-04-05
 - Scope: Operational Reality Mirror Phase 1 (Infrastruktur) + LLM-Migration Ollama/Qwen → AWS Bedrock Claude Sonnet 4.6. 4 Features (FEAT-028 bis FEAT-031), 6 Slices (SLC-040 bis SLC-045), BL-054 (Admin Mirror-Tab). Zweite Erhebungsschicht (bottom-up) neben bestehendem Management View (top-down). survey_type auf DB-Ebene, mirror_respondent Rolle mit RLS-Isolation, vertraulicher Einladungsflow mit Policy-Bestätigung, getrennte entpersonalisierte Exportströme (Data Contract v2.0). LLM von Qwen 2.5 14B lokal auf Claude Sonnet 4.6 via AWS Bedrock (eu-central-1 Frankfurt) migriert — 10x schneller, deutlich bessere Antwortqualität. Whisper von small auf large-v3 upgraded. Ollama-Service komplett entfernt (12 → 11 Docker Services, ~12 GB RAM frei).
