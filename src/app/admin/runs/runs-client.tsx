@@ -75,6 +75,7 @@ export function RunsClient({ email }: { email: string }) {
   const [newSnapshotId, setNewSnapshotId] = useState("");
   const [newTitle, setNewTitle] = useState("");
   const [newSurveyType, setNewSurveyType] = useState<"management" | "mirror">("management");
+  const [newDueDate, setNewDueDate] = useState("");
   const [creating, setCreating] = useState(false);
 
   const loadRuns = useCallback(async () => {
@@ -124,6 +125,7 @@ export function RunsClient({ email }: { email: string }) {
           catalog_snapshot_id: newSnapshotId,
           survey_type: newSurveyType,
           title: newTitle.trim(),
+          ...(newDueDate ? { due_date: newDueDate } : {}),
         }),
       });
 
@@ -133,6 +135,7 @@ export function RunsClient({ email }: { email: string }) {
         setNewSnapshotId("");
         setNewTitle("");
         setNewSurveyType("management");
+        setNewDueDate("");
         setCreateOpen(false);
         await loadRuns();
       } else {
@@ -248,6 +251,15 @@ export function RunsClient({ email }: { email: string }) {
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder="z.B. Assessment Q1 2026"
                     onKeyDown={(e) => e.key === "Enter" && handleCreateRun()}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="run-due-date">Fällig bis (optional)</Label>
+                  <Input
+                    id="run-due-date"
+                    type="date"
+                    value={newDueDate}
+                    onChange={(e) => setNewDueDate(e.target.value)}
                   />
                 </div>
               </div>

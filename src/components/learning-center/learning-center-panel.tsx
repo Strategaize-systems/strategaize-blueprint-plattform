@@ -45,34 +45,36 @@ export function LearningCenterPanel({ open, onOpenChange, isMirror = false }: Le
           </SheetDescription>
         </SheetHeader>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200/60 flex-shrink-0">
-          <button
-            onClick={() => {
-              setActiveTab("videos");
-              setSelectedTutorial(null);
-            }}
-            className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-              activeTab === "videos"
-                ? "text-brand-primary border-b-2 border-brand-primary bg-brand-primary/5"
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            <Video className="h-4 w-4" />
-            {t("tabVideos")}
-          </button>
-          <button
-            onClick={() => setActiveTab("guide")}
-            className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-              activeTab === "guide"
-                ? "text-brand-primary border-b-2 border-brand-primary bg-brand-primary/5"
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            <BookOpen className="h-4 w-4" />
-            {t("tabGuide")}
-          </button>
-        </div>
+        {/* Tab Navigation — hidden for mirror respondents */}
+        {!isMirror && (
+          <div className="flex border-b border-slate-200/60 flex-shrink-0">
+            <button
+              onClick={() => {
+                setActiveTab("videos");
+                setSelectedTutorial(null);
+              }}
+              className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                activeTab === "videos"
+                  ? "text-brand-primary border-b-2 border-brand-primary bg-brand-primary/5"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <Video className="h-4 w-4" />
+              {t("tabVideos")}
+            </button>
+            <button
+              onClick={() => setActiveTab("guide")}
+              className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                activeTab === "guide"
+                  ? "text-brand-primary border-b-2 border-brand-primary bg-brand-primary/5"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <BookOpen className="h-4 w-4" />
+              {t("tabGuide")}
+            </button>
+          </div>
+        )}
 
         {/* Tab Content */}
         <ScrollArea className="flex-1">

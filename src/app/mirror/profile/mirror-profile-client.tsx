@@ -35,18 +35,18 @@ interface MirrorProfile {
 }
 
 const DISC_OPTIONS = [
-  { value: "dominant", labelKey: "dominant" },
-  { value: "influential", labelKey: "influential" },
-  { value: "steady", labelKey: "steady" },
-  { value: "conscientious", labelKey: "conscientious" },
+  { value: "dominant", i18nKey: "discDominant", descKey: "discDominantDesc" },
+  { value: "influential", i18nKey: "discInfluential", descKey: "discInfluentialDesc" },
+  { value: "steady", i18nKey: "discSteady", descKey: "discSteadyDesc" },
+  { value: "conscientious", i18nKey: "discConscientious", descKey: "discConscientiousDesc" },
 ];
 
 const LEADERSHIP_OPTIONS = [
-  { value: "patriarchal", labelKey: "patriarchal" },
-  { value: "cooperative", labelKey: "cooperative" },
-  { value: "delegative", labelKey: "delegative" },
-  { value: "coaching", labelKey: "coaching" },
-  { value: "visionary", labelKey: "visionary" },
+  { value: "patriarchal", i18nKey: "leadershipPatriarchal" },
+  { value: "cooperative", i18nKey: "leadershipCooperative" },
+  { value: "delegative", i18nKey: "leadershipDelegative" },
+  { value: "coaching", i18nKey: "leadershipCoaching" },
+  { value: "visionary", i18nKey: "leadershipVisionary" },
 ];
 
 export function MirrorProfileClient({
@@ -188,7 +188,7 @@ export function MirrorProfileClient({
                 <SelectContent>
                   {LEADERSHIP_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
-                      {t(`profile.leadershipOptions.${opt.labelKey}`)}
+                      {t(`profile.${opt.i18nKey}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -211,7 +211,8 @@ export function MirrorProfileClient({
                       : "border-slate-200 text-slate-500 hover:border-slate-300"
                   }`}
                 >
-                  {t(`profile.discOptions.${opt.labelKey}`)}
+                  <div>{t(`profile.${opt.i18nKey}`)}</div>
+                  <div className="text-[10px] font-normal text-slate-400 mt-0.5">{t(`profile.${opt.descKey}`)}</div>
                 </button>
               ))}
             </div>
