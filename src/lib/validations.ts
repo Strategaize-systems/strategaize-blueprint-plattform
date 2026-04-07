@@ -18,6 +18,22 @@ export const inviteTenantUserSchema = z.object({
   surveyType: z.enum(["management", "mirror"]).optional().default("management"),
 });
 
+// === Tenant: Mirror Nominations ===
+
+export const createNominationSchema = z.object({
+  name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100),
+  email: z.string().email("Ungültige E-Mail-Adresse"),
+  respondent_layer: z.enum(["leadership_1", "leadership_2", "key_staff"]),
+  department: z.string().min(1, "Abteilung darf nicht leer sein").max(100),
+});
+
+export const updateNominationSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  email: z.string().email().optional(),
+  respondent_layer: z.enum(["leadership_1", "leadership_2", "key_staff"]).optional(),
+  department: z.string().min(1).max(100).optional(),
+});
+
 // === Admin: Runs ===
 
 export const createRunSchema = z.object({

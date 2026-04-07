@@ -46,5 +46,12 @@ export async function GET(
     })
   );
 
-  return NextResponse.json({ respondents: enriched });
+  // Load nominations for this tenant
+  const { data: nominations } = await adminClient!
+    .from("mirror_nominations")
+    .select("id, name, email, respondent_layer, department, status, created_at")
+    .eq("tenant_id", tenantId)
+    .order("created_at", { ascending: false });
+
+  return NextResponse.json({ respondents: enriched, nominations: nominations ?? [] });
 }
