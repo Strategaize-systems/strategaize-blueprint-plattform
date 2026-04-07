@@ -545,7 +545,7 @@
       "title": "GF Mirror-Nominierungsformular (Teilnehmer vorschlagen)",
       "type": "feature",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "version": "V3.1",
       "description": "Tenant-Admin bekommt Formular zum Vorschlagen von Mirror-Teilnehmern (Name, Ebene, Abteilung, E-Mail). Neue Tabelle mirror_nominations. Admin sieht Vorschlaege im Mirror-Tab und kann daraus einladen.",
       "createdAt": "2026-04-05"
@@ -555,7 +555,7 @@
       "title": "Mirror-Einladungs-E-Mail: separates Template mit Kontext",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "Eigenes E-Mail-Template fuer Mirror-Invites: Wer ist Strategaize, warum kontaktiert, was erwartet, Zeitaufwand, Vertraulichkeit, KI-Hinweis, Deadline wenn gesetzt. sendMirrorInviteEmail() getrennt von sendInviteEmail(). Dreisprachig DE/EN/NL.",
       "createdAt": "2026-04-05"
@@ -565,7 +565,7 @@
       "title": "Policy-Seite erweitern: Erklaerungsblock + Video-Platzhalter",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "Policy-Seite bekommt Erklaerungsblock (Was ist die Realitaetserhebung, wie funktioniert es) und Video-Platzhalter. Hinweis auf KI-Assistenten. Dreisprachig DE/EN/NL.",
       "createdAt": "2026-04-05"
@@ -575,7 +575,7 @@
       "title": "Mirror-Run Deadline: due_date auf Runs + Dashboard-Anzeige",
       "type": "feature",
       "priority": "medium",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "runs.due_date DATE nullable. Admin setzt bei Run-Erstellung. Teilnehmer sieht Deadline im Dashboard. Visueller Hinweis bei < 3 Tage oder ueberschritten. due_date im Export.",
       "createdAt": "2026-04-05"
@@ -595,7 +595,7 @@
       "title": "Mirror-Profil: Tabelle + Formular + Redirect nach Policy",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "Neue Tabelle mirror_profiles (pro User, nicht pro Tenant). Schlankes Profil: Name, Anrede (Du/Sie), Funktion, Abteilung, Fuehrungsstil (nur L1/L2), Kommunikationsstil (angepasst fuer KS), optionale Vorstellung. Redirect nach Policy-Bestaetigung zum Profil-Formular. Felder respondent_layer-abhaengig: L1/L2 sehen Fuehrungsstil+DISC wie GF, KS sieht vereinfachte Version. Dreisprachig DE/EN/NL.",
       "createdAt": "2026-04-05"
@@ -605,7 +605,7 @@
       "title": "Mirror LLM-Kontext: buildMirrorContext() mit Profil-Daten",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "Neuer buildMirrorContext() in llm.ts analog zu buildOwnerContext(). Liest mirror_profiles statt owner_profiles. Chat-Route erkennt mirror_respondent und nutzt Mirror-Kontext. Anrede, Name, Funktion, Kommunikationsstil fliessen in LLM-Prompts ein. Dreisprachig.",
       "createdAt": "2026-04-05"
@@ -615,7 +615,7 @@
       "title": "Learning Center: rollenbasierte Inhalte fuer Mirror-Teilnehmer",
       "type": "feature",
       "priority": "medium",
-      "status": "open",
+      "status": "done",
       "version": "V3.1",
       "description": "Learning Center zeigt unterschiedliche Inhalte je nach Rolle. Mirror-Teilnehmer sehen angepasste Anleitung (Wie beantworte ich Fragen, Was passiert mit meinen Antworten, KI-Assistent nutzen). Keine Videos ueber Mitarbeiter einladen oder Owner-Profil. Technisch: role-Check, separate i18n-Keys oder Markdown. Dreisprachig DE/EN/NL.",
       "createdAt": "2026-04-05"
