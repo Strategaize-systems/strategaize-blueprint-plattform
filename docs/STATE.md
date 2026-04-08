@@ -10,15 +10,15 @@ Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung
 
 ## Current State
 - High-Level State: implementing
-- Current Focus: V3.2 Slice-Planning abgeschlossen. 5 Slices (SLC-053 bis SLC-057) bereit für Implementation.
+- Current Focus: SLC-054 (3 API-Routen: chat, map, accept) done. QA SLC-054 als nächstes, dann SLC-055 (Frontend).
 - Current Phase: V3.2 Implementation
 
 ## Immediate Next Steps
-1. /backend SLC-053 (DB-Schema + LLM-Prompts + Utility)
-2. /backend SLC-054 (3 API-Routen)
-3. /frontend SLC-055 (Modus-Auswahl + Übersicht)
-4. /frontend SLC-056 (Chat UI + Soft-Limit)
-5. /frontend SLC-057 (Mapping-Review + Accept)
+1. /qa SLC-054
+2. /frontend SLC-055 (Modus-Auswahl + Übersicht)
+3. /frontend SLC-056 (Chat UI + Soft-Limit)
+4. /frontend SLC-057 (Mapping-Review + Accept)
+5. Gesamt-QA V3.2
 
 ## Active Scope
 V3.2 — Mirror Smart Input. Free-Form Chat mit LLM-Mapping auf strukturierte Fragen (FEAT-035). 5 Slices (SLC-053 bis SLC-057), 1 Backlog-Item (BL-063).
