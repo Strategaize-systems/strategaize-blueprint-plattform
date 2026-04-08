@@ -195,3 +195,26 @@ export const setPasswordSchema = z.object({
     .min(8, "Passwort muss mindestens 8 Zeichen lang sein")
     .max(128),
 });
+
+// === Free-Form Chat (V3.2) ===
+
+export const freeformChatSchema = z.object({
+  message: z.string().min(1, "Nachricht darf nicht leer sein").max(10000),
+  conversationId: z.string().uuid().optional(),
+});
+
+export const freeformMappingSchema = z.object({
+  conversationId: z.string().uuid("conversationId muss eine gültige UUID sein"),
+});
+
+export const freeformAcceptDraftsSchema = z.object({
+  conversationId: z.string().uuid("conversationId muss eine gültige UUID sein"),
+  acceptedDrafts: z
+    .array(
+      z.object({
+        questionId: z.string().min(1, "questionId darf nicht leer sein"),
+        text: z.string().min(1, "Antworttext darf nicht leer sein").max(50000),
+      })
+    )
+    .min(1, "Mindestens ein Draft muss ausgewählt sein"),
+});

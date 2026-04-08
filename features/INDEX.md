@@ -97,7 +97,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | planned | — | 2026-04-07 |
+| FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | in_progress | [Spec](FEAT-035-free-form-chat.md) | 2026-04-07 |
 | FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
 
 ## Next Available ID: FEAT-037

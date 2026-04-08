@@ -123,3 +123,11 @@
 - Reason: V3.1 Mirror Usability — GF-Nominierungsformular, Mirror-Profil für LLM-Personalisierung, Run-Deadline für Zeitrahmen
 - Risk: Gering — rein additive Änderungen, keine bestehenden Tabellen modifiziert (außer runs.due_date nullable)
 - Rollback Notes: DROP TABLE mirror_nominations; DROP TABLE mirror_profiles; ALTER TABLE runs DROP COLUMN due_date;
+
+### MIG-019 — Free-Form Conversations Tabelle (V3.2)
+- Date: 2026-04-08
+- Scope: Neue Tabelle freeform_conversations (run_id, tenant_id, created_by, conversation_number, messages JSONB, status, message_count, mapping_result JSONB). UNIQUE Constraint auf (run_id, created_by, conversation_number). RLS-Policies: SELECT/INSERT für eigene Conversations. GRANTs für authenticated + service_role.
+- Affected Areas: Workspace (Free-Form Modus), LLM-Integration (Gesprächsführung + Mapping), API-Routen (freeform/chat, freeform/map, freeform/accept)
+- Reason: V3.2 Free-Form Chat — offenes Gespräch mit LLM-Mapping auf strukturierte Fragen. Eigene Tabelle statt Erweiterung von question_events, weil Conversations eine andere Datenstruktur haben (JSONB Messages Array, Lifecycle-Status, Mapping-Result).
+- Risk: Gering — rein additive Änderung, keine bestehenden Tabellen modifiziert
+- Rollback Notes: DROP TABLE freeform_conversations;

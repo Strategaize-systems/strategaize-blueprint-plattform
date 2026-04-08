@@ -9,17 +9,19 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: released
-- Current Focus: V3.1 released (REL-007). Nächster Zyklus: V3.2 (Free-Form Chat + Feedback-Loop).
-- Current Phase: Stable (V3.1)
+- High-Level State: implementing
+- Current Focus: V3.2 Slice-Planning abgeschlossen. 5 Slices (SLC-053 bis SLC-057) bereit für Implementation.
+- Current Phase: V3.2 Implementation
 
 ## Immediate Next Steps
-1. /discovery V3.2 FEAT-035 (Free-Form Chat mit LLM-Mapping)
-2. /requirements V3.2 FEAT-036 (Feedback-Loop)
-3. Implementation V3.2
+1. /backend SLC-053 (DB-Schema + LLM-Prompts + Utility)
+2. /backend SLC-054 (3 API-Routen)
+3. /frontend SLC-055 (Modus-Auswahl + Übersicht)
+4. /frontend SLC-056 (Chat UI + Soft-Limit)
+5. /frontend SLC-057 (Mapping-Review + Accept)
 
 ## Active Scope
-V3.1 — Mirror Usability. GF-Nominierungsformular, Mirror-Profil mit LLM-Personalisierung, verbessertes Onboarding (E-Mail + Policy), Run-Deadline, rollenbasiertes Learning Center. 3 Features (FEAT-032 bis FEAT-034), 8 Backlog-Items (BL-055 bis BL-062).
+V3.2 — Mirror Smart Input. Free-Form Chat mit LLM-Mapping auf strukturierte Fragen (FEAT-035). 5 Slices (SLC-053 bis SLC-057), 1 Backlog-Item (BL-063).
 
 ## Blockers
 - aktuell keine

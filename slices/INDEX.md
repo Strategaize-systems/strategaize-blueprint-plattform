@@ -171,6 +171,31 @@ SLC-048 braucht SLC-047. SLC-052 braucht SLC-049.
 Sequentiell ist sauberer für QA.
 ```
 
+## V3.2 Slices — Free-Form Chat
+
+> 5 Slices für 1 Feature (FEAT-035). Abhängigkeitskette: SLC-053 → SLC-054 → SLC-055/056 → SLC-057.
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-053 | [Free-Form DB-Schema + LLM-Prompts](SLC-053-freeform-db-schema.md) | FEAT-035 | done | High | 2026-04-08 |
+| SLC-054 | [Free-Form API-Routen](SLC-054-freeform-api-routes.md) | FEAT-035 | planned | High | 2026-04-08 |
+| SLC-055 | [Modus-Auswahl + Fragen-Übersicht](SLC-055-freeform-mode-overview.md) | FEAT-035 | planned | High | 2026-04-08 |
+| SLC-056 | [Free-Form Chat UI + Soft-Limit](SLC-056-freeform-chat-ui.md) | FEAT-035 | planned | High | 2026-04-08 |
+| SLC-057 | [Mapping-Review + Antwort-Übernahme](SLC-057-freeform-mapping-review.md) | FEAT-035 | planned | High | 2026-04-08 |
+
+## V3.2 Execution Order
+
+```
+1. SLC-053 (DB+Backend)    → Schema + RLS + LLM-Prompts + Utility + Validierung
+2. SLC-054 (Backend)       → 3 API-Routen: chat, map, accept (hängt von SLC-053 ab)
+3. SLC-055 (Frontend)      → Modus-Switch + Fragen-Übersicht (hängt von SLC-054 ab)
+4. SLC-056 (Frontend)      → Chat-Panel + Voice + Soft-Limit (hängt von SLC-054, SLC-055 ab)
+5. SLC-057 (Frontend)      → Mapping-Review + Accept-Flow (hängt von SLC-054, SLC-056 ab)
+
+Strikt sequentiell: jeder Slice baut auf dem vorherigen auf.
+QA nach jedem Slice.
+```
+
 ## V4 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |

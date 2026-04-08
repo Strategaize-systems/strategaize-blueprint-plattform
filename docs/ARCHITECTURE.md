@@ -1472,3 +1472,520 @@ export function buildMirrorContext(profile: MirrorProfileData | null, locale?: s
 | i18n | `src/messages/de.json`, `en.json`, `nl.json` | mirror.nominations.*, mirror.profile.*, mirror.policyExplanation.*, learning.mirror.* |
 | Admin UI | `src/app/admin/tenants/tenants-client.tsx` | Nominations in Mirror-Tab anzeigen |
 | Admin UI | `src/app/admin/runs/runs-client.tsx` | DatePicker für due_date |
+
+## V3.2: Free-Form Chat mit LLM-Mapping Architektur
+
+### Architektur-Überblick
+
+V3.2 fügt dem Workspace einen zweiten Eingabemodus hinzu: **Free-Form Chat**. Statt Frage für Frage zu beantworten, führt das LLM ein offenes Gespräch und mappt die Erkenntnisse am Ende als Batch auf die strukturierten Fragen. Primär für Mirror-Teilnehmer, sekundär für Geschäftsführer.
+
+Keine neuen Docker-Services. Keine neuen externen Abhängigkeiten. Erweiterung von: DB (1 neue Tabelle), LLM-Prompts (2 neue Typen), API (3 neue Routen), Frontend (Modus-Switch, Review-Page).
+
+### Architektur-Diagramm
+
+```
+Workspace
+  |
+  +--- Modus-Auswahl ──────────────────────────────┐
+  |     |                                            |
+  |     v                                            v
+  | Fragebogen-Modus (bestehend)         Free-Form Modus (NEU)
+  | selectQuestion() → Chat              |
+  | → answer_submitted                   v
+  |                                  Fragen-Übersicht
+  |                                  (zugewiesene Blöcke/Fragen)
+  |                                      |
+  |                                      v
+  |                                  Free-Form Chat
+  |                                  POST /api/tenant/runs/[runId]/freeform/chat
+  |                                  (LLM: freiform-Prompt, Profil, Memory)
+  |                                      |
+  |                                      | ~30 Nachrichten → Soft-Limit
+  |                                      v
+  |                                  "Gespräch beenden"
+  |                                      |
+  |                                      v
+  |                                  Mapping-Step
+  |                                  POST /api/tenant/runs/[runId]/freeform/map
+  |                                  (LLM: mapping-Prompt, Neutralisierung)
+  |                                      |
+  |                                      v
+  |                                  Mapping-Review UI
+  |                                  (Draft pro Frage: Übernehmen/Bearbeiten/Verwerfen)
+  |                                      |
+  |                                      v
+  |                                  POST /api/tenant/runs/[runId]/freeform/accept
+  |                                  → question_events (answer_submitted, source: freeform)
+  |                                      |
+  |                                      v
+  |                                  Zurück zum Workspace
+```
+
+### DB-Erweiterung (MIG-019)
+
+#### Neue Tabelle: `freeform_conversations`
+
+```sql
+CREATE TABLE freeform_conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_id UUID NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  created_by UUID NOT NULL REFERENCES auth.users(id),
+  conversation_number INT NOT NULL DEFAULT 1,
+  messages JSONB NOT NULL DEFAULT '[]',
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'mapping_pending', 'mapped', 'closed')),
+  message_count INT NOT NULL DEFAULT 0,
+  mapping_result JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (run_id, created_by, conversation_number)
+);
+```
+
+**Spalten-Erklärung:**
+
+| Spalte | Zweck |
+|--------|-------|
+| `messages` | JSONB Array: `[{ role: "user"|"assistant", text: string, timestamp: string }]` |
+| `status` | Lifecycle: `active` → `mapping_pending` → `mapped` → `closed` |
+| `message_count` | Denormalisiert für Soft-Limit-Prüfung ohne JSON-Parse |
+| `mapping_result` | JSONB nach Mapping: `[{ question_id, draft_text, confidence, segments }]` |
+| `conversation_number` | Erlaubt mehrere Gespräche pro Teilnehmer/Run (1, 2, 3...) |
+
+**RLS-Policies:**
+
+```sql
+-- Tenant: eigene Conversations lesen
+CREATE POLICY "freeform_select_own" ON freeform_conversations
+  FOR SELECT USING (
+    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
+    AND created_by = auth.uid()
+  );
+
+-- Tenant: neue Conversation erstellen (nur wenn Run nicht locked)
+CREATE POLICY "freeform_insert_own" ON freeform_conversations
+  FOR INSERT WITH CHECK (
+    tenant_id = (SELECT tenant_id FROM profiles WHERE id = auth.uid())
+    AND created_by = auth.uid()
+    AND EXISTS (SELECT 1 FROM runs WHERE id = run_id AND status != 'locked')
+  );
+
+-- Kein UPDATE/DELETE für Tenants (Messages werden server-seitig via adminClient geschrieben)
+```
+
+**Warum JSONB statt separate Messages-Tabelle:**
+- Gespräche sind kurzlebig (max ~30 Nachrichten)
+- Werden immer als Ganzes geladen (LLM braucht den vollen Verlauf)
+- Kein Bedarf für Query auf einzelne Nachrichten
+- Einfacheres Schema, weniger Joins
+- Mapping-Result ebenfalls als JSONB (wird als Ganzes gelesen/geschrieben)
+
+### API-Routen (NEU)
+
+#### Route 1: `POST /api/tenant/runs/[runId]/freeform/chat`
+
+**Zweck:** Einzelne Nachricht im Free-Form Gespräch senden und LLM-Antwort erhalten.
+
+**Auth:** `requireTenant()` — tenant_admin, tenant_member, mirror_respondent
+
+**Request Body:**
+```typescript
+{
+  message: string;
+  conversationId?: string;  // null beim ersten Call → erstellt neue Conversation
+}
+```
+
+**Ablauf:**
+
+1. `requireTenant()` → Auth validieren
+2. Run laden, prüfen ob nicht locked
+3. Conversation laden oder erstellen:
+   - Wenn `conversationId` → bestehende Conversation laden, Status muss `active` sein
+   - Wenn null → neue Conversation erstellen (`conversation_number` = MAX+1)
+4. Fragenkatalog laden:
+   - Mirror: `questions` JOIN `member_block_access` → nur zugewiesene Blöcke
+   - Owner/Admin: alle `questions` für den Run-Katalog
+5. Profil-Kontext laden (`buildOwnerContext` oder `buildMirrorContext`)
+6. Memory laden (`run_memory.memory_text`)
+7. System-Prompt bauen:
+   ```
+   FREIFORM_PROMPTS[locale]
+   + profileContext
+   + memoryContext
+   + questionCatalogContext (kompakt: Block/Unterbereich/Fragetext pro Frage)
+   ```
+8. Messages-Array bauen:
+   ```
+   [system, ...conversation.messages, { role: "user", content: message }]
+   ```
+9. `chatWithLLM(messages, { temperature: 0.7, maxTokens: 512 })`
+10. Conversation updaten (via adminClient):
+    - Append user message + assistant response zu `messages`
+    - `message_count` incrementieren (+2)
+11. Memory async updaten (fire-and-forget)
+12. Response:
+    ```typescript
+    {
+      response: string;
+      conversationId: string;
+      messageCount: number;
+      softLimitReached: boolean;  // messageCount >= 28 (14 Paare)
+    }
+    ```
+
+**Soft-Limit-Logik:**
+- `softLimitReached: true` wenn `messageCount >= 28` (≈14 Frage-Antwort-Paare)
+- Das LLM bekommt ab Nachricht 28 einen Zusatz im Prompt, der es anweist die klare Cut-Empfehlung auszusprechen
+- Kein hartes Abbrechen — API akzeptiert weiter Nachrichten
+
+#### Route 2: `POST /api/tenant/runs/[runId]/freeform/map`
+
+**Zweck:** Gesamtes Gespräch auf strukturierte Fragen mappen und neutralisierte Draft-Antworten generieren.
+
+**Auth:** `requireTenant()` — gleiche Rollen
+
+**Request Body:**
+```typescript
+{
+  conversationId: string;
+}
+```
+
+**Ablauf:**
+
+1. `requireTenant()` → Auth validieren
+2. Conversation laden, prüfen:
+   - Status muss `active` oder `mapping_pending` sein
+   - `created_by` muss aktueller User sein
+3. Conversation Status → `mapping_pending` setzen
+4. Fragenkatalog laden (gleicher Block-Filter wie Chat-Route)
+5. Bestehende Antworten laden (`v_current_answers` für relevante Fragen)
+6. System-Prompt bauen:
+   ```
+   MAPPING_PROMPTS[locale]
+   + Fragenkatalog als strukturierte Liste:
+     [F-BP-001] Block A / A1 Grundverständnis: "Beschreiben Sie Ihr Geschäftsmodell..."
+     [F-BP-002] Block A / A1 Grundverständnis: "Wie ist Ihr Markt strukturiert..."
+     ...
+   + Liste bereits beantworteter Fragen (damit LLM weiß: "Ergänzung, nicht Erstantwort")
+   ```
+7. Messages-Array:
+   ```
+   [system, ...conversation.messages als user/assistant, { role: "user", content: "Bitte analysiere..." }]
+   ```
+8. `chatWithLLM(messages, { temperature: 0.3, maxTokens: 4096 })`
+   - Niedrige Temperatur für konsistentes, sachliches Mapping
+   - Hohe maxTokens weil Output für viele Fragen generiert wird
+9. LLM-Output parsen (structured JSON expected):
+   ```json
+   [
+     {
+       "question_id": "F-BP-001",
+       "draft_text": "Das Unternehmen operiert im Bereich...",
+       "confidence": "high",
+       "source_summary": "Gesprächssegment Min. 3-5: Teilnehmer beschrieb..."
+     }
+   ]
+   ```
+10. Mapping-Result in Conversation speichern (via adminClient):
+    - `mapping_result` = geparster JSON-Array
+    - `status` → `mapped`
+11. Response:
+    ```typescript
+    {
+      mappings: Array<{
+        questionId: string;
+        questionText: string;
+        block: string;
+        draftText: string;
+        confidence: "high" | "medium" | "low";
+        hasExistingAnswer: boolean;
+      }>;
+      unmappedQuestions: Array<{ questionId: string; questionText: string; block: string }>;
+    }
+    ```
+
+#### Route 3: `POST /api/tenant/runs/[runId]/freeform/accept`
+
+**Zweck:** Ausgewählte Draft-Antworten als answer_submitted Events speichern.
+
+**Auth:** `requireTenant()` — gleiche Rollen
+
+**Request Body:**
+```typescript
+{
+  conversationId: string;
+  acceptedDrafts: Array<{
+    questionId: string;
+    text: string;          // Draft-Text (ggf. vom User bearbeitet)
+  }>;
+}
+```
+
+**Ablauf:**
+
+1. `requireTenant()` → Auth validieren
+2. Conversation laden, Status muss `mapped` sein
+3. Für jeden Draft:
+   - `question_id` validieren (existiert, gehört zum Run-Katalog)
+   - `question_events` INSERT:
+     ```sql
+     INSERT INTO question_events (
+       client_event_id, question_id, run_id, tenant_id,
+       event_type, payload, created_by
+     ) VALUES (
+       gen_random_uuid(), $questionId, $runId, $tenantId,
+       'answer_submitted',
+       '{"text": $draftText, "source": "freeform", "conversation_id": $conversationId}',
+       auth.uid()
+     )
+     ```
+4. Conversation Status → `closed`
+5. Response:
+   ```typescript
+   {
+     acceptedCount: number;
+     conversationStatus: "closed";
+   }
+   ```
+
+### LLM-Prompt-Architektur (NEU)
+
+#### Prompt-Typ 1: `freiform` (Gesprächsführung)
+
+**Zweck:** Offenes Berater-Gespräch führen, thematisch durch Blöcke steuern.
+
+**Schlüssel-Eigenschaften:**
+- Rolle: Erfahrener M&A-Berater im Erstgespräch
+- Offene Fragen stellen, nicht abfragen
+- Thematisch durch die zugewiesenen Blöcke steuern (ohne Fragen-IDs zu nennen)
+- Bei oberflächlichen Aussagen nachhaken (wie bestehender rückfrage-Prompt)
+- Profil-Kontext nutzen (Anrede, Kommunikationsstil)
+- NICHT mappen oder zuordnen während des Gesprächs
+- Dreisprachig: DE/EN/NL
+
+**Token-Budget:**
+```
+Freiform-Prompt:        ~800 Tokens
+Profil-Kontext:         ~300-500 Tokens
+Memory-Kontext:         ~200-400 Tokens
+Fragenkatalog (kompakt): ~3.000 Tokens (Mirror 14 Fragen) bis ~5.800 Tokens (Owner 73 Fragen)
+─────────────────────────────────────
+Basis-Kontext:          ~4.300-7.500 Tokens
++ Chat-History:         ~200-300 Tokens pro Nachrichtenpaar
++ Bei 30 Nachrichten:   ~4.500-5.000 Tokens Chat-History
+─────────────────────────────────────
+Maximum:                ~12.500 Tokens pro Call (bei vollem GF-Katalog + 30 Nachrichten)
+```
+
+Claude Sonnet 4.6 hat 200K Context — kein Problem. Kosten: ~$0.05-0.10 pro Call bei diesen Input-Größen.
+
+**Soft-Limit Injection:**
+Ab `message_count >= 28` wird ein zusätzlicher Absatz an den Prompt angehängt:
+```
+WICHTIG: Du hast bereits sehr viele Informationen gesammelt. Empfehle dem Teilnehmer
+jetzt klar und deutlich, das Gespräch zu beenden und die Ergebnisse zu überarbeiten.
+Begründe: Die Qualität der Zusammenfassung leidet ab diesem Punkt, weil zu viel
+Material verarbeitet werden muss. Biete an: 1-2 weitere Antworten wenn gerade passend,
+aber empfehle professionell und unmissverständlich einen Cut. Kein weiches "vielleicht
+sollten wir..." — sondern eine klare Berater-Empfehlung.
+```
+
+**Fragenkatalog-Kompakt-Format:**
+```
+Themenblöcke die wir besprechen sollten:
+
+Block A — Geschäftsmodell & Markt:
+• Geschäftsmodell beschreiben und Alleinstellungsmerkmale
+• Marktstruktur und Wettbewerbsposition
+• Kundenstruktur und Abhängigkeiten
+...
+
+Block C — Prozesse & Abläufe:
+• Kernprozesse und Dokumentation
+• Qualitätssicherung
+...
+```
+
+Das LLM bekommt die Themen in natürlicher Sprache (nicht die exakten Fragen-IDs), damit das Gespräch natürlich bleibt. Die genauen Frage-IDs werden nur im Mapping-Prompt verwendet.
+
+#### Prompt-Typ 2: `mapping` (Batch-Zuordnung + Neutralisierung)
+
+**Zweck:** Gesamtes Gespräch analysieren, auf Fragen mappen, neutralisierte Drafts generieren.
+
+**Schlüssel-Eigenschaften:**
+- Rolle: Analytiker der Gesprächsinhalte strukturiert auswertet
+- Bekommt den vollständigen Fragenkatalog mit IDs
+- Identifiziert welche Fragen durch das Gespräch abgedeckt wurden
+- Generiert pro erkannter Frage eine Draft-Antwort
+- **Neutralisierungslayer** (Kernregel im Prompt):
+  - Emotionale Aussagen → sachliche Einordnung
+  - Schuldzuweisungen → strukturelle Beobachtung
+  - Namentliche Nennungen → Rollenbezeichnung ("der Vorgesetzte", "die Abteilungsleitung")
+  - Persönliche Meinungen → beobachtungsbasierte Aussagen
+  - Wertungen ("der ist unfähig") → Sachverhalt ("in diesem Bereich besteht Entwicklungsbedarf")
+- Confidence-Score: `high` (klare Aussage), `medium` (indirekt abgeleitet), `low` (nur angedeutet)
+- Output als strukturiertes JSON
+
+**Token-Budget:**
+```
+Mapping-Prompt:          ~1.200 Tokens (inkl. Neutralisierungsregeln)
+Fragenkatalog (mit IDs): ~5.800 Tokens (voller Katalog) / ~1.200 Tokens (Mirror-Subset)
+Chat-History:            ~4.500-5.000 Tokens (gesamtes Gespräch)
+Bestehende Antworten:    ~500-1.500 Tokens (Info welche Fragen schon beantwortet)
+─────────────────────────────────────
+Input:                   ~8.000-13.500 Tokens
+Output:                  ~2.000-4.000 Tokens (Drafts für 5-15 Fragen)
+```
+
+**Temperature:** 0.3 (fokussiert, konsistent)
+**maxTokens:** 4096 (genug für viele Draft-Antworten)
+
+### Frontend-Architektur
+
+#### Modus-Auswahl (FS-01)
+
+**Platzierung:** Workspace-Einstiegsseite (beim Öffnen eines Runs).
+
+**Implementierung:** Neuer State in `run-workspace-client.tsx`:
+```typescript
+type WorkspaceMode = "questionnaire" | "freeform";
+const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>("questionnaire");
+```
+
+**UI:** Zwei Cards nebeneinander:
+- **Fragebogen-Modus:** Icon + Beschreibung, öffnet bestehende Fragen-Ansicht
+- **Free-Form Modus:** Icon + Beschreibung, öffnet Fragen-Übersicht → Chat
+
+Toggle jederzeit möglich. State wird nicht persistiert (bei Seiten-Reload → Auswahl erneut).
+
+#### Fragen-Übersicht vor Chat (FS-02)
+
+**Platzierung:** Zwischen Modus-Auswahl und Chat-Start.
+
+**Daten:** Gleiche Fragen wie im Fragebogen-Modus, gruppiert nach Block:
+- Block-Name + Fragenanzahl
+- Bereits beantwortete Fragen markiert (grüner Dot)
+- Gesamtfortschritt: "X von Y Fragen beantwortet"
+
+**CTA:** "Gespräch starten" → öffnet Free-Form Chat Panel
+
+#### Free-Form Chat Panel (FS-03)
+
+**Implementierung:** Wiederverwendung des bestehenden Chat-UI-Patterns, aber:
+- Kein `activeQuestion` nötig
+- Chat-History aus `freeform_conversations.messages` statt lokaler State
+- `conversationId` State statt `activeQuestion`
+- Send-Button ruft `/api/.../freeform/chat` statt `/api/.../questions/.../chat`
+- Voice (Whisper) funktioniert identisch (Transkription → Eingabefeld)
+
+**Neuer State:**
+```typescript
+const [conversationId, setConversationId] = useState<string | null>(null);
+const [freeformMessages, setFreeformMessages] = useState<ChatMessage[]>([]);
+const [softLimitReached, setSoftLimitReached] = useState(false);
+```
+
+**Soft-Limit UI:** Wenn `softLimitReached`:
+- Info-Banner über dem Eingabefeld: "Das Gespräch hat genug Material gesammelt."
+- Button "Ergebnisse auswerten" wird prominent
+- Eingabefeld bleibt aktiv (kein hartes Limit)
+
+**"Gespräch beenden" Button:**
+- Immer sichtbar ab 4+ Nachrichten
+- Wird prominent nach Soft-Limit
+- Klick → Confirmation Dialog → ruft Mapping-Route
+
+#### Mapping-Review Page (FS-07)
+
+**Route:** Kein separater Route nötig — bleibt im Workspace als State-Transition:
+```typescript
+type FreeformPhase = "overview" | "chatting" | "mapping" | "review";
+const [freeformPhase, setFreeformPhase] = useState<FreeformPhase>("overview");
+```
+
+**Während Mapping (`mapping` Phase):**
+- Loading-Spinner mit Hinweis: "Ihre Antworten werden ausgewertet..."
+- Blocking UI (keine Interaktion möglich)
+
+**Review (`review` Phase):**
+- Liste aller gemappten Fragen, gruppiert nach Block
+- Pro Frage:
+  - Frage-Text (Original)
+  - Draft-Antwort (neutralisiert)
+  - Confidence-Badge: Grün (high), Orange (medium), Grau (low)
+  - Hinweis "Ergänzung" wenn Frage bereits beantwortet
+  - Checkbox: Übernehmen (default: checked für high/medium, unchecked für low)
+  - "Bearbeiten" Button → Draft-Text wird editierbar
+  - "Verwerfen" Button → entfernt aus Auswahl
+- Abschnitt "Nicht abgedeckte Fragen" (Fragen ohne Mapping)
+- Footer: "X von Y Drafts ausgewählt" + "Übernehmen" Button
+- "Alle auswählen" / "Keine auswählen" Toggle
+
+**Nach Übernahme:**
+- Ruft `/api/.../freeform/accept` mit ausgewählten Drafts
+- Success-Meldung: "X Antworten übernommen"
+- Zurück zur Modus-Auswahl oder Fragebogen-Modus
+
+### Token-Budget-Strategie
+
+| Call-Typ | System-Kontext | Chat-History | Output | Gesamt Input |
+|----------|---------------|-------------|--------|-------------|
+| Free-Form Chat (Mirror, 14 Fragen) | ~4.300 | ~200-5.000 | ~512 | ~4.500-9.300 |
+| Free-Form Chat (GF, 73 Fragen) | ~7.500 | ~200-5.000 | ~512 | ~7.700-12.500 |
+| Mapping (Mirror) | ~3.400 | ~4.500 | ~2.000 | ~7.900 |
+| Mapping (GF) | ~8.500 | ~4.500 | ~4.000 | ~13.000 |
+
+**Kosten-Schätzung pro Gespräch (15 Nachrichten):**
+- Mirror: ~15 Chat-Calls + 1 Mapping = ~$0.50-1.00
+- GF: ~15 Chat-Calls + 1 Mapping = ~$1.00-2.00
+
+Innerhalb üblicher SaaS-LLM-Kosten. Monitoring empfohlen.
+
+### Memory-Integration
+
+**Während Free-Form Chat:**
+- Memory wird bei jedem Chat-Call als Kontext geladen (identisch zu bestehend)
+- Memory wird nach jedem Chat-Call async aktualisiert (identisch zu bestehend)
+- Summary-Format für Memory-Update:
+  ```
+  Free-Form Gespräch:
+  Nutzer: [letzte Nachricht]
+  KI: [Antwort, erste 300 Zeichen]
+  ```
+
+**Nach Mapping:**
+- Kein zusätzliches Memory-Update nötig (Chat-Updates haben Memory bereits aktualisiert)
+
+### Sicherheit / DSGVO
+
+- **Gesprächsverläufe:** Gespeichert in `freeform_conversations` mit RLS auf `tenant_id` + `created_by`. Nur der Ersteller kann sein Gespräch sehen.
+- **Neutralisierung:** Findet serverseitig im LLM-Prompt statt. Rohe Gesprächsdaten bleiben in der Conversation gespeichert (für Audit-Trail), aber Draft-Antworten in `question_events` sind immer neutralisiert.
+- **Keine externen Dienste:** Alle Daten bleiben auf Hetzner. LLM-Calls gehen an AWS Bedrock eu-central-1 (Frankfurt, DSGVO). Gleiche Architektur wie bestehender Chat.
+- **Mirror-Vertraulichkeit:** RLS verhindert dass der GF/tenant_admin die Gespräche oder Rohdaten von Mirror-Teilnehmern sieht. Nur die neutralisierten answer_submitted Events sind über den Export zugänglich.
+- **Audio (Whisper):** Identisch zum bestehenden Voice-Flow — In-Memory-Buffer, kein Speichern.
+
+### RAM-Impact
+
+**Keiner.** Kein neuer Docker-Service. Die zusätzliche DB-Tabelle und API-Routen belasten den Server nicht messbar. LLM-Calls gehen an Bedrock (kein lokaler Compute). Whisper-Nutzung bleibt identisch.
+
+### Betroffene Dateien (Übersicht für Slice-Planning)
+
+| Bereich | Dateien | Aktion |
+|---------|---------|--------|
+| DB | `sql/migrations/019_v32_freeform_chat.sql` | NEU — freeform_conversations + RLS |
+| API | `src/app/api/tenant/runs/[runId]/freeform/chat/route.ts` | NEU — Chat-Route |
+| API | `src/app/api/tenant/runs/[runId]/freeform/map/route.ts` | NEU — Mapping-Route |
+| API | `src/app/api/tenant/runs/[runId]/freeform/accept/route.ts` | NEU — Accept-Route |
+| Backend | `src/lib/llm.ts` | ERWEITERN — freiform + mapping Prompts, Fragenkatalog-Builder |
+| Backend | `src/lib/freeform.ts` | NEU — Conversation-Logik, Katalog-Loader, Mapping-Parser |
+| Frontend | `src/app/runs/[id]/run-workspace-client.tsx` | ERWEITERN — Modus-Switch, FreeformPhase State |
+| Frontend | `src/components/freeform/mode-selector.tsx` | NEU — Modus-Auswahl Cards |
+| Frontend | `src/components/freeform/question-overview.tsx` | NEU — Fragen-Übersicht vor Chat |
+| Frontend | `src/components/freeform/freeform-chat.tsx` | NEU — Chat-Panel (ohne Frage-Scope) |
+| Frontend | `src/components/freeform/mapping-review.tsx` | NEU — Mapping-Review mit Draft-Verwaltung |
+| Frontend | `src/components/freeform/soft-limit-banner.tsx` | NEU — Info-Banner bei Soft-Limit |
+| i18n | `src/messages/de.json`, `en.json`, `nl.json` | ERWEITERN — freeform.* Namespace |
+| Validierung | `src/lib/validations.ts` | ERWEITERN — freeformChatSchema, mappingSchema |

@@ -625,7 +625,7 @@
       "title": "Free-Form Chat: offenes Gespraech als primaerer Eingabekanal mit LLM-Mapping auf strukturierte Fragen",
       "type": "feature",
       "priority": "high",
-      "status": "open",
+      "status": "in_progress",
       "version": "V3.2",
       "description": "Neuer Interaktionsmodus neben dem strukturierten Fragebogen. Teilnehmer spricht frei ueber Arbeitsalltag, Prozesse, Situationen. LLM stellt natuerliche Rueckfragen. Im Hintergrund mappt das LLM die Gespraechsinhalte auf die strukturierten Fragen und befuellt Antworten automatisch. Depersonalisierung beim Auto-Befuellen (keine Namen, emotionale Glaettung). Teilnehmer reviewt am Ende die auto-befuellten Antworten, kann ergaenzen/korrigieren/freigeben. Nicht beantwortete Fragen werden sichtbar fuer gezielte Nachfragen. Braucht Discovery fuer LLM-Mapping-Ansatz und UI-Konzept.",
       "createdAt": "2026-04-07"

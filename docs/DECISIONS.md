@@ -169,3 +169,28 @@
 - Status: accepted
 - Reason: Dashboard soll sauber bleiben und nur Runs zeigen. Nominations sind ein eigener Workflow. Sidebar-Navigation bekommt neuen Eintrag für tenant_admin.
 - Consequence: Neue Route /mirror/nominations. Sidebar-Erweiterung für tenant_admin.
+
+## DEC-035 — JSONB statt separate Messages-Tabelle für Free-Form Conversations
+- Status: accepted
+- Reason: Free-Form Gespräche sind kurzlebig (max ~30 Nachrichten) und werden immer als Ganzes geladen (LLM braucht vollen Verlauf). Separate Messages-Tabelle würde unnötige Joins erzeugen. Kein Bedarf für Query auf einzelne Nachrichten. JSONB ist für dieses Zugriffsmuster optimal.
+- Consequence: `freeform_conversations.messages` als JSONB Array. Mapping-Result ebenfalls als JSONB. Server-seitige Schreibzugriffe via adminClient (nicht direkt vom Client).
+
+## DEC-036 — Batch-Mapping am Gesprächsende statt Echtzeit-Mapping
+- Status: accepted
+- Reason: Einzelne Nachrichten haben oft nicht genug Kontext für sicheres Fragen-Mapping. "Wir haben 12 Mitarbeiter" kann 5 Fragen betreffen — erst im Gesamtkontext wird die Zuordnung klar. Batch spart 15+ Extra-LLM-Calls pro Gespräch und liefert bessere Mapping-Qualität.
+- Consequence: Kein Mapping während des Gesprächs. LLM konzentriert sich auf Gesprächsführung. Nach Abschluss: ein einzelner Mapping-Call mit dem gesamten Gesprächsverlauf. Mapping-Route `POST /api/.../freeform/map` als separater Step.
+
+## DEC-037 — Neutralisierungslayer im Mapping-Prompt statt Post-Processing
+- Status: accepted
+- Reason: Neutralisierung (emotionale Aussagen → sachlich, keine Namen, keine Schuldzuweisungen) ist ein sprachliches Problem, kein technisches. Das LLM kann Neutralisierung als Teil der Draft-Generierung machen — kein separater Post-Processing-Schritt nötig. Einfachere Architektur, weniger LLM-Calls.
+- Consequence: Mapping-Prompt enthält explizite Neutralisierungsregeln. Draft-Antworten kommen bereits neutralisiert aus dem LLM. Rohe Gesprächsdaten bleiben in `freeform_conversations.messages` für Audit-Trail. `question_events` enthält nur neutralisierte Texte.
+
+## DEC-038 — Kompaktes Themen-Format statt Frage-IDs im Freiform-Prompt
+- Status: accepted
+- Reason: Wenn das LLM die exakten Frage-IDs und -Texte im Gesprächsführungs-Prompt hat, neigt es dazu die Fragen abzuarbeiten statt ein natürliches Gespräch zu führen. Kompakte Themen-Blöcke ("Block A — Geschäftsmodell & Markt: Geschäftsmodell, Alleinstellungsmerkmale, Marktstruktur...") erlauben thematische Steuerung ohne Formularbefüllung.
+- Consequence: Freiform-Prompt bekommt kompakte Themen. Mapping-Prompt bekommt den vollständigen Katalog mit IDs. Neuer Helper `buildCompactCatalog()` für Freiform, bestehende Frage-Struktur für Mapping.
+
+## DEC-039 — Freeform-Phase als State im Workspace statt separate Route
+- Status: accepted
+- Reason: Free-Form Flow hat 4 Phasen (overview → chatting → mapping → review). Separate Routes würden 4 neue Pages erzeugen und den Context (Run, Conversation) über URL-Params transportieren müssen. State-basierte Phase-Transition im bestehenden Workspace-Client ist einfacher und konsistenter mit dem bestehenden Chat-UI-Pattern.
+- Consequence: `FreeformPhase` State in `run-workspace-client.tsx`. Kein Routing-Aufwand. Conversation-ID im State. Phase-Transitions durch Button-Klicks.

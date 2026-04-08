@@ -92,7 +92,7 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 
 ## Implementation Status
 
-> Stand: 2026-03-31.
+> Stand: 2026-04-08.
 
 | Version | Status | Features |
 |---------|--------|----------|
@@ -101,7 +101,9 @@ Der Fragebogen ist definiert in `Exit Ready Blueprint Master_V1.0.xlsx` und umfa
 | V2 | **released** | FEAT-019 (Voice Input via Whisper) |
 | V2.1 | **released** | FEAT-023 bis FEAT-025 (Learning Center, Video-Tutorials, Bedienungsanleitung) |
 | V2.2 | **released** | FEAT-026 bis FEAT-027 (Owner-Profil, LLM Run Memory) |
-| V3 | **requirements** | FEAT-028 bis FEAT-031 (Operational Reality Mirror — Phase 1 Infrastruktur) |
+| V3 | **released** | FEAT-028 bis FEAT-031 (Operational Reality Mirror — Phase 1 Infrastruktur) |
+| V3.1 | **released** | FEAT-032 bis FEAT-034 (Mirror Usability — Nominations, Onboarding, Deadline) |
+| V3.2 | **requirements** | FEAT-035 (Free-Form Chat mit LLM-Mapping), FEAT-036 (Feedback-Loop) |
 | V4 | planned | FEAT-020 (Dedizierte Server pro Kunde) |
 
 ## V1 Scope — Core Features
