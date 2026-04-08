@@ -788,6 +788,14 @@ export function RunWorkspaceClient({
               <h1 className="text-lg font-bold text-slate-900">{run.title}</h1>
               <p className="text-sm text-slate-500">{t("freeform.modeSelector.freeformTitle")}</p>
             </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 transition-colors"
+              >
+                {t("common.logout")}
+              </Link>
+            </div>
           </div>
         </header>
         {/* Chat */}
