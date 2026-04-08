@@ -51,6 +51,7 @@ import { RunMemoryView } from "@/components/learning-center/run-memory-view";
 import { ModeSelector } from "@/components/freeform/mode-selector";
 import { QuestionOverview } from "@/components/freeform/question-overview";
 import { FreeformChat } from "@/components/freeform/freeform-chat";
+import { MappingReview } from "@/components/freeform/mapping-review";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -127,6 +128,10 @@ export function RunWorkspaceClient({
   const [workspaceMode, setWorkspaceMode] = useState<"questionnaire" | "freeform" | null>(null);
   const [freeformPhase, setFreeformPhase] = useState<"overview" | "chatting" | "mapping" | "review">("overview");
   const [freeformConversationId, setFreeformConversationId] = useState<string | null>(null);
+  const [mappingResult, setMappingResult] = useState<{ mappings: Array<{ questionId: string; questionText: string; block: string; draftText: string; confidence: "high" | "medium" | "low"; hasExistingAnswer: boolean }>; unmappedQuestions: Array<{ questionId: string; questionText: string; block: string }> } | null>(null);
+  const [mappingLoading, setMappingLoading] = useState(false);
+  const [mappingError, setMappingError] = useState<string | null>(null);
+  const [accepting, setAccepting] = useState(false);
 
   // Evidence state
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
@@ -798,7 +803,117 @@ export function RunWorkspaceClient({
     );
   }
 
-  // ─── Main layout (questionnaire mode or freeform mapping/review) ──
+  // ─── Free-Form mapping phase: trigger mapping API ────────────────────
+  if (workspaceMode === "freeform" && freeformPhase === "mapping") {
+    // Auto-trigger mapping on entering this phase
+    if (!mappingLoading && !mappingResult && !mappingError) {
+      setMappingLoading(true);
+      fetch(`/api/tenant/runs/${runId}/freeform/map`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId: freeformConversationId }),
+      })
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            setMappingResult(data);
+            setFreeformPhase("review");
+          } else {
+            setMappingError(t("freeform.mapping.error"));
+          }
+        })
+        .catch(() => {
+          setMappingError(t("freeform.mapping.error"));
+        })
+        .finally(() => {
+          setMappingLoading(false);
+        });
+    }
+
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="text-center max-w-md px-4">
+          {mappingError ? (
+            <>
+              <p className="text-sm text-red-600 mb-4">{mappingError}</p>
+              <Button
+                onClick={() => {
+                  setMappingError(null);
+                  setMappingResult(null);
+                }}
+                variant="outline"
+              >
+                {t("freeform.mapping.retry")}
+              </Button>
+              <Button
+                onClick={() => setFreeformPhase("chatting")}
+                variant="ghost"
+                className="ml-2"
+              >
+                {t("freeform.chat.endChatCancel")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto mb-6 h-12 w-12 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-brand-primary" />
+              </div>
+              <p className="text-lg font-bold text-slate-900 mb-2">{t("freeform.mapping.loading")}</p>
+              <p className="text-sm text-slate-500">{t("freeform.mapping.loadingDescription")}</p>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Free-Form review phase: show mapping results ───────────────────
+  if (workspaceMode === "freeform" && freeformPhase === "review" && mappingResult) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <MappingReview
+          mappings={mappingResult.mappings}
+          unmappedQuestions={mappingResult.unmappedQuestions}
+          accepting={accepting}
+          onAccept={async (drafts) => {
+            if (!freeformConversationId || drafts.length === 0) return;
+            setAccepting(true);
+            try {
+              const res = await fetch(`/api/tenant/runs/${runId}/freeform/accept`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  conversationId: freeformConversationId,
+                  acceptedDrafts: drafts,
+                }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                setMessage({
+                  text: t("freeform.review.success", { count: data.acceptedCount }),
+                  type: "success",
+                });
+                // Reset freeform state and switch to questionnaire to show updated answers
+                setMappingResult(null);
+                setFreeformConversationId(null);
+                setWorkspaceMode("questionnaire");
+                setFreeformPhase("overview");
+                await loadRun();
+              } else {
+                setMessage({ text: t("freeform.review.acceptError"), type: "error" });
+              }
+            } catch {
+              setMessage({ text: t("common.networkError"), type: "error" });
+            } finally {
+              setAccepting(false);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  // ─── Main layout (questionnaire mode) ─────────────────────────────
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile sidebar toggle */}

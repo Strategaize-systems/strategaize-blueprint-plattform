@@ -383,6 +383,33 @@
       "title": "Genug Material gesammelt",
       "description": "Sie haben bereits viele wertvolle Informationen geteilt. Wir empfehlen, jetzt die Ergebnisse auszuwerten.",
       "evaluateNow": "Ergebnisse auswerten"
+    },
+    "mapping": {
+      "loading": "Ihre Antworten werden ausgewertet...",
+      "loadingDescription": "Die KI ordnet Ihre Aussagen den Fragen zu und erstellt neutralisierte Entwürfe.",
+      "error": "Auswertung fehlgeschlagen. Sie können es erneut versuchen.",
+      "retry": "Erneut versuchen"
+    },
+    "review": {
+      "title": "Ergebnisse prüfen",
+      "subtitle": "Die KI hat folgende Zuordnungen erkannt. Wählen Sie die Entwürfe aus, die Sie übernehmen möchten.",
+      "selectAll": "Alle auswählen",
+      "selectNone": "Keine auswählen",
+      "accept": "Ausgewählte übernehmen",
+      "acceptCount": "{count} von {total} Entwürfen ausgewählt",
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "discard": "Verwerfen",
+      "supplement": "Ergänzung — vorhandene Antwort wird aktualisiert",
+      "unmapped": "Nicht abgedeckte Fragen",
+      "unmappedDescription": "Diese Fragen wurden im Gespräch nicht angesprochen.",
+      "confidence": {
+        "high": "Hohe Sicherheit",
+        "medium": "Mittlere Sicherheit",
+        "low": "Geringe Sicherheit"
+      },
+      "success": "{count} Antworten erfolgreich übernommen",
+      "acceptError": "Übernahme fehlgeschlagen. Bitte erneut versuchen."
     }
   }
 }

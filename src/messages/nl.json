@@ -383,6 +383,33 @@
       "title": "Voldoende materiaal verzameld",
       "description": "U heeft al veel waardevolle informatie gedeeld. We raden aan om nu de resultaten te evalueren.",
       "evaluateNow": "Resultaten evalueren"
+    },
+    "mapping": {
+      "loading": "Uw antwoorden worden geëvalueerd...",
+      "loadingDescription": "De AI wijst uw uitspraken toe aan de vragen en maakt geneutraliseerde concepten.",
+      "error": "Evaluatie mislukt. U kunt het opnieuw proberen.",
+      "retry": "Opnieuw proberen"
+    },
+    "review": {
+      "title": "Resultaten bekijken",
+      "subtitle": "De AI heeft de volgende toewijzingen geïdentificeerd. Selecteer de concepten die u wilt overnemen.",
+      "selectAll": "Alles selecteren",
+      "selectNone": "Niets selecteren",
+      "accept": "Geselecteerde overnemen",
+      "acceptCount": "{count} van {total} concepten geselecteerd",
+      "edit": "Bewerken",
+      "save": "Opslaan",
+      "discard": "Verwijderen",
+      "supplement": "Aanvulling — bestaand antwoord wordt bijgewerkt",
+      "unmapped": "Niet-behandelde vragen",
+      "unmappedDescription": "Deze vragen zijn niet in het gesprek aan bod gekomen.",
+      "confidence": {
+        "high": "Hoge zekerheid",
+        "medium": "Gemiddelde zekerheid",
+        "low": "Lage zekerheid"
+      },
+      "success": "{count} antwoorden succesvol overgenomen",
+      "acceptError": "Overname mislukt. Probeer het opnieuw."
     }
   }
 }

@@ -383,6 +383,33 @@
       "title": "Enough material collected",
       "description": "You have already shared a lot of valuable information. We recommend evaluating the results now.",
       "evaluateNow": "Evaluate results"
+    },
+    "mapping": {
+      "loading": "Your answers are being evaluated...",
+      "loadingDescription": "The AI is mapping your statements to the questions and creating neutralized drafts.",
+      "error": "Evaluation failed. You can try again.",
+      "retry": "Try again"
+    },
+    "review": {
+      "title": "Review Results",
+      "subtitle": "The AI has identified the following mappings. Select the drafts you would like to accept.",
+      "selectAll": "Select all",
+      "selectNone": "Select none",
+      "accept": "Accept selected",
+      "acceptCount": "{count} of {total} drafts selected",
+      "edit": "Edit",
+      "save": "Save",
+      "discard": "Discard",
+      "supplement": "Supplement — existing answer will be updated",
+      "unmapped": "Uncovered questions",
+      "unmappedDescription": "These questions were not addressed in the conversation.",
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "success": "{count} answers successfully accepted",
+      "acceptError": "Acceptance failed. Please try again."
     }
   }
 }
