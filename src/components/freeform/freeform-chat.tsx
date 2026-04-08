@@ -65,10 +65,11 @@ export function FreeformChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Add welcome message on mount
+  // Add welcome message on mount only
   useEffect(() => {
     setMessages([{ role: "assistant", text: t("welcome") }]);
-  }, [t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps — run only on mount
+  }, []);
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || loading) return;

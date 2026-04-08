@@ -842,7 +842,8 @@ export function RunWorkspaceClient({
       .finally(() => {
         setMappingLoading(false);
       });
-  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps — t excluded intentionally (unstable reference causes infinite re-renders)
+  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId]);
 
   if (workspaceMode === "freeform" && freeformPhase === "mapping") {
     return (
