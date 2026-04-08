@@ -117,6 +117,8 @@ export async function POST(
 
     if (insertError) {
       errors.push(`Failed to insert event for ${draft.questionId}: ${insertError.message}`);
+      const { captureException } = await import("@/lib/logger");
+      captureException(insertError, { source: "api/freeform/accept", metadata: { runId, conversationId, questionId: draft.questionId } });
     } else {
       acceptedCount++;
     }
