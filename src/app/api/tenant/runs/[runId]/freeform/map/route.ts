@@ -68,14 +68,22 @@ export async function POST(
   });
 
   // Load existing answers for context
+  // v_current_answers.question_id is a UUID, but mapping uses frage_id (e.g. "F-BP-001")
+  // → resolve UUID → frage_id via the already-loaded questions
   const adminClient = createAdminClient();
   const { data: currentAnswers } = await adminClient
     .from("v_current_answers")
     .select("question_id, answer_text")
     .eq("run_id", runId);
 
+  const uuidToFrageId = new Map(questions.map((q) => [q.id, q.frage_id]));
   const existingAnswerMap = new Map(
-    (currentAnswers ?? []).map((a: { question_id: string; answer_text: string }) => [a.question_id, a.answer_text])
+    (currentAnswers ?? [])
+      .map((a: { question_id: string; answer_text: string }) => {
+        const frageId = uuidToFrageId.get(a.question_id);
+        return frageId ? [frageId, a.answer_text] as const : null;
+      })
+      .filter((entry): entry is [string, string] => entry !== null)
   );
 
   // Build existing answers context for the LLM
