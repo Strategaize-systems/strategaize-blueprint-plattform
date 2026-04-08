@@ -349,5 +349,24 @@
         "description": "Bewijs uploaden, labels toewijzen, documentanalyse gebruiken"
       }
     }
+  },
+  "freeform": {
+    "modeSelector": {
+      "title": "Hoe wilt u werken?",
+      "questionnaireTitle": "Vraag voor vraag",
+      "questionnaireDescription": "Beantwoord elke vraag afzonderlijk. De AI stelt vervolgvragen en helpt bij de formulering.",
+      "freeformTitle": "Open gesprek",
+      "freeformDescription": "Vertel vrij over uw bedrijf. De AI wijst uw uitspraken achteraf toe aan de vragen."
+    },
+    "overview": {
+      "title": "Themaoverzicht",
+      "subtitle": "Deze onderwerpen worden in het gesprek behandeld:",
+      "progress": "{answered} van {total} vragen beantwoord",
+      "startChat": "Gesprek starten",
+      "questionsInBlock": "{count} vragen",
+      "answered": "beantwoord",
+      "open": "open",
+      "backToMode": "Terug naar selectie"
+    }
   }
 }

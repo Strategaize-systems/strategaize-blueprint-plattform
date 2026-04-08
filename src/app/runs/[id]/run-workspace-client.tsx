@@ -48,6 +48,8 @@ import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Spar
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 import { RunMemoryView } from "@/components/learning-center/run-memory-view";
+import { ModeSelector } from "@/components/freeform/mode-selector";
+import { QuestionOverview } from "@/components/freeform/question-overview";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -119,6 +121,11 @@ export function RunWorkspaceClient({
   const [openBlocks, setOpenBlocks] = useState<Set<string>>(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [learningCenterOpen, setLearningCenterOpen] = useState(false);
+
+  // Free-Form mode state (V3.2)
+  const [workspaceMode, setWorkspaceMode] = useState<"questionnaire" | "freeform" | null>(null);
+  const [freeformPhase, setFreeformPhase] = useState<"overview" | "chatting" | "mapping" | "review">("overview");
+  const [freeformConversationId, setFreeformConversationId] = useState<string | null>(null);
 
   // Evidence state
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([]);
@@ -738,7 +745,33 @@ export function RunWorkspaceClient({
     </div>
   );
 
-  // ─── Main layout ──────────────────────────────────────────────────────
+  // ─── Mode Selection (V3.2) ─────────────────────────────────────────────
+  // Show mode selector before entering the workspace (unless admin or locked)
+  if (!isAdmin && !isLocked && workspaceMode === null) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <ModeSelector onSelect={(mode) => {
+          setWorkspaceMode(mode);
+          if (mode === "freeform") setFreeformPhase("overview");
+        }} />
+      </div>
+    );
+  }
+
+  // Free-Form overview phase: show question/block overview before chat starts
+  if (workspaceMode === "freeform" && freeformPhase === "overview") {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <QuestionOverview
+          questions={run.questions}
+          onStartChat={() => setFreeformPhase("chatting")}
+          onBack={() => setWorkspaceMode(null)}
+        />
+      </div>
+    );
+  }
+
+  // ─── Main layout (questionnaire mode or freeform chatting/mapping/review) ─
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile sidebar toggle */}

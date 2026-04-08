@@ -349,5 +349,24 @@
         "description": "Evidence hochladen, Labels vergeben, Dokumentanalyse nutzen"
       }
     }
+  },
+  "freeform": {
+    "modeSelector": {
+      "title": "Wie möchten Sie arbeiten?",
+      "questionnaireTitle": "Frage für Frage",
+      "questionnaireDescription": "Beantworten Sie jede Frage einzeln. Die KI stellt Rückfragen und hilft bei der Formulierung.",
+      "freeformTitle": "Offenes Gespräch",
+      "freeformDescription": "Erzählen Sie frei über Ihr Unternehmen. Die KI ordnet Ihre Aussagen anschließend den Fragen zu."
+    },
+    "overview": {
+      "title": "Themenübersicht",
+      "subtitle": "Diese Themen werden im Gespräch behandelt:",
+      "progress": "{answered} von {total} Fragen beantwortet",
+      "startChat": "Gespräch starten",
+      "questionsInBlock": "{count} Fragen",
+      "answered": "beantwortet",
+      "open": "offen",
+      "backToMode": "Zurück zur Auswahl"
+    }
   }
 }

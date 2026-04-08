@@ -349,5 +349,24 @@
         "description": "Upload evidence, assign labels, use document analysis"
       }
     }
+  },
+  "freeform": {
+    "modeSelector": {
+      "title": "How would you like to work?",
+      "questionnaireTitle": "Question by Question",
+      "questionnaireDescription": "Answer each question individually. The AI asks follow-up questions and helps with formulation.",
+      "freeformTitle": "Open Conversation",
+      "freeformDescription": "Talk freely about your company. The AI will map your statements to the questions afterwards."
+    },
+    "overview": {
+      "title": "Topic Overview",
+      "subtitle": "These topics will be covered in the conversation:",
+      "progress": "{answered} of {total} questions answered",
+      "startChat": "Start Conversation",
+      "questionsInBlock": "{count} questions",
+      "answered": "answered",
+      "open": "open",
+      "backToMode": "Back to selection"
+    }
   }
 }
