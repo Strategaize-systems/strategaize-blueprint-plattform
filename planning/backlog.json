@@ -639,6 +639,16 @@
       "version": "V3.2",
       "description": "Nach Freigabe aller Antworten: kurzer Feedback-Block. Fragen wie: Themen nicht abgedeckt? Fragen verstaendlich? Verbesserungsvorschlaege? Daten separat gespeichert (nicht in Fragebogen-Antworten), entpersonalisiert exportierbar. Fliesst intern in Katalog-Verbesserung. Grundstruktur spaeter wiederverwendbar fuer Mitarbeiter-Feedback, Ideen-Management, Verbesserungspotenzial in anderen Produkten.",
       "createdAt": "2026-04-07"
+    },
+    {
+      "id": "BL-065",
+      "title": "Unified Workspace: Offenes Gespraech + Frage fuer Frage + Feedback nebeneinander",
+      "type": "improvement",
+      "priority": "high",
+      "status": "open",
+      "version": null,
+      "description": "Statt Modus-Auswahl-Screen: alle drei Bereiche (Offenes Gespraech, Frage fuer Frage, Feedback) als gleichwertige Hauptbereiche im Run-Workspace sichtbar. Nutzer kann jederzeit zwischen den Bereichen wechseln. Frage-fuer-Frage zeigt die bestehende Block/Fragen-Struktur aufklappbar darunter. Offenes Gespraech zeigt den Chat. Feedback ist initial ausgegraut bis es Inhalte gibt. Nutzer soll zwischendurch checken koennen, welche Fragen durch das offene Gespraech schon befuellt wurden. Kein separater Modus-Auswahl-Screen mehr noetig. Braucht Discovery fuer Layout-Konzept (Tabs? Sidebar-Sections? Split-View?).",
+      "createdAt": "2026-04-08"
     }
   ]
 }
