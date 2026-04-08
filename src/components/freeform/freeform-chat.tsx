@@ -30,7 +30,8 @@ interface FreeformChatProps {
   onEndChat: () => void;
 }
 
-const MIN_MESSAGES_TO_END = 4;
+// End-chat button visible after 2 user messages (= 4 total messages incl. assistant replies)
+const MIN_USER_MESSAGES_TO_END = 2;
 
 export function FreeformChat({
   runId,
@@ -213,7 +214,7 @@ export function FreeformChat({
 
   // Count user messages (for end-chat visibility)
   const userMessageCount = messages.filter((m) => m.role === "user").length;
-  const canEndChat = userMessageCount >= MIN_MESSAGES_TO_END / 2;
+  const canEndChat = userMessageCount >= MIN_USER_MESSAGES_TO_END;
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
