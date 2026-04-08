@@ -401,6 +401,8 @@
       "save": "Speichern",
       "discard": "Verwerfen",
       "supplement": "Ergänzung — vorhandene Antwort wird aktualisiert",
+      "noMappings": "Keine Zuordnungen gefunden. Im Gespräch wurden keine konkreten Antworten auf die Fragen erkannt. Sie können ein neues Gespräch starten oder die Fragen einzeln beantworten.",
+      "backToOverview": "Zurück zur Übersicht",
       "unmapped": "Nicht abgedeckte Fragen",
       "unmappedDescription": "Diese Fragen wurden im Gespräch nicht angesprochen.",
       "confidence": {

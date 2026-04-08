@@ -39,6 +39,7 @@ interface MappingReviewProps {
   mappings: MappingItem[];
   unmappedQuestions: UnmappedQuestion[];
   onAccept: (drafts: { questionId: string; text: string }[]) => void;
+  onBack: () => void;
   accepting: boolean;
 }
 
@@ -52,6 +53,7 @@ export function MappingReview({
   mappings,
   unmappedQuestions,
   onAccept,
+  onBack,
   accepting,
 }: MappingReviewProps) {
   const t = useTranslations("freeform.review");
@@ -130,7 +132,18 @@ export function MappingReview({
         <p className="text-sm text-slate-500">{t("subtitle")}</p>
       </div>
 
-      {/* Select controls */}
+      {/* Empty state: no mappings found */}
+      {mappings.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-sm text-slate-500 mb-6">{t("noMappings")}</p>
+          <Button variant="outline" onClick={onBack}>
+            {t("backToOverview")}
+          </Button>
+        </div>
+      )}
+
+      {/* Select controls + Drafts + Footer (only when mappings exist) */}
+      {mappings.length > 0 && (<>
       <div className="flex items-center justify-between mb-6">
         <span className="text-sm font-semibold text-slate-700">
           {t("acceptCount", { count: selectedCount, total: totalCount })}
@@ -309,6 +322,7 @@ export function MappingReview({
           )}
         </Button>
       </div>
+      </>)}
     </div>
   );
 }

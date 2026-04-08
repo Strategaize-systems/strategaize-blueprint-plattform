@@ -401,6 +401,8 @@
       "save": "Opslaan",
       "discard": "Verwijderen",
       "supplement": "Aanvulling — bestaand antwoord wordt bijgewerkt",
+      "noMappings": "Geen toewijzingen gevonden. Het gesprek bevatte geen concrete antwoorden op de vragen. U kunt een nieuw gesprek starten of de vragen individueel beantwoorden.",
+      "backToOverview": "Terug naar overzicht",
       "unmapped": "Niet-behandelde vragen",
       "unmappedDescription": "Deze vragen zijn niet in het gesprek aan bod gekomen.",
       "confidence": {

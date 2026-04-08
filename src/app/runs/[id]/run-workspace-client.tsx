@@ -803,33 +803,40 @@ export function RunWorkspaceClient({
     );
   }
 
-  // ─── Free-Form mapping phase: trigger mapping API ────────────────────
-  if (workspaceMode === "freeform" && freeformPhase === "mapping") {
-    // Auto-trigger mapping on entering this phase
-    if (!mappingLoading && !mappingResult && !mappingError) {
-      setMappingLoading(true);
-      fetch(`/api/tenant/runs/${runId}/freeform/map`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversationId: freeformConversationId }),
-      })
-        .then(async (res) => {
-          if (res.ok) {
-            const data = await res.json();
+  // ─── Free-Form mapping phase: trigger mapping API via useEffect ───────
+  useEffect(() => {
+    if (workspaceMode !== "freeform" || freeformPhase !== "mapping") return;
+    if (mappingLoading || mappingResult || mappingError) return;
+    if (!freeformConversationId) return;
+
+    setMappingLoading(true);
+    fetch(`/api/tenant/runs/${runId}/freeform/map`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: freeformConversationId }),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.mappings && Array.isArray(data.mappings)) {
             setMappingResult(data);
             setFreeformPhase("review");
           } else {
             setMappingError(t("freeform.mapping.error"));
           }
-        })
-        .catch(() => {
+        } else {
           setMappingError(t("freeform.mapping.error"));
-        })
-        .finally(() => {
-          setMappingLoading(false);
-        });
-    }
+        }
+      })
+      .catch(() => {
+        setMappingError(t("freeform.mapping.error"));
+      })
+      .finally(() => {
+        setMappingLoading(false);
+      });
+  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId, t]);
 
+  if (workspaceMode === "freeform" && freeformPhase === "mapping") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center max-w-md px-4">
@@ -875,6 +882,12 @@ export function RunWorkspaceClient({
           mappings={mappingResult.mappings}
           unmappedQuestions={mappingResult.unmappedQuestions}
           accepting={accepting}
+          onBack={() => {
+            setMappingResult(null);
+            setFreeformConversationId(null);
+            setWorkspaceMode(null);
+            setFreeformPhase("overview");
+          }}
           onAccept={async (drafts) => {
             if (!freeformConversationId || drafts.length === 0) return;
             setAccepting(true);

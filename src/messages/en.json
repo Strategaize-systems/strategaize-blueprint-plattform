@@ -401,6 +401,8 @@
       "save": "Save",
       "discard": "Discard",
       "supplement": "Supplement — existing answer will be updated",
+      "noMappings": "No mappings found. The conversation did not contain concrete answers to the questions. You can start a new conversation or answer the questions individually.",
+      "backToOverview": "Back to overview",
       "unmapped": "Uncovered questions",
       "unmappedDescription": "These questions were not addressed in the conversation.",
       "confidence": {
