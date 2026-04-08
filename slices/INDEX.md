@@ -180,7 +180,7 @@ Sequentiell ist sauberer für QA.
 | SLC-053 | [Free-Form DB-Schema + LLM-Prompts](SLC-053-freeform-db-schema.md) | FEAT-035 | done | High | 2026-04-08 |
 | SLC-054 | [Free-Form API-Routen](SLC-054-freeform-api-routes.md) | FEAT-035 | done | High | 2026-04-08 |
 | SLC-055 | [Modus-Auswahl + Fragen-Übersicht](SLC-055-freeform-mode-overview.md) | FEAT-035 | done | High | 2026-04-08 |
-| SLC-056 | [Free-Form Chat UI + Soft-Limit](SLC-056-freeform-chat-ui.md) | FEAT-035 | planned | High | 2026-04-08 |
+| SLC-056 | [Free-Form Chat UI + Soft-Limit](SLC-056-freeform-chat-ui.md) | FEAT-035 | done | High | 2026-04-08 |
 | SLC-057 | [Mapping-Review + Antwort-Übernahme](SLC-057-freeform-mapping-review.md) | FEAT-035 | planned | High | 2026-04-08 |
 
 ## V3.2 Execution Order

@@ -50,6 +50,7 @@ import { LearningCenterPanel } from "@/components/learning-center/learning-cente
 import { RunMemoryView } from "@/components/learning-center/run-memory-view";
 import { ModeSelector } from "@/components/freeform/mode-selector";
 import { QuestionOverview } from "@/components/freeform/question-overview";
+import { FreeformChat } from "@/components/freeform/freeform-chat";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -771,7 +772,33 @@ export function RunWorkspaceClient({
     );
   }
 
-  // ─── Main layout (questionnaire mode or freeform chatting/mapping/review) ─
+  // Free-Form chatting phase: full-screen chat panel
+  if (workspaceMode === "freeform" && freeformPhase === "chatting") {
+    return (
+      <div className="flex h-screen flex-col bg-slate-50">
+        {/* Header */}
+        <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-slate-900">{run.title}</h1>
+              <p className="text-sm text-slate-500">{t("freeform.modeSelector.freeformTitle")}</p>
+            </div>
+          </div>
+        </header>
+        {/* Chat */}
+        <div className="flex-1 overflow-hidden">
+          <FreeformChat
+            runId={runId}
+            conversationId={freeformConversationId}
+            onConversationCreated={(id) => setFreeformConversationId(id)}
+            onEndChat={() => setFreeformPhase("mapping")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Main layout (questionnaire mode or freeform mapping/review) ──
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile sidebar toggle */}

@@ -367,6 +367,22 @@
       "answered": "answered",
       "open": "open",
       "backToMode": "Back to selection"
+    },
+    "chat": {
+      "placeholder": "Talk freely about your company...",
+      "send": "Send",
+      "loading": "AI is thinking...",
+      "endChat": "End Conversation",
+      "endChatConfirm": "End conversation and evaluate results?",
+      "endChatConfirmText": "The AI will map your statements to the questions and create neutralized drafts. You can then review and accept the drafts.",
+      "endChatCancel": "Continue talking",
+      "endChatConfirmButton": "Evaluate results",
+      "welcome": "Welcome! Tell me freely about your company — strengths, challenges, processes, whatever seems important to you. I will ask follow-up questions as needed."
+    },
+    "softLimit": {
+      "title": "Enough material collected",
+      "description": "You have already shared a lot of valuable information. We recommend evaluating the results now.",
+      "evaluateNow": "Evaluate results"
     }
   }
 }

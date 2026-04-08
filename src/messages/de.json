@@ -367,6 +367,22 @@
       "answered": "beantwortet",
       "open": "offen",
       "backToMode": "Zurück zur Auswahl"
+    },
+    "chat": {
+      "placeholder": "Erzählen Sie frei über Ihr Unternehmen...",
+      "send": "Senden",
+      "loading": "KI denkt nach...",
+      "endChat": "Gespräch beenden",
+      "endChatConfirm": "Gespräch beenden und Ergebnisse auswerten?",
+      "endChatConfirmText": "Die KI wird Ihre Aussagen den Fragen zuordnen und neutralisierte Entwürfe erstellen. Sie können die Entwürfe anschließend prüfen und übernehmen.",
+      "endChatCancel": "Weiter sprechen",
+      "endChatConfirmButton": "Ergebnisse auswerten",
+      "welcome": "Willkommen! Erzählen Sie mir frei über Ihr Unternehmen — über Stärken, Herausforderungen, Prozesse, was immer Ihnen wichtig erscheint. Ich stelle bei Bedarf Rückfragen."
+    },
+    "softLimit": {
+      "title": "Genug Material gesammelt",
+      "description": "Sie haben bereits viele wertvolle Informationen geteilt. Wir empfehlen, jetzt die Ergebnisse auszuwerten.",
+      "evaluateNow": "Ergebnisse auswerten"
     }
   }
 }

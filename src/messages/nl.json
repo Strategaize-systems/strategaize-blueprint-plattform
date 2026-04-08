@@ -367,6 +367,22 @@
       "answered": "beantwoord",
       "open": "open",
       "backToMode": "Terug naar selectie"
+    },
+    "chat": {
+      "placeholder": "Vertel vrij over uw bedrijf...",
+      "send": "Verzenden",
+      "loading": "AI denkt na...",
+      "endChat": "Gesprek beëindigen",
+      "endChatConfirm": "Gesprek beëindigen en resultaten evalueren?",
+      "endChatConfirmText": "De AI wijst uw uitspraken toe aan de vragen en maakt geneutraliseerde concepten. U kunt de concepten daarna bekijken en overnemen.",
+      "endChatCancel": "Verder praten",
+      "endChatConfirmButton": "Resultaten evalueren",
+      "welcome": "Welkom! Vertel me vrij over uw bedrijf — sterke punten, uitdagingen, processen, alles wat u belangrijk vindt. Ik stel indien nodig vervolgvragen."
+    },
+    "softLimit": {
+      "title": "Voldoende materiaal verzameld",
+      "description": "U heeft al veel waardevolle informatie gedeeld. We raden aan om nu de resultaten te evalueren.",
+      "evaluateNow": "Resultaten evalueren"
     }
   }
 }
