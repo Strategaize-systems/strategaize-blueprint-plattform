@@ -224,6 +224,40 @@ export function RunWorkspaceClient({
     }
   }, [activeQuestion, isAdmin, loadEvidence]);
 
+  // ─── Free-Form mapping phase: trigger mapping API ───────────────────
+  useEffect(() => {
+    if (workspaceMode !== "freeform" || freeformPhase !== "mapping") return;
+    if (mappingLoading || mappingResult || mappingError) return;
+    if (!freeformConversationId) return;
+
+    setMappingLoading(true);
+    fetch(`/api/tenant/runs/${runId}/freeform/map`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: freeformConversationId }),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.mappings && Array.isArray(data.mappings)) {
+            setMappingResult(data);
+            setFreeformPhase("review");
+          } else {
+            setMappingError(t("freeform.mapping.error"));
+          }
+        } else {
+          setMappingError(t("freeform.mapping.error"));
+        }
+      })
+      .catch(() => {
+        setMappingError(t("freeform.mapping.error"));
+      })
+      .finally(() => {
+        setMappingLoading(false);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps — t excluded intentionally (unstable reference causes infinite re-renders)
+  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId]);
+
   function selectQuestion(q: Question) {
     // Stop any active recording when switching questions
     if (isRecording) stopRecording();
@@ -810,40 +844,6 @@ export function RunWorkspaceClient({
       </div>
     );
   }
-
-  // ─── Free-Form mapping phase: trigger mapping API via useEffect ───────
-  useEffect(() => {
-    if (workspaceMode !== "freeform" || freeformPhase !== "mapping") return;
-    if (mappingLoading || mappingResult || mappingError) return;
-    if (!freeformConversationId) return;
-
-    setMappingLoading(true);
-    fetch(`/api/tenant/runs/${runId}/freeform/map`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId: freeformConversationId }),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.mappings && Array.isArray(data.mappings)) {
-            setMappingResult(data);
-            setFreeformPhase("review");
-          } else {
-            setMappingError(t("freeform.mapping.error"));
-          }
-        } else {
-          setMappingError(t("freeform.mapping.error"));
-        }
-      })
-      .catch(() => {
-        setMappingError(t("freeform.mapping.error"));
-      })
-      .finally(() => {
-        setMappingLoading(false);
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps — t excluded intentionally (unstable reference causes infinite re-renders)
-  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId]);
 
   if (workspaceMode === "freeform" && freeformPhase === "mapping") {
     return (
