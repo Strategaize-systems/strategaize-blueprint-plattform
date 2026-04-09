@@ -63,12 +63,11 @@
 |----|---------|--------|---------|
 | FEAT-020 | Dedizierte Server pro Kunde | planned | 2026-03-29 |
 
-## Removed Features
+## Removed Features (nicht im Scope)
 
-| ID | Feature | Status | Reason |
-|----|---------|--------|--------|
-| FEAT-021 | Scoring-Dashboard & Scorecard | removed | Gehört in OS-Plattform, nicht Blueprint |
-| FEAT-022 | Admin: Fragebogen-Editor | removed | Katalog-Import über Admin-UI reicht |
+> Die folgenden Feature-IDs wurden vergeben aber aus dem Scope entfernt. Sie werden nicht implementiert.
+> - **FEAT-021** — Scoring-Dashboard & Scorecard → Gehört in OS-Plattform, nicht Blueprint
+> - **FEAT-022** — Admin: Fragebogen-Editor → Katalog-Import über Admin-UI reicht
 
 ## V2.1 Features (Geplant — Onboarding & Hilfe)
 
