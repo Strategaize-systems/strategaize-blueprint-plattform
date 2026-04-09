@@ -28,7 +28,10 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Pencil, Trash2, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldCheck, Menu, X } from "lucide-react";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { HelpButton } from "@/components/help-button";
+import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 
 interface Nomination {
   id: string;
@@ -46,12 +49,21 @@ const LAYER_OPTIONS = [
   { value: "key_staff", labelKey: "layerKS" },
 ];
 
-export function NominationsClient({ tenantId }: { tenantId: string }) {
+interface Profile {
+  id: string;
+  tenant_id: string | null;
+  email: string;
+  role: string;
+}
+
+export function NominationsClient({ tenantId, profile }: { tenantId: string; profile: Profile }) {
   const t = useTranslations("mirror.nominations");
   const locale = useLocale();
   const [nominations, setNominations] = useState<Nomination[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [learningCenterOpen, setLearningCenterOpen] = useState(false);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -150,17 +162,32 @@ export function NominationsClient({ tenantId }: { tenantId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-3xl px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-2">
-          <Link href="/dashboard" className="text-sm text-slate-500 hover:text-brand-primary">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <ShieldCheck className="h-5 w-5 text-amber-600" />
-          <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-        </div>
-        <p className="text-sm text-slate-500 mb-6">{t("subtitle")}</p>
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Mobile toggle */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md lg:hidden"
+      >
+        {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </button>
+
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-40 w-[280px] transform transition-transform duration-300 lg:relative lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <DashboardSidebar profile={profile} activePage="nominations" />
+      </aside>
+
+      <div className="flex flex-1 flex-col overflow-hidden lg:ml-0">
+        <div className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-3xl px-6 py-8">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-2">
+              <ShieldCheck className="h-5 w-5 text-amber-600" />
+              <h1 className="text-2xl font-bold text-slate-900 pl-10 lg:pl-0">{t("title")}</h1>
+            </div>
+            <p className="text-sm text-slate-500 mb-6">{t("subtitle")}</p>
 
         {message && (
           <Alert variant={message.type === "error" ? "destructive" : "default"} className="mb-4">
@@ -282,6 +309,16 @@ export function NominationsClient({ tenantId }: { tenantId: string }) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+          </div>
+        </div>
+
+        {/* Help */}
+        <HelpButton onClick={() => setLearningCenterOpen(true)} />
+        <LearningCenterPanel
+          open={learningCenterOpen}
+          onOpenChange={setLearningCenterOpen}
+          isMirror={false}
+        />
       </div>
     </div>
   );

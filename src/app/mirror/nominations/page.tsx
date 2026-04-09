@@ -23,5 +23,5 @@ export default async function NominationsPage() {
     redirect("/dashboard");
   }
 
-  return <NominationsClient tenantId={profile.tenant_id!} />;
+  return <NominationsClient tenantId={profile.tenant_id!} profile={profile} />;
 }
