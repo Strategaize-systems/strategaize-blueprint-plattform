@@ -104,6 +104,6 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-037 | Unified Tabbed Workspace | planned | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
+| FEAT-037 | Unified Tabbed Workspace | done | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
 
 ## Next Available ID: FEAT-038
