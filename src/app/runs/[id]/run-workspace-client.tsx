@@ -786,12 +786,14 @@ export function RunWorkspaceClient({
     </div>
   );
 
-  // ─── Mapping/Review Overlay (V3.3 — fullscreen over workspace) ──────
-  // Shown when freeform chat ends and mapping is triggered
-  const showMappingOverlay = freeformPhase === "mapping" || (freeformPhase === "review" && mappingResult);
+  // ─── Mapping/Review Overlay state (V3.3) ──────────────────────────
+  const showMappingOverlay = freeformPhase === "mapping" || (freeformPhase === "review" && !!mappingResult);
 
-  if (showMappingOverlay) {
-    return (
+  // ─── Unified Workspace (V3.3) ─────────────────────────────────────
+  return (
+    <>
+    {/* Mapping/Review Overlay — rendered ON TOP of workspace so FreeformChat stays mounted */}
+    {showMappingOverlay && (
       <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
         {freeformPhase === "mapping" && (
           <div className="flex min-h-screen items-center justify-center">
@@ -875,11 +877,7 @@ export function RunWorkspaceClient({
           />
         )}
       </div>
-    );
-  }
-
-  // ─── Unified Workspace (V3.3) ─────────────────────────────────────
-  return (
+    )}
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile sidebar toggle */}
       <button
@@ -1520,5 +1518,6 @@ export function RunWorkspaceClient({
         isMirror={isMirrorRespondent}
       />
     </div>
+    </>
   );
 }
