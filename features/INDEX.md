@@ -102,7 +102,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-037 | Unified Tabbed Workspace | done | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
+| FEAT-037 | Unified Tabbed Workspace | deployed | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
 
 ## V3.4 Features (Feedback + Compliance)
 

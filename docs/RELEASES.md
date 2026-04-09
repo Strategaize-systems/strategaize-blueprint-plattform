@@ -1,5 +1,12 @@
 # Releases
 
+### REL-009 — V3.3 Unified Tabbed Workspace
+- Date: 2026-04-09
+- Scope: FEAT-037 Unified Tabbed Workspace. 4 Slices (SLC-058 bis SLC-061). Drei-Tab-Layout (Offen, Frage für Frage, Feedback) ersetzt Mode-Selector. FreeformChat eingebettet im Offen-Tab. Sidebar auto-collapse. Globaler Collapse/Expand Button. Mapping/Review als Vollbild-Overlay mit Rückkehr-Option. CSS hidden Pattern für State-Erhaltung. DashboardSidebar als shared Component (Dashboard + Nominations). V3.2 Bug-Fix (React Hooks Violation). nodemailer Security Fix. Cockpit-Records Parsing Fix.
+- Summary: Teilnehmer landen direkt im integrierten Workspace statt einer Modus-Auswahl. Drei Tabs erlauben freies Wechseln zwischen offenem Gespräch und strukturiertem Fragebogen. Feedback-Tab als Platzhalter für V3.4. Nominations-Seite hat jetzt die gleiche Sidebar wie das Dashboard.
+- Risks: Keine automatisierten Tests (ISSUE-002). Browser-Kompatibilität nur Chrome verifiziert.
+- Rollback Notes: Coolify Container-Rollback auf V3.2 Build. Keine DB-Änderungen, kein Schema-Rollback nötig.
+
 ### REL-008 — V3.2 Mirror Smart Input (Free-Form Chat)
 - Date: 2026-04-09
 - Scope: Free-Form Chat als alternativer Eingabekanal (FEAT-035). 5 Slices (SLC-053 bis SLC-057), 1 Backlog-Item (BL-063). Teilnehmer spricht frei über Arbeitsalltag, LLM mappt auf strukturierte Fragen, depersonalisiert, Teilnehmer reviewt und akzeptiert. Mode-Selector UI, Themenübersicht, Chat mit Voice+Soft-Limit, Mapping-Review mit Draft-Editing. 1 DB-Migration (MIG-019: freeform_conversations). Bug-Fix: React Hooks Violation (useEffect nach conditional returns).
