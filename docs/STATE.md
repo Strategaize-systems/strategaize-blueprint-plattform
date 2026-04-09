@@ -9,24 +9,23 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: implementing
-- Current Focus: Alle 5 V3.2 Slices (SLC-053-057) implementiert. QA SLC-057 als nächstes, dann Gesamt-QA V3.2.
-- Current Phase: V3.2 Implementation
+- High-Level State: requirements
+- Current Focus: FEAT-037 Unified Tabbed Workspace — Requirements abgeschlossen, /architecture als nächstes.
+- Current Phase: V3.3 Requirements
 
 ## Immediate Next Steps
-1. /qa SLC-057
-2. Gesamt-QA V3.2
-3. /final-check V3.2
-4. /deploy V3.2
+1. /architecture für FEAT-037
+2. /slice-planning für FEAT-037
+3. /frontend Implementation
 
 ## Active Scope
-V3.2 — Mirror Smart Input. Free-Form Chat mit LLM-Mapping auf strukturierte Fragen (FEAT-035). 5 Slices (SLC-053 bis SLC-057), 1 Backlog-Item (BL-063).
+V3.3 — Unified Workspace. Drei-Tab-Layout (Offen, Frage für Frage, Feedback), direkter Einstieg ohne Mode-Selector, eingebetteter Free-Form Chat, Mapping/Review als Vollbild-Overlay. Reine Frontend-Arbeit, keine API-Änderungen. FEAT-037, BL-065.
 
 ## Blockers
 - aktuell keine
 
 ## Last Stable Version
-- V3.1 — 2026-04-07 — deployed auf https://blueprint.strategaizetransition.com
+- V3.2 — 2026-04-09 — deployed auf https://blueprint.strategaizetransition.com
 
 ## Notes
-Server: Hetzner CPX62. LLM auf Claude Sonnet 4.6 via AWS Bedrock (eu-central-1). Whisper auf large-v3. Ollama entfernt. V3 released (REL-006). V3.1 Gesamt-QA PASS: 7 Slices, 6 Bugfixes, Live-Test bestanden. FEAT-020 (Dedizierte Server) auf V4. BL-035 (Lektorat), BL-045 (DSGVO), BL-059 (Policy-Text Recht) offen. V3.2 geplant: Free-Form Chat (FEAT-035) + Feedback-Loop (FEAT-036).
+Server: Hetzner CPX62. LLM auf Claude Sonnet 4.6 via AWS Bedrock (eu-central-1). Whisper auf large-v3. Ollama entfernt. V3.2 deployed: Free-Form Chat (FEAT-035) implementiert + Bug-Fix (React Hooks Violation). V3.3: Unified Tabbed Workspace (FEAT-037). FEAT-036 (Feedback) als Platzhalter in V3.3, Inhalt in V3.4. FEAT-020 (Dedizierte Server) auf V4. BL-035 (Lektorat), BL-045 (DSGVO), BL-059 (Policy-Text Recht) offen.

@@ -100,4 +100,10 @@
 | FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | done | [Spec](FEAT-035-free-form-chat.md) | 2026-04-07 |
 | FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
 
-## Next Available ID: FEAT-037
+## V3.3 Features (Unified Workspace)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-037 | Unified Tabbed Workspace | planned | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
+
+## Next Available ID: FEAT-038

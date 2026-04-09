@@ -642,12 +642,12 @@
     },
     {
       "id": "BL-065",
-      "title": "Unified Workspace: Offenes Gespraech + Frage fuer Frage + Feedback nebeneinander",
-      "type": "improvement",
+      "title": "Unified Workspace: Drei-Tab-Layout (Offen, Frage fuer Frage, Feedback)",
+      "type": "feature",
       "priority": "high",
-      "status": "open",
-      "version": null,
-      "description": "Statt Modus-Auswahl-Screen: alle drei Bereiche (Offenes Gespraech, Frage fuer Frage, Feedback) als gleichwertige Hauptbereiche im Run-Workspace sichtbar. Nutzer kann jederzeit zwischen den Bereichen wechseln. Frage-fuer-Frage zeigt die bestehende Block/Fragen-Struktur aufklappbar darunter. Offenes Gespraech zeigt den Chat. Feedback ist initial ausgegraut bis es Inhalte gibt. Nutzer soll zwischendurch checken koennen, welche Fragen durch das offene Gespraech schon befuellt wurden. Kein separater Modus-Auswahl-Screen mehr noetig. Braucht Discovery fuer Layout-Konzept (Tabs? Sidebar-Sections? Split-View?).",
+      "status": "in_progress",
+      "version": "V3.3",
+      "description": "FEAT-037: Drei-Tab-Layout im Run-Workspace. Direkter Einstieg ohne Mode-Selector. Offen-Tab mit eingebettetem Free-Form Chat, Frage-fuer-Frage-Tab mit bestehendem Fragebogen + globalem Block-Collapse, Feedback-Tab als Platzhalter. Mapping/Review als Vollbild-Overlay mit Rueckkehr-Option. Tab-Wechsel behaelt State.",
       "createdAt": "2026-04-08"
     }
   ]
