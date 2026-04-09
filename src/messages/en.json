@@ -51,6 +51,12 @@
     "locked": "Locked"
   },
   "workspace": {
+    "tabs": {
+      "offen": "Open",
+      "questionnaire": "Question by Question",
+      "feedback": "Feedback",
+      "feedbackLocked": "This section will be available soon."
+    },
     "yourAnswer": "Your Answer",
     "messagesCount": "{count} messages",
     "emptyState": "Enter your answer or work with the AI assistant",

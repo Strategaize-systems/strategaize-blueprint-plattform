@@ -51,6 +51,12 @@
     "locked": "Gesperrt"
   },
   "workspace": {
+    "tabs": {
+      "offen": "Offen",
+      "questionnaire": "Frage für Frage",
+      "feedback": "Feedback",
+      "feedbackLocked": "Dieser Bereich wird bald freigeschaltet."
+    },
     "yourAnswer": "Ihre Antwort",
     "messagesCount": "{count} Nachrichten",
     "emptyState": "Antwort eingeben oder mit KI-Assistent erarbeiten",

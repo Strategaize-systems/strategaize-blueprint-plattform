@@ -51,6 +51,12 @@
     "locked": "Vergrendeld"
   },
   "workspace": {
+    "tabs": {
+      "offen": "Open",
+      "questionnaire": "Vraag voor Vraag",
+      "feedback": "Feedback",
+      "feedbackLocked": "Dit gedeelte wordt binnenkort beschikbaar."
+    },
     "yourAnswer": "Uw Antwoord",
     "messagesCount": "{count} berichten",
     "emptyState": "Voer uw antwoord in of werk samen met de AI-assistent",

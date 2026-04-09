@@ -44,14 +44,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square, ShieldCheck } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, X, MessageCircle, Send, Sparkles, Loader2, Image, Mic, Square, ShieldCheck, Lock } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { LearningCenterPanel } from "@/components/learning-center/learning-center-panel";
 import { RunMemoryView } from "@/components/learning-center/run-memory-view";
-import { ModeSelector } from "@/components/freeform/mode-selector";
-import { QuestionOverview } from "@/components/freeform/question-overview";
 import { FreeformChat } from "@/components/freeform/freeform-chat";
 import { MappingReview } from "@/components/freeform/mapping-review";
+import { WorkspaceTabs, type WorkspaceTab } from "@/components/workspace/workspace-tabs";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -124,9 +123,11 @@ export function RunWorkspaceClient({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [learningCenterOpen, setLearningCenterOpen] = useState(false);
 
-  // Free-Form mode state (V3.2)
-  const [workspaceMode, setWorkspaceMode] = useState<"questionnaire" | "freeform" | null>(null);
-  const [freeformPhase, setFreeformPhase] = useState<"overview" | "chatting" | "mapping" | "review">("overview");
+  // Unified Workspace tabs (V3.3)
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("offen");
+
+  // Free-Form state (V3.2)
+  const [freeformPhase, setFreeformPhase] = useState<"chatting" | "mapping" | "review">("chatting");
   const [freeformConversationId, setFreeformConversationId] = useState<string | null>(null);
   const [mappingResult, setMappingResult] = useState<{ mappings: Array<{ questionId: string; questionText: string; block: string; draftText: string; confidence: "high" | "medium" | "low"; hasExistingAnswer: boolean }>; unmappedQuestions: Array<{ questionId: string; questionText: string; block: string }> } | null>(null);
   const [mappingLoading, setMappingLoading] = useState(false);
@@ -226,7 +227,7 @@ export function RunWorkspaceClient({
 
   // ─── Free-Form mapping phase: trigger mapping API ───────────────────
   useEffect(() => {
-    if (workspaceMode !== "freeform" || freeformPhase !== "mapping") return;
+    if (activeTab !== "offen" || freeformPhase !== "mapping") return;
     if (mappingLoading || mappingResult || mappingError) return;
     if (!freeformConversationId) return;
 
@@ -256,7 +257,7 @@ export function RunWorkspaceClient({
         setMappingLoading(false);
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps — t excluded intentionally (unstable reference causes infinite re-renders)
-  }, [workspaceMode, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId]);
+  }, [activeTab, freeformPhase, mappingLoading, mappingResult, mappingError, freeformConversationId, runId]);
 
   function selectQuestion(q: Question) {
     // Stop any active recording when switching questions
@@ -785,157 +786,99 @@ export function RunWorkspaceClient({
     </div>
   );
 
-  // ─── Mode Selection (V3.2) ─────────────────────────────────────────────
-  // Show mode selector before entering the workspace (unless admin or locked)
-  if (!isAdmin && !isLocked && workspaceMode === null) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <ModeSelector onSelect={(mode) => {
-          setWorkspaceMode(mode);
-          if (mode === "freeform") setFreeformPhase("overview");
-        }} />
-      </div>
-    );
-  }
+  // ─── Mapping/Review Overlay (V3.3 — fullscreen over workspace) ──────
+  // Shown when freeform chat ends and mapping is triggered
+  const showMappingOverlay = freeformPhase === "mapping" || (freeformPhase === "review" && mappingResult);
 
-  // Free-Form overview phase: show question/block overview before chat starts
-  if (workspaceMode === "freeform" && freeformPhase === "overview") {
+  if (showMappingOverlay) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <QuestionOverview
-          questions={run.questions}
-          onStartChat={() => setFreeformPhase("chatting")}
-          onBack={() => setWorkspaceMode(null)}
-        />
-      </div>
-    );
-  }
-
-  // Free-Form chatting phase: full-screen chat panel
-  if (workspaceMode === "freeform" && freeformPhase === "chatting") {
-    return (
-      <div className="flex h-screen flex-col bg-slate-50">
-        {/* Header */}
-        <header className="flex-shrink-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold text-slate-900">{run.title}</h1>
-              <p className="text-sm text-slate-500">{t("freeform.modeSelector.freeformTitle")}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard"
-                className="rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 transition-colors"
-              >
-                {t("common.logout")}
-              </Link>
+      <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+        {freeformPhase === "mapping" && (
+          <div className="flex min-h-screen items-center justify-center">
+            <div className="text-center max-w-md px-4">
+              {mappingError ? (
+                <>
+                  <p className="text-sm text-red-600 mb-4">{mappingError}</p>
+                  <Button
+                    onClick={() => {
+                      setMappingError(null);
+                      setMappingResult(null);
+                    }}
+                    variant="outline"
+                  >
+                    {t("freeform.mapping.retry")}
+                  </Button>
+                  <Button
+                    onClick={() => setFreeformPhase("chatting")}
+                    variant="ghost"
+                    className="ml-2"
+                  >
+                    {t("freeform.chat.endChatCancel")}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="mx-auto mb-6 h-12 w-12 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-brand-primary" />
+                  </div>
+                  <p className="text-lg font-bold text-slate-900 mb-2">{t("freeform.mapping.loading")}</p>
+                  <p className="text-sm text-slate-500">{t("freeform.mapping.loadingDescription")}</p>
+                </>
+              )}
             </div>
           </div>
-        </header>
-        {/* Chat */}
-        <div className="flex-1 overflow-hidden">
-          <FreeformChat
-            runId={runId}
-            conversationId={freeformConversationId}
-            onConversationCreated={(id) => setFreeformConversationId(id)}
-            onEndChat={() => setFreeformPhase("mapping")}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (workspaceMode === "freeform" && freeformPhase === "mapping") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="text-center max-w-md px-4">
-          {mappingError ? (
-            <>
-              <p className="text-sm text-red-600 mb-4">{mappingError}</p>
-              <Button
-                onClick={() => {
-                  setMappingError(null);
-                  setMappingResult(null);
-                }}
-                variant="outline"
-              >
-                {t("freeform.mapping.retry")}
-              </Button>
-              <Button
-                onClick={() => setFreeformPhase("chatting")}
-                variant="ghost"
-                className="ml-2"
-              >
-                {t("freeform.chat.endChatCancel")}
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="mx-auto mb-6 h-12 w-12 rounded-full bg-brand-primary/10 flex items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-brand-primary" />
-              </div>
-              <p className="text-lg font-bold text-slate-900 mb-2">{t("freeform.mapping.loading")}</p>
-              <p className="text-sm text-slate-500">{t("freeform.mapping.loadingDescription")}</p>
-            </>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // ─── Free-Form review phase: show mapping results ───────────────────
-  if (workspaceMode === "freeform" && freeformPhase === "review" && mappingResult) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <MappingReview
-          mappings={mappingResult.mappings}
-          unmappedQuestions={mappingResult.unmappedQuestions}
-          accepting={accepting}
-          onBack={() => {
-            setMappingResult(null);
-            setFreeformConversationId(null);
-            setWorkspaceMode(null);
-            setFreeformPhase("overview");
-          }}
-          onAccept={async (drafts) => {
-            if (!freeformConversationId || drafts.length === 0) return;
-            setAccepting(true);
-            try {
-              const res = await fetch(`/api/tenant/runs/${runId}/freeform/accept`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  conversationId: freeformConversationId,
-                  acceptedDrafts: drafts,
-                }),
-              });
-              if (res.ok) {
-                const data = await res.json();
-                setMessage({
-                  text: t("freeform.review.success", { count: data.acceptedCount }),
-                  type: "success",
+        )}
+        {freeformPhase === "review" && mappingResult && (
+          <MappingReview
+            mappings={mappingResult.mappings}
+            unmappedQuestions={mappingResult.unmappedQuestions}
+            accepting={accepting}
+            onBack={() => {
+              // Return to chat — keep conversation state
+              setFreeformPhase("chatting");
+              setMappingResult(null);
+              setMappingError(null);
+            }}
+            onAccept={async (drafts) => {
+              if (!freeformConversationId || drafts.length === 0) return;
+              setAccepting(true);
+              try {
+                const res = await fetch(`/api/tenant/runs/${runId}/freeform/accept`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    conversationId: freeformConversationId,
+                    acceptedDrafts: drafts,
+                  }),
                 });
-                // Reset freeform state and switch to questionnaire to show updated answers
-                setMappingResult(null);
-                setFreeformConversationId(null);
-                setWorkspaceMode("questionnaire");
-                setFreeformPhase("overview");
-                await loadRun();
-              } else {
-                setMessage({ text: t("freeform.review.acceptError"), type: "error" });
+                if (res.ok) {
+                  const data = await res.json();
+                  setMessage({
+                    text: t("freeform.review.success", { count: data.acceptedCount }),
+                    type: "success",
+                  });
+                  // Clear freeform state, switch to questionnaire to show updated answers
+                  setMappingResult(null);
+                  setFreeformConversationId(null);
+                  setFreeformPhase("chatting");
+                  setActiveTab("questionnaire");
+                  await loadRun();
+                } else {
+                  setMessage({ text: t("freeform.review.acceptError"), type: "error" });
+                }
+              } catch {
+                setMessage({ text: t("common.networkError"), type: "error" });
+              } finally {
+                setAccepting(false);
               }
-            } catch {
-              setMessage({ text: t("common.networkError"), type: "error" });
-            } finally {
-              setAccepting(false);
-            }
-          }}
-        />
+            }}
+          />
+        )}
       </div>
     );
   }
 
-  // ─── Main layout (questionnaire mode) ─────────────────────────────
+  // ─── Unified Workspace (V3.3) ─────────────────────────────────────
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Mobile sidebar toggle */}
@@ -1083,6 +1026,11 @@ export function RunWorkspaceClient({
           </div>
         </header>
 
+        {/* Tab Navigation (V3.3) */}
+        {!isAdmin && !isLocked && (
+          <WorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
+        )}
+
         {/* Mirror confidentiality banner */}
         {isMirrorRespondent && (
           <div className="flex-shrink-0 px-6 pt-3">
@@ -1104,8 +1052,29 @@ export function RunWorkspaceClient({
           </div>
         )}
 
-        {/* Content: main workspace — scrollable page, answer area fills viewport */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        {/* ─── Tab: Offen (Free-Form Chat) ─── */}
+        <div className={`flex-1 overflow-hidden ${activeTab === "offen" && !isAdmin && !isLocked ? "flex flex-col" : "hidden"}`}>
+          <FreeformChat
+            runId={runId}
+            conversationId={freeformConversationId}
+            onConversationCreated={(id) => setFreeformConversationId(id)}
+            onEndChat={() => setFreeformPhase("mapping")}
+          />
+        </div>
+
+        {/* ─── Tab: Feedback (Platzhalter) ─── */}
+        <div className={`flex-1 overflow-hidden ${activeTab === "feedback" && !isAdmin && !isLocked ? "flex items-center justify-center" : "hidden"}`}>
+          <div className="text-center px-4">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+              <Lock className="h-8 w-8 text-slate-300" />
+            </div>
+            <p className="text-lg font-bold text-slate-400 mb-2">{t("workspace.tabs.feedback")}</p>
+            <p className="text-sm text-slate-400">{t("workspace.tabs.feedbackLocked")}</p>
+          </div>
+        </div>
+
+        {/* ─── Tab: Frage für Frage (Questionnaire) ─── */}
+        <div className={`flex-1 overflow-y-auto px-6 py-4 ${activeTab === "questionnaire" || isAdmin || isLocked ? "" : "hidden"}`}>
           {activeQ ? (
             <div className="mx-auto max-w-6xl w-full space-y-3">
               {/* ── Kompakte Fragekarte ── */}
