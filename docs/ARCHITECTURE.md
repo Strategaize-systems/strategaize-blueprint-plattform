@@ -1989,3 +1989,156 @@ Innerhalb üblicher SaaS-LLM-Kosten. Monitoring empfohlen.
 | Frontend | `src/components/freeform/soft-limit-banner.tsx` | NEU — Info-Banner bei Soft-Limit |
 | i18n | `src/messages/de.json`, `en.json`, `nl.json` | ERWEITERN — freeform.* Namespace |
 | Validierung | `src/lib/validations.ts` | ERWEITERN — freeformChatSchema, mappingSchema |
+
+## V3.3: Unified Tabbed Workspace Architektur
+
+### Architektur-Überblick
+
+V3.3 ersetzt das Entweder-Oder-Modell (Mode Selector → separate Vollbild-Screens) durch einen integrierten Workspace mit drei Tabs. Reine Frontend-Umstrukturierung — keine Backend-, API- oder DB-Änderungen.
+
+```
+Run-Seite (/runs/[id])
+  |
+  v
+RunWorkspaceClient (Orchestrator)
+  |
+  +---> Tab-Leiste: [Offen] [Frage für Frage] [Feedback🔒]
+  |
+  +---> activeTab === "offen"
+  |       |
+  |       +---> Sidebar (sichtbar, alle Blöcke eingeklappt)
+  |       +---> FreeformChat (eingebettet, volle Funktionalität)
+  |
+  +---> activeTab === "questionnaire"
+  |       |
+  |       +---> Sidebar (sichtbar, Blöcke auf-/zuklappbar + Global Toggle)
+  |       +---> Frage-Detail (Antwort/Chat/Evidence — unverändert)
+  |
+  +---> activeTab === "feedback"
+  |       |
+  |       +---> Platzhalter ("Kommt bald")
+  |
+  +---> Mapping/Review Overlay (Vollbild, über dem Workspace)
+          |
+          +---> MappingReview (bestehendes Component)
+          +---> "Zurück zum Chat" → Overlay schließen, Chat-State erhalten
+          +---> "Akzeptieren" → Antworten übernehmen, Chat + Review leeren
+```
+
+### State-Architektur
+
+#### Neuer State (ersetzt `workspaceMode`)
+
+```typescript
+// Tab-Steuerung — ersetzt den bisherigen workspaceMode (null | "questionnaire" | "freeform")
+const [activeTab, setActiveTab] = useState<"offen" | "questionnaire" | "feedback">("offen");
+
+// Mapping-Overlay — unabhängig vom Tab-State
+const [showMappingOverlay, setShowMappingOverlay] = useState(false);
+```
+
+#### Beibehaltener State
+
+Alle bisherigen State-Variablen bleiben erhalten:
+- `freeformConversationId`, `freeformPhase`, `mappingResult`, `mappingLoading`, `mappingError` — Freeform-Flow
+- `activeQuestion`, `answerText`, `chatMessages`, `chatInput` — Fragebogen-Interaktion
+- `openBlocks`, `sidebarOpen` — Sidebar-Navigation
+- `run`, `loading`, `submissions`, `evidenceItems` — Datenladung
+
+#### Entfallender State
+
+```typescript
+// ENTFERNT:
+// workspaceMode: "questionnaire" | "freeform" | null  — ersetzt durch activeTab
+// freeformPhase: "overview" | "chatting" | "mapping" | "review" — vereinfacht
+```
+
+`freeformPhase` wird vereinfacht: "overview" entfällt (kein separater Overview-Screen mehr). Die verbleibenden Phasen ("chatting", "mapping", "review") werden über `showMappingOverlay` und den Chat-State selbst gesteuert.
+
+### Tab-Rendering-Strategie
+
+**Kritische Entscheidung: Beide Tabs bleiben gemountet (CSS hidden), damit State erhalten bleibt.**
+
+```typescript
+// NICHT: Conditional Rendering (verliert State beim Tab-Wechsel)
+{activeTab === "offen" && <FreeformChat />}
+
+// STATTDESSEN: CSS-basiertes Hiding (State bleibt erhalten)
+<div className={activeTab === "offen" ? "block" : "hidden"}>
+  <FreeformChat />
+</div>
+<div className={activeTab === "questionnaire" ? "block" : "hidden"}>
+  {/* Fragebogen-Bereich */}
+</div>
+```
+
+**Warum:** Wenn der User 10 Minuten im Chat tippt, dann kurz die Fragen prüft und zurückwechselt, darf der Chat-Verlauf nicht verloren gehen. CSS hidden hält die Components gemountet und ihren State intakt.
+
+### Sidebar-Verhalten pro Tab
+
+| Tab | Sidebar sichtbar | Blöcke | Interaktion |
+|-----|-------------------|--------|-------------|
+| Offen | Ja | Alle eingeklappt | Aufklappen zum Fortschritt prüfen |
+| Frage für Frage | Ja | Normal auf-/zuklappbar | Fragen-Navigation wie bisher |
+| Feedback | Ja (optional) | Eingeklappt | Nur Fortschrittsanzeige |
+
+**Global Collapse/Expand:** Ein Button in der Sidebar (oben) der `openBlocks` auf `new Set(allBlocks)` oder `new Set()` setzt.
+
+**Tab-Wechsel-Verhalten:** Beim Wechsel zu "Offen" werden alle Blöcke automatisch eingeklappt. Beim Wechsel zu "Frage für Frage" bleiben sie wie der User sie zuletzt hatte.
+
+### Mapping/Review als Overlay
+
+```
+Normaler Workspace (Tabs + Sidebar + Content)
+  |
+  | Chat endet → "Mapping starten"
+  v
++--------------------------------------------------+
+| Mapping/Review Overlay (position: fixed, z-50)    |
+|                                                    |
+|  [← Zurück zum Chat]            [Akzeptieren →]   |
+|                                                    |
+|  Zuordnungen: Frage X.Y → Draft-Antwort           |
+|  [✓] [✓] [ ] ...                                  |
++--------------------------------------------------+
+
+"Zurück zum Chat":
+  → setShowMappingOverlay(false)
+  → Chat-State unverändert (Nachrichten, ConversationID bleiben)
+  → User kann weiterschreiben, dann erneut Mapping starten
+
+"Akzeptieren":
+  → API Call: POST /api/tenant/runs/{runId}/freeform/accept
+  → Antworten werden in strukturierte Fragen übernommen
+  → Chat-State leeren (messages, conversationId)
+  → Mapping-State leeren (mappingResult)
+  → setShowMappingOverlay(false)
+  → loadRun() um aktualisierte Antworten zu laden
+  → User ist zurück im Workspace, kann neuen Chat starten
+```
+
+### Component-Änderungen
+
+| Datei | Aktion | Beschreibung |
+|-------|--------|-------------|
+| `src/app/runs/[id]/run-workspace-client.tsx` | REFACTOR | Tab-Logik einbauen, Mode-Selector/Overview-Returns entfernen, Mapping als Overlay |
+| `src/components/freeform/freeform-chat.tsx` | MINIMAL | Eventuell Height-Anpassung für eingebetteten Modus |
+| `src/components/freeform/mapping-review.tsx` | UNVERÄNDERT | Wird als Overlay-Content wiederverwendet |
+| `src/components/freeform/mode-selector.tsx` | ENTFERNEN | Nicht mehr benötigt |
+| `src/components/freeform/question-overview.tsx` | ENTFERNEN | Nicht mehr benötigt |
+| `src/components/workspace/workspace-tabs.tsx` | NEU | Tab-Leiste als eigene Component |
+| `src/messages/de.json`, `en.json`, `nl.json` | ERWEITERN | workspace.tabs.*, workspace.feedback.* Keys |
+
+### Risiko-Mitigation: Dateigröße run-workspace-client.tsx
+
+Die Hauptdatei ist bereits ~1500 Zeilen. Die Tab-Logik kommt hinzu, aber durch Entfernen der conditional-return-Screens (Mode Selector, Question Overview, Freeform Chatting Fullscreen) fallen ~100 Zeilen weg.
+
+**Strategie:** Tab-Leiste als eigene Component extrahieren (`workspace-tabs.tsx`). Den Rest in der Hauptdatei belassen — der Fragebogen-Bereich und der Shared State sind zu eng verwoben für sinnvolle Extraktion ohne massives Prop-Drilling.
+
+### Keine Backend-Änderungen
+
+Alle API-Endpoints bleiben unverändert:
+- `POST /api/tenant/runs/{runId}/freeform/chat` — Chat-Nachrichten
+- `POST /api/tenant/runs/{runId}/freeform/map` — Mapping nach Chat-Ende
+- `POST /api/tenant/runs/{runId}/freeform/accept` — Antworten übernehmen
+- Alle bestehenden Tenant-Endpoints (events, evidence, submissions, etc.)

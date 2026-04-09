@@ -191,6 +191,21 @@
 - Consequence: Freiform-Prompt bekommt kompakte Themen. Mapping-Prompt bekommt den vollständigen Katalog mit IDs. Neuer Helper `buildCompactCatalog()` für Freiform, bestehende Frage-Struktur für Mapping.
 
 ## DEC-039 — Freeform-Phase als State im Workspace statt separate Route
-- Status: accepted
+- Status: superseded
 - Reason: Free-Form Flow hat 4 Phasen (overview → chatting → mapping → review). Separate Routes würden 4 neue Pages erzeugen und den Context (Run, Conversation) über URL-Params transportieren müssen. State-basierte Phase-Transition im bestehenden Workspace-Client ist einfacher und konsistenter mit dem bestehenden Chat-UI-Pattern.
-- Consequence: `FreeformPhase` State in `run-workspace-client.tsx`. Kein Routing-Aufwand. Conversation-ID im State. Phase-Transitions durch Button-Klicks.
+- Consequence: Ersetzt durch DEC-040. Freeform ist jetzt ein Tab, nicht mehr ein separater Phasen-Flow.
+
+## DEC-040 — Unified Tabs statt Mode-Selector (V3.3)
+- Status: accepted
+- Reason: Der Mode-Selector erzwingt eine Vorab-Entscheidung zwischen "Offen" und "Frage für Frage". Teilnehmer wollen aber frei zwischen beiden wechseln — frei erzählen, dann Fragen prüfen, dann zurück zum Chat. Die Entweder-Oder-Trennung widerspricht dem natürlichen Arbeitsflow.
+- Consequence: Drei Tabs im Workspace (Offen, Frage für Frage, Feedback). Kein Mode-Selector. Beide Tabs bleiben gemountet (CSS hidden) damit State erhalten bleibt. Mapping/Review als Vollbild-Overlay über dem Workspace.
+
+## DEC-041 — CSS Hidden statt Conditional Rendering für Tab-Inhalte
+- Status: accepted
+- Reason: Conditional Rendering (`{activeTab === "offen" && <Chat />}`) würde den Chat-State (Nachrichten, Recording, ConversationID) beim Tab-Wechsel zerstören. Der User könnte 10 Minuten chatten, kurz die Fragen prüfen, und der Chat wäre weg. CSS hidden (`className="hidden"`) hält die Components gemountet und ihren State intakt.
+- Consequence: Beide Tab-Inhalte sind immer im DOM. Nur der aktive Tab ist sichtbar. Kein State-Verlust beim Wechsel. Minimaler Performance-Overhead da der Hidden-Tab keine DOM-Updates triggert.
+
+## DEC-042 — Mapping/Review als Overlay statt Tab-Ersetzung
+- Status: accepted
+- Reason: Wenn Mapping/Review den "Offen"-Tab ersetzen würde, könnte der User nicht zum Chat zurückkehren um Ergänzungen zu machen. Ein Vollbild-Overlay über dem gesamten Workspace erlaubt Rückkehr zum Chat via "Zurück"-Button. Erst bei "Akzeptieren" werden Chat und Review geleert.
+- Consequence: `showMappingOverlay` State. Overlay ist `position: fixed, z-50`. Chat-State bleibt intakt bis Accept. MappingReview Component wird unverändert als Overlay-Content wiederverwendet.
