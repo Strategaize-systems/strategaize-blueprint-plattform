@@ -65,10 +65,10 @@
 
 ## Removed Features
 
-| ID | Feature | Reason |
-|----|---------|--------|
-| FEAT-021 | Scoring-Dashboard & Scorecard | Gehört in OS-Plattform, nicht Blueprint |
-| FEAT-022 | Admin: Fragebogen-Editor | Katalog-Import über Admin-UI reicht |
+| ID | Feature | Status | Reason |
+|----|---------|--------|--------|
+| FEAT-021 | Scoring-Dashboard & Scorecard | removed | Gehört in OS-Plattform, nicht Blueprint |
+| FEAT-022 | Admin: Fragebogen-Editor | removed | Katalog-Import über Admin-UI reicht |
 
 ## V2.1 Features (Geplant — Onboarding & Hilfe)
 
