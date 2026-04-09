@@ -693,6 +693,19 @@ export function RunWorkspaceClient({
       </div>
       <div className="h-3" />
 
+      {/* Global collapse/expand */}
+      <div className="px-3 pb-1">
+        <button
+          onClick={() => {
+            const allOpen = openBlocks.size === blocks.length;
+            setOpenBlocks(allOpen ? new Set() : new Set(blocks));
+          }}
+          className="w-full rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-300 hover:bg-white/[0.04] transition-colors text-center"
+        >
+          {openBlocks.size === blocks.length ? t("sidebar.collapseAll") : t("sidebar.expandAll")}
+        </button>
+      </div>
+
       {/* Block groups */}
       <div className="flex-1 overflow-y-auto px-3 py-1">
         {blocks.map((block) => {

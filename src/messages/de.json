@@ -28,7 +28,9 @@
     "runs": "Runs",
     "runsDescription": "Ihre Assessments",
     "mirrorNominations": "Mirror-Teilnehmer",
-    "mirrorNominationsDescription": "Vorschläge verwalten"
+    "mirrorNominationsDescription": "Vorschläge verwalten",
+    "expandAll": "Alle öffnen",
+    "collapseAll": "Alle schließen"
   },
   "blocks": {
     "A": "Grundverständnis",

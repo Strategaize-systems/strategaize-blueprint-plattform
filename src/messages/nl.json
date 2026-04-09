@@ -28,7 +28,9 @@
     "runs": "Runs",
     "runsDescription": "Uw Assessments",
     "mirrorNominations": "Mirror-deelnemers",
-    "mirrorNominationsDescription": "Voorstellen beheren"
+    "mirrorNominationsDescription": "Voorstellen beheren",
+    "expandAll": "Alles openen",
+    "collapseAll": "Alles sluiten"
   },
   "blocks": {
     "A": "Basiskennis",

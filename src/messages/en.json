@@ -28,7 +28,9 @@
     "runs": "Runs",
     "runsDescription": "Your Assessments",
     "mirrorNominations": "Mirror Participants",
-    "mirrorNominationsDescription": "Manage suggestions"
+    "mirrorNominationsDescription": "Manage suggestions",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "blocks": {
     "A": "Fundamentals",

@@ -202,7 +202,7 @@ QA nach jedem Slice.
 |----|-------|---------|--------|----------|---------|
 | SLC-058 | [Tab-Infrastruktur + Cleanup](SLC-058-tab-infrastructure.md) | FEAT-037 | done | High | 2026-04-09 |
 | SLC-059 | [Offen-Tab mit eingebettetem Chat](SLC-059-offen-tab-chat.md) | FEAT-037 | done | High | 2026-04-09 |
-| SLC-060 | [Frage-für-Frage-Tab + Global Collapse + Feedback](SLC-060-questionnaire-tab-feedback.md) | FEAT-037 | planned | High | 2026-04-09 |
+| SLC-060 | [Frage-für-Frage-Tab + Global Collapse + Feedback](SLC-060-questionnaire-tab-feedback.md) | FEAT-037 | done | High | 2026-04-09 |
 | SLC-061 | [Mapping/Review Overlay](SLC-061-mapping-overlay.md) | FEAT-037 | planned | High | 2026-04-09 |
 
 ## V3.3 Execution Order
