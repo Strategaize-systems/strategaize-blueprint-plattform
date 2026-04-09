@@ -125,6 +125,20 @@ export function RunWorkspaceClient({
 
   // Unified Workspace tabs (V3.3)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("offen");
+  const prevBlocksRef = useRef<Set<string>>(new Set());
+
+  // Tab switch handler — collapses sidebar blocks when switching to "offen"
+  function handleTabChange(tab: WorkspaceTab) {
+    if (tab === "offen" && activeTab !== "offen") {
+      // Save current block state before collapsing
+      prevBlocksRef.current = new Set(openBlocks);
+      setOpenBlocks(new Set());
+    } else if (tab === "questionnaire" && activeTab === "offen") {
+      // Restore previous block state when returning to questionnaire
+      setOpenBlocks(prevBlocksRef.current.size > 0 ? new Set(prevBlocksRef.current) : new Set());
+    }
+    setActiveTab(tab);
+  }
 
   // Free-Form state (V3.2)
   const [freeformPhase, setFreeformPhase] = useState<"chatting" | "mapping" | "review">("chatting");
@@ -863,7 +877,7 @@ export function RunWorkspaceClient({
                   setMappingResult(null);
                   setFreeformConversationId(null);
                   setFreeformPhase("chatting");
-                  setActiveTab("questionnaire");
+                  handleTabChange("questionnaire");
                   await loadRun();
                 } else {
                   setMessage({ text: t("freeform.review.acceptError"), type: "error" });
@@ -1026,7 +1040,7 @@ export function RunWorkspaceClient({
 
         {/* Tab Navigation (V3.3) */}
         {!isAdmin && !isLocked && (
-          <WorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
+          <WorkspaceTabs activeTab={activeTab} onChange={handleTabChange} />
         )}
 
         {/* Mirror confidentiality banner */}

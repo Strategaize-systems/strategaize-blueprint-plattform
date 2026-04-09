@@ -20,7 +20,7 @@ export function WorkspaceTabs({ activeTab, onChange }: WorkspaceTabsProps) {
   const t = useTranslations();
 
   return (
-    <div className="flex items-center gap-2 px-6 py-3 bg-white border-b border-slate-200/60">
+    <div className="flex-shrink-0 flex items-center gap-2 px-6 py-3 bg-white border-b border-slate-200/60">
       {TAB_CONFIG.map(({ id, icon: Icon, labelKey, disabled }) => {
         const isActive = activeTab === id;
         return (
