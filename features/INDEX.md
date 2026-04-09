@@ -97,7 +97,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | done | [Spec](FEAT-035-free-form-chat.md) | 2026-04-07 |
+| FEAT-035 | Free-Form Chat mit LLM-Mapping auf strukturierte Fragen | deployed | [Spec](FEAT-035-free-form-chat.md) | 2026-04-07 |
 | FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
 
 ## V3.3 Features (Unified Workspace)

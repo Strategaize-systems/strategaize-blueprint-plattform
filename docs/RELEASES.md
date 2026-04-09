@@ -1,5 +1,12 @@
 # Releases
 
+### REL-008 — V3.2 Mirror Smart Input (Free-Form Chat)
+- Date: 2026-04-09
+- Scope: Free-Form Chat als alternativer Eingabekanal (FEAT-035). 5 Slices (SLC-053 bis SLC-057), 1 Backlog-Item (BL-063). Teilnehmer spricht frei über Arbeitsalltag, LLM mappt auf strukturierte Fragen, depersonalisiert, Teilnehmer reviewt und akzeptiert. Mode-Selector UI, Themenübersicht, Chat mit Voice+Soft-Limit, Mapping-Review mit Draft-Editing. 1 DB-Migration (MIG-019: freeform_conversations). Bug-Fix: React Hooks Violation (useEffect nach conditional returns).
+- Summary: Zweiter Eingabekanal neben dem strukturierten Fragebogen. Teilnehmer können frei über ihr Unternehmen sprechen, das LLM ordnet die Inhalte automatisch den 73 Fragen zu und generiert neutralisierte Draft-Antworten. Review-UI erlaubt Prüfung, Bearbeitung und selektive Übernahme. Voice-Input via Whisper. Compliance-tauglich durch automatische Depersonalisierung.
+- Risks: Keine automatisierten Tests (ISSUE-002). Mode-Selector wird in V3.3 durch Unified Workspace ersetzt.
+- Rollback Notes: Coolify Container-Rollback auf V3.1. DB: DROP TABLE freeform_conversations;
+
 ### REL-007 — V3.1 Mirror Usability
 - Date: 2026-04-07
 - Scope: Mirror Usability für Realeinsatz. 3 Features (FEAT-032 bis FEAT-034), 7 Slices (SLC-046 bis SLC-052), 8 Backlog-Items. GF-Nominierungsformular (Teilnehmer in Plattform vorschlagen). Mirror-Profil (Pflicht nach Policy, Layer-abhängige Felder, LLM-Personalisierung via buildMirrorContext). Verbessertes Mirror-Onboarding (eigenes E-Mail-Template mit Kontext + erweiterte Policy-Seite mit Erklärungsblock + Video-Platzhalter). Run-Deadline (DatePicker bei Erstellung, Pill-Badge im Dashboard). Rollenbasiertes Learning Center (Mirror sieht angepasste Hilfe statt Owner-Videos). 1 DB-Migration (MIG-018: mirror_nominations, mirror_profiles, runs.due_date). 6 Bugfixes nach Live-Test.
