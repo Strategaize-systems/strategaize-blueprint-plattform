@@ -636,7 +636,7 @@
       "type": "feature",
       "priority": "medium",
       "status": "open",
-      "version": "V3.2",
+      "version": "V3.4",
       "description": "Nach Freigabe aller Antworten: kurzer Feedback-Block. Fragen wie: Themen nicht abgedeckt? Fragen verstaendlich? Verbesserungsvorschlaege? Daten separat gespeichert (nicht in Fragebogen-Antworten), entpersonalisiert exportierbar. Fliesst intern in Katalog-Verbesserung. Grundstruktur spaeter wiederverwendbar fuer Mitarbeiter-Feedback, Ideen-Management, Verbesserungspotenzial in anderen Produkten.",
       "createdAt": "2026-04-07"
     },
@@ -649,6 +649,16 @@
       "version": "V3.3",
       "description": "FEAT-037: Drei-Tab-Layout im Run-Workspace. Direkter Einstieg ohne Mode-Selector. Offen-Tab mit eingebettetem Free-Form Chat, Frage-fuer-Frage-Tab mit bestehendem Fragebogen + globalem Block-Collapse, Feedback-Tab als Platzhalter. Mapping/Review als Vollbild-Overlay mit Rueckkehr-Option. Tab-Wechsel behaelt State.",
       "createdAt": "2026-04-08"
+    },
+    {
+      "id": "BL-066",
+      "title": "Compliance-Datentrennung: GF behaelt Rohdaten, Mirror nur neutralisierte Antworten",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V3.4",
+      "description": "FEAT-038: Rollenbasierte Datenweitergabe an OS. GF/Owner: Rohdaten aus Free-Form Chat werden gespeichert und ans OS weitergegeben (Kontext fuer Beratung). Mirror/Mitarbeiter: Nur strukturierte, neutralisierte, nicht-rueckfuehrbare Antworten. Rohe Gespraechsdaten werden NICHT exportiert. Technisch: Export-Filter nach survey_type, freeform_conversations Zugriff einschraenken, ggf. TTL/Loeschung fuer Mirror-Rohdaten.",
+      "createdAt": "2026-04-09"
     }
   ]
 }
