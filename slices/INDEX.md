@@ -196,6 +196,27 @@ Strikt sequentiell: jeder Slice baut auf dem vorherigen auf.
 QA nach jedem Slice.
 ```
 
+## V3.3 Slices — Unified Tabbed Workspace
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-058 | [Tab-Infrastruktur + Cleanup](SLC-058-tab-infrastructure.md) | FEAT-037 | planned | High | 2026-04-09 |
+| SLC-059 | [Offen-Tab mit eingebettetem Chat](SLC-059-offen-tab-chat.md) | FEAT-037 | planned | High | 2026-04-09 |
+| SLC-060 | [Frage-für-Frage-Tab + Global Collapse + Feedback](SLC-060-questionnaire-tab-feedback.md) | FEAT-037 | planned | High | 2026-04-09 |
+| SLC-061 | [Mapping/Review Overlay](SLC-061-mapping-overlay.md) | FEAT-037 | planned | High | 2026-04-09 |
+
+## V3.3 Execution Order
+
+```
+1. SLC-058 (Frontend)  → Tab-Leiste, activeTab State, alte Screens entfernen
+2. SLC-059 (Frontend)  → Chat in Offen-Tab einbetten, Sidebar-Collapse (hängt von SLC-058 ab)
+3. SLC-060 (Frontend)  → Fragebogen in Tab, Global Collapse, Feedback-Platzhalter (hängt von SLC-058 ab)
+4. SLC-061 (Frontend)  → Mapping-Overlay, Accept-Flow, Phase-Cleanup (hängt von SLC-058, SLC-059 ab)
+
+SLC-059 und SLC-060 können parallel nach SLC-058 laufen.
+QA nach jedem Slice.
+```
+
 ## V4 Slices (Geplant)
 
 | ID | Slice | Feature | Status | Priority | Created |

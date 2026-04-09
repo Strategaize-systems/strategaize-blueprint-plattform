@@ -9,14 +9,15 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: architecture
-- Current Focus: FEAT-037 Unified Tabbed Workspace — Architecture abgeschlossen, /slice-planning als nächstes.
-- Current Phase: V3.3 Architecture
+- High-Level State: slice-planning
+- Current Focus: FEAT-037 Unified Tabbed Workspace — 4 Slices (SLC-058 bis SLC-061), /frontend SLC-058 als nächstes.
+- Current Phase: V3.3 Slice Planning
 
 ## Immediate Next Steps
-1. /slice-planning für FEAT-037
-2. /frontend Implementation
-3. /qa nach jedem Slice
+1. /frontend SLC-058 (Tab-Infrastruktur)
+2. /qa SLC-058
+3. /frontend SLC-059 + SLC-060 (parallel möglich)
+4. /frontend SLC-061 (Mapping-Overlay)
 
 ## Active Scope
 V3.3 — Unified Workspace. Drei-Tab-Layout (Offen, Frage für Frage, Feedback), direkter Einstieg ohne Mode-Selector, eingebetteter Free-Form Chat, Mapping/Review als Vollbild-Overlay. Reine Frontend-Arbeit, keine API-Änderungen. FEAT-037, BL-065.
