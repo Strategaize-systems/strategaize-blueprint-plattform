@@ -57,7 +57,26 @@
       "offen": "Open",
       "questionnaire": "Question by Question",
       "feedback": "Feedback",
-      "feedbackLocked": "This section will be available soon."
+      "feedbackLocked": "Available after questionnaire completion"
+    },
+    "feedback": {
+      "title": "Questionnaire Feedback",
+      "description": "Your feedback helps us improve the questionnaire. All responses are voluntary and stored anonymously.",
+      "coverageQuestion": "Were there topics missing from the questionnaire?",
+      "coveragePlaceholder": "What topics would you have liked to see?",
+      "clarityQuestion": "Were any questions difficult to understand?",
+      "clarityPlaceholder": "Which questions were unclear or confusing?",
+      "improvementsQuestion": "What would you improve about the process?",
+      "improvementsPlaceholder": "Your suggestions for improvement...",
+      "overallQuestion": "How would you rate the questionnaire overall?",
+      "overallPlaceholder": "Optional comment on the overall rating...",
+      "ratingLabel": "Rating",
+      "submit": "Submit Feedback",
+      "submitting": "Submitting...",
+      "successTitle": "Thank you!",
+      "successMessage": "Your feedback has been saved.",
+      "errorSaving": "Could not save feedback. Please try again.",
+      "errorLoading": "Could not load feedback."
     },
     "yourAnswer": "Your Answer",
     "messagesCount": "{count} messages",

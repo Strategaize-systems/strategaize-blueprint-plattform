@@ -57,7 +57,26 @@
       "offen": "Offen",
       "questionnaire": "Frage für Frage",
       "feedback": "Feedback",
-      "feedbackLocked": "Dieser Bereich wird bald freigeschaltet."
+      "feedbackLocked": "Verfügbar nach Fragebogen-Abschluss"
+    },
+    "feedback": {
+      "title": "Feedback zum Fragebogen",
+      "description": "Ihre Rückmeldung hilft uns, den Fragebogen zu verbessern. Alle Angaben sind freiwillig und werden anonymisiert gespeichert.",
+      "coverageQuestion": "Gab es Themen, die im Fragebogen gefehlt haben?",
+      "coveragePlaceholder": "Welche Themen hätten Sie sich gewünscht?",
+      "clarityQuestion": "Gab es Fragen, die schwer verständlich waren?",
+      "clarityPlaceholder": "Welche Fragen waren unklar oder missverständlich?",
+      "improvementsQuestion": "Was würden Sie am Prozess verbessern?",
+      "improvementsPlaceholder": "Ihre Verbesserungsvorschläge...",
+      "overallQuestion": "Wie bewerten Sie den Fragebogen insgesamt?",
+      "overallPlaceholder": "Optionaler Kommentar zur Gesamtbewertung...",
+      "ratingLabel": "Bewertung",
+      "submit": "Feedback absenden",
+      "submitting": "Wird gesendet...",
+      "successTitle": "Vielen Dank!",
+      "successMessage": "Ihr Feedback wurde gespeichert.",
+      "errorSaving": "Feedback konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "errorLoading": "Feedback konnte nicht geladen werden."
     },
     "yourAnswer": "Ihre Antwort",
     "messagesCount": "{count} Nachrichten",

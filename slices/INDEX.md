@@ -221,9 +221,9 @@ QA nach jedem Slice.
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-062 | [Feedback Backend (DB + API)](SLC-062-feedback-backend.md) | FEAT-036 | planned | High | 2026-04-13 |
-| SLC-063 | [Feedback Frontend (Tab + Panel)](SLC-063-feedback-frontend.md) | FEAT-036 | planned | High | 2026-04-13 |
-| SLC-064 | [Compliance Export-Haertung + Freeform-Export](SLC-064-compliance-export.md) | FEAT-038, FEAT-036 | planned | High | 2026-04-13 |
+| SLC-062 | [Feedback Backend (DB + API)](SLC-062-feedback-backend.md) | FEAT-036 | done | High | 2026-04-13 |
+| SLC-063 | [Feedback Frontend (Tab + Panel)](SLC-063-feedback-frontend.md) | FEAT-036 | done | High | 2026-04-13 |
+| SLC-064 | [Compliance Export-Haertung + Freeform-Export](SLC-064-compliance-export.md) | FEAT-038, FEAT-036 | done | High | 2026-04-13 |
 
 ## V3.4 Execution Order
 

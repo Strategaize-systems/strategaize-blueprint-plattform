@@ -8,21 +8,23 @@ export type WorkspaceTab = "offen" | "questionnaire" | "feedback";
 interface WorkspaceTabsProps {
   activeTab: WorkspaceTab;
   onChange: (tab: WorkspaceTab) => void;
+  disabledTabs?: WorkspaceTab[];
 }
 
-const TAB_CONFIG: { id: WorkspaceTab; icon: typeof MessageCircle; labelKey: string; disabled?: boolean }[] = [
+const TAB_CONFIG: { id: WorkspaceTab; icon: typeof MessageCircle; labelKey: string }[] = [
   { id: "offen", icon: MessageCircle, labelKey: "workspace.tabs.offen" },
   { id: "questionnaire", icon: ClipboardList, labelKey: "workspace.tabs.questionnaire" },
-  { id: "feedback", icon: MessageSquareHeart, labelKey: "workspace.tabs.feedback", disabled: true },
+  { id: "feedback", icon: MessageSquareHeart, labelKey: "workspace.tabs.feedback" },
 ];
 
-export function WorkspaceTabs({ activeTab, onChange }: WorkspaceTabsProps) {
+export function WorkspaceTabs({ activeTab, onChange, disabledTabs = [] }: WorkspaceTabsProps) {
   const t = useTranslations();
 
   return (
     <div className="flex-shrink-0 flex items-center gap-2 px-6 py-3 bg-white border-b border-slate-200/60">
-      {TAB_CONFIG.map(({ id, icon: Icon, labelKey, disabled }) => {
+      {TAB_CONFIG.map(({ id, icon: Icon, labelKey }) => {
         const isActive = activeTab === id;
+        const disabled = disabledTabs.includes(id);
         return (
           <button
             key={id}

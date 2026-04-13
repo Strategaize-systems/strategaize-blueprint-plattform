@@ -9,14 +9,14 @@
 Die Strategaize Blueprint Plattform ist eine nach außen gerichtete Webanwendung, über die Kunden einen strukturierten Fragebogen zur Exit-Readiness ihres Unternehmens bearbeiten. Ein integriertes LLM stellt kontextbezogene Rückfragen, damit jede Antwort ausreichend Tiefe erreicht. Die Antworten dienen als Rohmaterial für die Strategaize Operating System Plattform.
 
 ## Current State
-- High-Level State: slice-planning
-- Current Focus: V3.4 Slice Planning abgeschlossen. 3 Slices (SLC-062, SLC-063, SLC-064) definiert. Naechster Schritt: Implementation SLC-062.
-- Current Phase: V3.4 Slice Planning
+- High-Level State: implementing
+- Current Focus: V3.4 alle 3 Slices done (SLC-062, SLC-063, SLC-064). Naechster Schritt: /qa SLC-064, dann Gesamt-QA V3.4.
+- Current Phase: V3.4 QA
 
 ## Immediate Next Steps
-1. /backend SLC-062 (Feedback DB + API)
-2. /frontend SLC-063 (Feedback Tab + Panel)
-3. /backend SLC-064 (Compliance Export + Doku)
+1. /qa SLC-064 (Compliance Export)
+2. Gesamt-QA V3.4
+3. /final-check + /go-live + /deploy
 
 ## Active Scope
 V3.4 — Feedback + Compliance. FEAT-036: Feedback-Tab im Workspace aktivieren, 4 feste Fragen, run_feedback Tabelle, depersonalisierter Export. FEAT-038: Export-Haertung (freeform aus Mirror ausschliessen), freeform in Management-Export, RLS-Audit, Compliance-Doku.

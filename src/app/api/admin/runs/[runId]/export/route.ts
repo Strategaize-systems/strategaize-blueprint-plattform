@@ -94,8 +94,40 @@ export async function GET(
     .eq("run_id", runId)
     .order("submitted_at", { ascending: true });
 
-  // Mirror depersonalization: map profile_id → respondent_layer
+  // V3.4: Load feedback (depersonalized — no created_by in table)
+  const { data: feedbackData } = await adminClient!
+    .from("run_feedback")
+    .select("question_key, response_text, response_rating, created_at, updated_at")
+    .eq("run_id", runId)
+    .order("created_at", { ascending: true });
+
+  const allFeedback = feedbackData ?? [];
+
+  // V3.4: Load freeform conversations (only for management runs — COMPLIANCE DEC-044)
   const isMirror = run.survey_type === "mirror";
+  let freeformConversations: Array<{
+    id: string;
+    conversation_number: number;
+    messages: unknown;
+    status: string;
+    message_count: number;
+    mapping_result: unknown;
+    created_at: string;
+    updated_at: string;
+  }> = [];
+
+  if (!isMirror) {
+    // Management: include freeform conversations in export
+    const { data: freeformData } = await adminClient!
+      .from("freeform_conversations")
+      .select("id, conversation_number, messages, status, message_count, mapping_result, created_at, updated_at")
+      .eq("run_id", runId)
+      .order("conversation_number", { ascending: true });
+    freeformConversations = freeformData ?? [];
+  }
+  // Mirror: freeform explicitly NOT loaded (COMPLIANCE DEC-044: Mirror raw conversations must never be exported)
+
+  // Mirror depersonalization: map profile_id → respondent_layer
   let respondentLayerMap = new Map<string, string>();
 
   if (isMirror) {
@@ -134,6 +166,19 @@ export async function GET(
     "evidence_links.json",
     "submissions.json",
   ];
+
+  // V3.4: Add feedback.json if feedback exists
+  const hasFeedback = allFeedback.length > 0;
+  if (hasFeedback) {
+    fileList.push("feedback.json");
+  }
+
+  // V3.4: Add freeform conversation files (management only)
+  const includesFreeform = freeformConversations.length > 0;
+  for (const conv of freeformConversations) {
+    fileList.push(`freeform/conversation_${conv.conversation_number}.json`);
+  }
+
   // Add physical evidence files
   const fileEvidenceItems = allEvidenceItems.filter((e) => e.item_type === "file" && e.file_path);
   for (const e of fileEvidenceItems) {
@@ -160,6 +205,8 @@ export async function GET(
     total_events: allEvents.length,
     total_evidence_items: allEvidenceItems.length,
     total_submissions: allSubmissions.length,
+    has_feedback: hasFeedback,
+    includes_freeform: includesFreeform,
     files: fileList,
     missing_files: [] as string[],
   };
@@ -298,6 +345,37 @@ export async function GET(
   archive.append(JSON.stringify(evidenceLinksJson, null, 2), { name: "evidence_links.json" });
   archive.append(JSON.stringify(submissionsJson, null, 2), { name: "submissions.json" });
 
+  // V3.4: Append feedback.json (depersonalized — no user reference)
+  if (hasFeedback) {
+    const feedbackJson = {
+      run_id: runId,
+      feedback: allFeedback.map((f) => ({
+        question_key: f.question_key,
+        response_text: f.response_text,
+        response_rating: f.response_rating,
+      })),
+      submitted_at: allFeedback[allFeedback.length - 1]?.updated_at ?? exportedAt,
+    };
+    archive.append(JSON.stringify(feedbackJson, null, 2), { name: "feedback.json" });
+  }
+
+  // V3.4: Append freeform conversations (management only — COMPLIANCE DEC-044)
+  for (const conv of freeformConversations) {
+    const convJson = {
+      conversation_number: conv.conversation_number,
+      status: conv.status,
+      message_count: conv.message_count,
+      messages: conv.messages,
+      mapping_result: conv.mapping_result,
+      created_at: conv.created_at,
+      updated_at: conv.updated_at,
+    };
+    archive.append(
+      JSON.stringify(convJson, null, 2),
+      { name: `freeform/conversation_${conv.conversation_number}.json` }
+    );
+  }
+
   // Download and append physical evidence files
   for (const item of fileEvidenceItems) {
     if (!item.file_path) continue;
@@ -341,6 +419,8 @@ export async function GET(
       survey_type: run.survey_type ?? "management",
       total_events: allEvents.length,
       total_evidence: allEvidenceItems.length,
+      has_feedback: hasFeedback,
+      includes_freeform: includesFreeform,
     },
   });
 

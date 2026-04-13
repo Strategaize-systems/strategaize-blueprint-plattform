@@ -51,6 +51,7 @@ import { RunMemoryView } from "@/components/learning-center/run-memory-view";
 import { FreeformChat } from "@/components/freeform/freeform-chat";
 import { MappingReview } from "@/components/freeform/mapping-review";
 import { WorkspaceTabs, type WorkspaceTab } from "@/components/workspace/workspace-tabs";
+import { FeedbackPanel } from "@/components/workspace/feedback-panel";
 
 const EVIDENCE_LABEL_KEYS = ["policy", "process", "template", "contract", "financial", "legal", "system", "org", "kpi", "other"] as const;
 
@@ -123,9 +124,10 @@ export function RunWorkspaceClient({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [learningCenterOpen, setLearningCenterOpen] = useState(false);
 
-  // Unified Workspace tabs (V3.3)
+  // Unified Workspace tabs (V3.3, V3.4: feedback + locked tab support)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("offen");
   const prevBlocksRef = useRef<Set<string>>(new Set());
+  const tabInitRef = useRef(false);
 
   // Tab switch handler — collapses sidebar blocks when switching to "offen"
   function handleTabChange(tab: WorkspaceTab) {
@@ -230,6 +232,14 @@ export function RunWorkspaceClient({
   }, [runId]);
 
   useEffect(() => { loadRun(); loadSubmissions(); }, [loadRun, loadSubmissions]);
+
+  // V3.4: When run is locked, default to questionnaire tab (offen is disabled)
+  useEffect(() => {
+    if (run && run.status === "locked" && activeTab === "offen" && !tabInitRef.current) {
+      tabInitRef.current = true;
+      setActiveTab("questionnaire");
+    }
+  }, [run, activeTab]);
 
   useEffect(() => {
     if (activeQuestion && !isAdmin) {
@@ -649,6 +659,11 @@ export function RunWorkspaceClient({
   const answered = run.questions.filter((q) => q.latest_answer).length;
   const total = run.questions.length;
   const isLocked = run.status === "locked";
+  const isSubmittedOrLocked = run.status === "submitted" || run.status === "locked";
+  const feedbackEnabled = !isMirrorRespondent && isSubmittedOrLocked;
+  const disabledTabs: WorkspaceTab[] = [];
+  if (!feedbackEnabled) disabledTabs.push("feedback");
+  if (isLocked) disabledTabs.push("offen");
   const activeQ = run.questions.find((q) => q.id === activeQuestion);
 
   function formatFileSize(bytes: number | null) {
@@ -1051,9 +1066,9 @@ export function RunWorkspaceClient({
           </div>
         </header>
 
-        {/* Tab Navigation (V3.3) */}
-        {!isAdmin && !isLocked && (
-          <WorkspaceTabs activeTab={activeTab} onChange={handleTabChange} />
+        {/* Tab Navigation (V3.3, V3.4: auch bei locked sichtbar) */}
+        {!isAdmin && (
+          <WorkspaceTabs activeTab={activeTab} onChange={handleTabChange} disabledTabs={disabledTabs} />
         )}
 
         {/* Mirror confidentiality banner */}
@@ -1087,19 +1102,25 @@ export function RunWorkspaceClient({
           />
         </div>
 
-        {/* ─── Tab: Feedback (Platzhalter) ─── */}
-        <div className={`flex-1 overflow-hidden ${activeTab === "feedback" && !isAdmin && !isLocked ? "flex items-center justify-center" : "hidden"}`}>
-          <div className="text-center px-4">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center">
-              <Lock className="h-8 w-8 text-slate-300" />
+        {/* ─── Tab: Feedback (V3.4) ─── */}
+        <div className={`flex-1 overflow-hidden ${activeTab === "feedback" && !isAdmin ? "flex flex-col" : "hidden"}`}>
+          {feedbackEnabled ? (
+            <FeedbackPanel runId={runId} />
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center px-4">
+                <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+                  <Lock className="h-8 w-8 text-slate-300" />
+                </div>
+                <p className="text-lg font-bold text-slate-400 mb-2">{t("workspace.tabs.feedback")}</p>
+                <p className="text-sm text-slate-400">{t("workspace.tabs.feedbackLocked")}</p>
+              </div>
             </div>
-            <p className="text-lg font-bold text-slate-400 mb-2">{t("workspace.tabs.feedback")}</p>
-            <p className="text-sm text-slate-400">{t("workspace.tabs.feedbackLocked")}</p>
-          </div>
+          )}
         </div>
 
         {/* ─── Tab: Frage für Frage (Questionnaire) ─── */}
-        <div className={`flex-1 overflow-y-auto px-6 py-4 ${activeTab === "questionnaire" || isAdmin || isLocked ? "" : "hidden"}`}>
+        <div className={`flex-1 overflow-y-auto px-6 py-4 ${activeTab === "questionnaire" || isAdmin ? "" : "hidden"}`}>
           {activeQ ? (
             <div className="mx-auto max-w-6xl w-full space-y-3">
               {/* ── Kompakte Fragekarte ── */}
