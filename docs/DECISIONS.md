@@ -209,3 +209,18 @@
 - Status: accepted
 - Reason: Wenn Mapping/Review den "Offen"-Tab ersetzen würde, könnte der User nicht zum Chat zurückkehren um Ergänzungen zu machen. Ein Vollbild-Overlay über dem gesamten Workspace erlaubt Rückkehr zum Chat via "Zurück"-Button. Erst bei "Akzeptieren" werden Chat und Review geleert.
 - Consequence: `showMappingOverlay` State. Overlay ist `position: fixed, z-50`. Chat-State bleibt intakt bis Accept. MappingReview Component wird unverändert als Overlay-Content wiederverwendet.
+
+## DEC-043 — run_feedback ohne created_by (Depersonalisierung by Design)
+- Status: accepted
+- Reason: Feedback soll depersonalisiert exportiert werden. Statt created_by nachtraeglich zu filtern, wird die Spalte gar nicht erst gespeichert. Da Feedback nur fuer GF/Owner verfuegbar ist (1 Person pro Tenant), ist die Zuordnung ohnehin eindeutig. Kein Informationsverlust, aber intrinsische DSGVO-Konformitaet.
+- Consequence: run_feedback hat keine created_by Spalte. Export enthaelt keine User-Referenz. Nachtraegliche Zuordnung nur ueber Tenant moeglich.
+
+## DEC-044 — Freeform-Export nur fuer Management, nie fuer Mirror
+- Status: accepted
+- Reason: Free-Form Conversations enthalten rohe, nicht-neutralisierte Formulierungen. Mirror-Teilnehmer haben die Vertraulichkeitsgarantie, dass ihre Aussagen nicht personenbezogen zurueckgegeben werden. Rohe Gespraeche koennten durch Sprachstil, spezifische Formulierungen oder referenzierte Situationen rueckfuehrbar sein. Expliziter Ausschluss statt implizitem "wird halt nicht geladen".
+- Consequence: Export-Route prueft survey_type explizit. Bei mirror: freeform_conversations werden nicht geladen, nicht exportiert, mit Code-Kommentar dokumentiert. Management: freeform/ Ordner im ZIP mit Conversations.
+
+## DEC-045 — Feedback als UPSERT statt INSERT-only
+- Status: accepted
+- Reason: GF/Owner soll Feedback ueberarbeiten koennen bevor der Run gelocked wird. INSERT-only wuerde bei erneutem Speichern einen Unique-Constraint-Fehler werfen oder mehrere Eintraege pro Frage erzeugen. UPSERT (INSERT ON CONFLICT UPDATE) ist sauberer und entspricht dem erwarteten User-Verhalten.
+- Consequence: POST /api/tenant/runs/[runId]/feedback nutzt ON CONFLICT (run_id, question_key) DO UPDATE. Kein separater PUT-Endpunkt noetig.

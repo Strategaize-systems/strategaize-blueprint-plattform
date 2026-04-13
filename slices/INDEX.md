@@ -217,6 +217,26 @@ SLC-059 und SLC-060 können parallel nach SLC-058 laufen.
 QA nach jedem Slice.
 ```
 
+## V3.4 Slices — Feedback + Compliance
+
+| ID | Slice | Feature | Status | Priority | Created |
+|----|-------|---------|--------|----------|---------|
+| SLC-062 | [Feedback Backend (DB + API)](SLC-062-feedback-backend.md) | FEAT-036 | planned | High | 2026-04-13 |
+| SLC-063 | [Feedback Frontend (Tab + Panel)](SLC-063-feedback-frontend.md) | FEAT-036 | planned | High | 2026-04-13 |
+| SLC-064 | [Compliance Export-Haertung + Freeform-Export](SLC-064-compliance-export.md) | FEAT-038, FEAT-036 | planned | High | 2026-04-13 |
+
+## V3.4 Execution Order
+
+```
+1. SLC-062 (Backend)     → DB-Schema + API fuer Feedback
+2. SLC-063 (Frontend)    → Tab aktivieren + FeedbackPanel (haengt von SLC-062 ab)
+3. SLC-064 (Backend)     → Export haerten + Compliance-Doku (haengt von SLC-062 ab)
+
+SLC-063 und SLC-064 koennen nach SLC-062 parallel laufen.
+QA nach jedem Slice.
+Gesamt-QA nach allen 3 Slices.
+```
+
 ## V4 Slices — Interne Meetings (Geplant)
 
 > Slices werden nach /discovery + /requirements + /architecture + /slice-planning definiert.

@@ -114,7 +114,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
-| FEAT-038 | Compliance-Datentrennung (GF vs. Mirror Datenweitergabe) | planned | — | 2026-04-09 |
+| FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | [Spec](FEAT-036-feedback-loop.md) | 2026-04-07 |
+| FEAT-038 | Compliance-Datentrennung (GF vs. Mirror Datenweitergabe) | planned | [Spec](FEAT-038-compliance-data-separation.md) | 2026-04-09 |
 
 ## Next Available ID: FEAT-040

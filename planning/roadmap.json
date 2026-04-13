@@ -66,7 +66,7 @@
     {
       "id": "v3-4",
       "name": "V3.4",
-      "status": "planned",
+      "status": "active",
       "summary": "Feedback + Compliance — Feedback-Schleife im Workspace-Tab, rollenbasierte Datenweitergabe (GF: Rohdaten, Mirror: nur neutralisierte strukturierte Antworten)",
       "order": 10
     },

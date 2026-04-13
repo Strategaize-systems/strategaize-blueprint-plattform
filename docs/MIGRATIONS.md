@@ -131,3 +131,11 @@
 - Reason: V3.2 Free-Form Chat — offenes Gespräch mit LLM-Mapping auf strukturierte Fragen. Eigene Tabelle statt Erweiterung von question_events, weil Conversations eine andere Datenstruktur haben (JSONB Messages Array, Lifecycle-Status, Mapping-Result).
 - Risk: Gering — rein additive Änderung, keine bestehenden Tabellen modifiziert
 - Rollback Notes: DROP TABLE freeform_conversations;
+
+### MIG-020 — run_feedback Tabelle + RLS (V3.4)
+- Date: 2026-04-13
+- Scope: Neue Tabelle run_feedback (id UUID PK, run_id FK, tenant_id FK, question_key TEXT, response_text TEXT, response_rating INT CHECK 1-5, created_at, updated_at). UNIQUE(run_id, question_key). RLS-Policies fuer tenant_admin/tenant_owner (SELECT, INSERT, UPDATE). GRANTs fuer authenticated + service_role. Kein created_by (Depersonalisierung DEC-043).
+- Affected Areas: Workspace (Feedback-Tab), Export-Route (feedback.json), Tenant-API (neuer Endpunkt)
+- Reason: FEAT-036 — Feedback-Schleife nach Fragebogen-Abschluss. Separate Tabelle weil Feedback andere Struktur hat als question_events (key-value statt event-log).
+- Risk: Gering — rein additive Aenderung, keine bestehenden Tabellen modifiziert
+- Rollback Notes: DROP TABLE run_feedback;

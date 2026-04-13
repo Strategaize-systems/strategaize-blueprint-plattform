@@ -2142,3 +2142,200 @@ Alle API-Endpoints bleiben unverändert:
 - `POST /api/tenant/runs/{runId}/freeform/map` — Mapping nach Chat-Ende
 - `POST /api/tenant/runs/{runId}/freeform/accept` — Antworten übernehmen
 - Alle bestehenden Tenant-Endpoints (events, evidence, submissions, etc.)
+
+## V3.4: Feedback + Compliance Architecture
+
+### Architecture Summary
+
+V3.4 erweitert die Plattform um zwei Capabilities:
+
+1. **Feedback (FEAT-036):** Neuer Datenpfad (run_feedback Tabelle → Feedback-Tab UI → Export). Baut auf bestehender Tab-Infrastruktur (V3.3) und Export-Pipeline auf.
+2. **Compliance (FEAT-038):** Haertung der bestehenden Export-Pipeline und RLS-Audit. Kein neues Datenmodell, sondern Absicherung und Erweiterung des bestehenden.
+
+Beide Features sind unabhaengig voneinander implementierbar, teilen sich aber die Export-Route als gemeinsamen Erweiterungspunkt.
+
+### Datenmodell: run_feedback
+
+```sql
+CREATE TABLE run_feedback (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_id UUID NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  question_key TEXT NOT NULL,
+  response_text TEXT,
+  response_rating INT CHECK (response_rating >= 1 AND response_rating <= 5),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(run_id, question_key)
+);
+```
+
+**Design-Entscheidungen:**
+- Kein `created_by` — Depersonalisierung by design (DEC-043)
+- `question_key` statt question_id — Feedback-Fragen sind hardcoded, nicht im Fragenkatalog
+- UNIQUE(run_id, question_key) — genau eine Antwort pro Frage pro Run
+- `response_rating` nur fuer `overall`-Frage, sonst NULL
+- ON DELETE CASCADE auf run_id — Feedback wird mit Run geloescht
+
+**Feste question_keys:**
+
+| Key | Typ | Beschreibung |
+|-----|-----|-------------|
+| `coverage` | Freitext | Fehlende Themen |
+| `clarity` | Freitext | Verstaendlichkeitsprobleme |
+| `improvements` | Freitext | Verbesserungsvorschlaege |
+| `overall` | Rating 1-5 + Freitext | Gesamtbewertung |
+
+### RLS: run_feedback
+
+```sql
+-- SELECT: Tenant kann eigenes Feedback lesen
+CREATE POLICY "feedback_select_own" ON run_feedback
+  FOR SELECT USING (
+    tenant_id = auth.user_tenant_id()
+    AND auth.user_role() IN ('tenant_admin', 'tenant_owner')
+  );
+
+-- INSERT: Tenant kann Feedback erstellen (nur wenn Run submitted/locked)
+CREATE POLICY "feedback_insert_own" ON run_feedback
+  FOR INSERT WITH CHECK (
+    tenant_id = auth.user_tenant_id()
+    AND auth.user_role() IN ('tenant_admin', 'tenant_owner')
+    AND EXISTS (
+      SELECT 1 FROM runs r
+      WHERE r.id = run_id
+      AND r.status IN ('submitted', 'locked')
+      AND r.survey_type = 'management'
+    )
+  );
+
+-- UPDATE: Tenant kann eigenes Feedback aendern (bis Run locked)
+CREATE POLICY "feedback_update_own" ON run_feedback
+  FOR UPDATE USING (
+    tenant_id = auth.user_tenant_id()
+    AND auth.user_role() IN ('tenant_admin', 'tenant_owner')
+  );
+```
+
+**Kein DELETE** — Feedback wird nur ueberschrieben, nie geloescht (append-only Philosophie).
+**Kein mirror_respondent** — Feedback ist in V3.4 nur fuer GF/Owner.
+
+### API-Endpunkte: Feedback
+
+**`GET /api/tenant/runs/[runId]/feedback`**
+- Auth: requireTenant() + Rollencheck (tenant_admin, tenant_owner)
+- Response: Array aller run_feedback Eintraege fuer diesen Run
+- Leer-Array wenn noch kein Feedback
+
+**`POST /api/tenant/runs/[runId]/feedback`**
+- Auth: requireTenant() + Rollencheck
+- Body: `{ items: [{ question_key, response_text, response_rating }] }`
+- Logik: UPSERT (INSERT ON CONFLICT UPDATE) fuer alle 4 Fragen
+- Validierung: question_key muss in ['coverage', 'clarity', 'improvements', 'overall'] sein
+- Run muss status 'submitted' oder 'locked' haben
+- Run muss survey_type 'management' haben
+
+### UI-Architektur: Feedback-Tab
+
+```
+Workspace Tabs
+  |
+  +--- Offen (Free-Form Chat)        [immer aktiv]
+  +--- Frage fuer Frage (Fragebogen)  [immer aktiv]
+  +--- Feedback                       [aktiv wenn Run submitted/locked]
+         |
+         +--- FeedbackPanel (neue Component)
+                |
+                +--- FeedbackQuestion (coverage) — Textarea
+                +--- FeedbackQuestion (clarity) — Textarea
+                +--- FeedbackQuestion (improvements) — Textarea
+                +--- FeedbackRating (overall) — Star-Rating + Textarea
+                +--- Submit-Button
+                +--- Success-Message
+```
+
+**Component-Hierarchie:**
+- `src/components/workspace/feedback-panel.tsx` — Haupt-Container
+- Feedback-Tab nutzt dasselbe CSS-hidden Pattern wie die anderen Tabs (DEC-041)
+- FeedbackPanel laedt Daten via GET beim Mount, sendet via POST beim Submit
+- State: lokal im FeedbackPanel (kein globaler State noetig)
+
+**Tab-Aktivierung:**
+- workspace-tabs.tsx: `disabled` Prop wird dynamisch gesetzt basierend auf Run-Status
+- Pruefung: Alle Bloecke muessen mindestens eine Submission haben (bestehende Logik in run-workspace-client.tsx)
+
+### Export-Architektur: Erweiterung
+
+Die bestehende Export-Route (`/api/admin/runs/[runId]/export/route.ts`) wird um zwei Bereiche erweitert:
+
+**1. Feedback-Export (FEAT-036):**
+```
+ZIP
+  +--- feedback.json              (NEU)
+  +--- manifest.json              (ERWEITERT: has_feedback Flag)
+  +--- ... bestehende Dateien
+```
+
+Logik:
+- adminClient laedt run_feedback fuer den Run
+- Wenn Feedback existiert: feedback.json wird generiert
+- Kein created_by, kein User-Bezug im Export
+
+**2. Freeform-Export (FEAT-038, nur Management):**
+```
+ZIP (survey_type=management)
+  +--- freeform/
+  |      +--- conversation_1.json
+  |      +--- conversation_2.json
+  +--- manifest.json              (ERWEITERT: includes_freeform Flag)
+  +--- ... bestehende Dateien
+
+ZIP (survey_type=mirror)
+  --- KEIN freeform/ Ordner ---
+  +--- manifest.json              (includes_freeform: false)
+```
+
+Logik:
+- Wenn survey_type=management: adminClient laedt freeform_conversations fuer den Run
+- Jede Conversation wird als eigene JSON-Datei exportiert
+- Messages enthalten role (user/assistant), keinen Usernamen
+- Wenn survey_type=mirror: freeform wird explizit uebersprungen (nicht nur "nicht geladen", sondern aktiv ausgeschlossen mit Kommentar)
+
+### Compliance: RLS-Audit-Matrix
+
+| Endpunkt | Rolle | survey_type | Erwartung | Absicherung |
+|----------|-------|-------------|-----------|-------------|
+| POST freeform/chat | tenant_admin/owner | management | Erlaubt | RLS auf runs (survey_type check) |
+| POST freeform/chat | mirror_respondent | mirror | Erlaubt (eigene) | RLS auf freeform_conversations (created_by) |
+| POST freeform/chat | mirror_respondent | management | Blockiert | RLS auf runs (survey_type check) |
+| POST freeform/map | tenant_admin/owner | management | Erlaubt | RLS auf runs |
+| POST freeform/map | mirror_respondent | * | Blockiert | API-Route prueft Rolle |
+| POST freeform/accept | tenant_admin/owner | management | Erlaubt | RLS auf runs |
+| POST freeform/accept | mirror_respondent | * | Blockiert | API-Route prueft Rolle |
+| GET export | admin | management | Mit freeform | Explizit: freeform laden |
+| GET export | admin | mirror | Ohne freeform | Explizit: freeform NICHT laden |
+| GET/POST feedback | tenant_admin/owner | management | Erlaubt | RLS auf run_feedback |
+| GET/POST feedback | mirror_respondent | * | Blockiert | RLS: Rolle nicht erlaubt |
+
+### Compliance-Dokument
+
+`/docs/COMPLIANCE.md` wird als neues Projektdokument erstellt mit:
+1. Datenkategorien (Management-Daten vs. Mirror-Daten)
+2. Zugriffsmatrix pro Rolle
+3. Export-Regeln pro survey_type
+4. Datenhaltung und -speicherung
+5. Vertraulichkeitsgarantie fuer Mirror-Teilnehmer
+6. Offene Punkte (TTL in V3.5)
+
+### Datei-Aenderungen Uebersicht
+
+| Datei | Aktion | Zweck |
+|-------|--------|-------|
+| `sql/migrations/020_v34_feedback.sql` | NEU | run_feedback Tabelle + RLS + GRANTs |
+| `src/app/api/tenant/runs/[runId]/feedback/route.ts` | NEU | GET + POST Feedback |
+| `src/components/workspace/feedback-panel.tsx` | NEU | Feedback-Tab UI |
+| `src/components/workspace/workspace-tabs.tsx` | AENDERN | disabled dynamisch |
+| `src/app/runs/[id]/run-workspace-client.tsx` | AENDERN | FeedbackPanel einbinden |
+| `src/app/api/admin/runs/[runId]/export/route.ts` | AENDERN | feedback.json + freeform/ |
+| `src/messages/de.json`, `en.json`, `nl.json` | AENDERN | Feedback-Keys |
+| `docs/COMPLIANCE.md` | NEU | Compliance-Dokumentation |
