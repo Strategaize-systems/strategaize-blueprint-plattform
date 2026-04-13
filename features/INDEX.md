@@ -57,11 +57,17 @@
 | FEAT-030 | Mirror-Einladung und Onboarding | deployed | [Spec](FEAT-030-mirror-onboarding.md) | 2026-04-03 |
 | FEAT-031 | Getrennte Exportströme (Management + Mirror) | deployed | [Spec](FEAT-031-mirror-export.md) | 2026-04-03 |
 
-## V4 Features (Geplant)
+## V4 Features (Interne Meetings)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| FEAT-039 | Interne Meetings: Aufzeichnung, Transkription, Fragebogen-Verknüpfung | planned | — | 2026-04-13 |
+
+## Deferred Features
 
 | ID | Feature | Status | Created |
 |----|---------|--------|---------|
-| FEAT-020 | Dedizierte Server pro Kunde | planned | 2026-03-29 |
+| FEAT-020 | Dedizierte Server pro Kunde | deferred | 2026-03-29 |
 
 ## Removed Features (nicht im Scope)
 
@@ -111,4 +117,4 @@
 | FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | planned | — | 2026-04-07 |
 | FEAT-038 | Compliance-Datentrennung (GF vs. Mirror Datenweitergabe) | planned | — | 2026-04-09 |
 
-## Next Available ID: FEAT-039
+## Next Available ID: FEAT-040

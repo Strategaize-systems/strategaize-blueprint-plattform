@@ -74,8 +74,15 @@
       "id": "v4",
       "name": "V4",
       "status": "planned",
-      "summary": "Dedizierte Server — Single-Tenant Deployment auf eigenem Hetzner-Server pro Kunde",
+      "summary": "Interne Meetings — Geschützte Video/Audio-Meetings zwischen Teilnehmern mit Aufzeichnung, Transkription und Fragebogen-Verknüpfung. Erweitert die Plattform über reines Assessment hinaus.",
       "order": 11
+    },
+    {
+      "id": "v-future-dedicated",
+      "name": "Dedicated Servers",
+      "status": "deferred",
+      "summary": "Dedizierte Server — Single-Tenant Deployment auf eigenem Hetzner-Server pro Kunde. Erst wenn die Plattform feature-complete ist.",
+      "order": 99
     }
   ]
 }

@@ -234,10 +234,10 @@
       "id": "BL-024",
       "title": "Dedizierte Server pro Kunde (Single-Tenant Deployment)",
       "type": "feature",
-      "priority": "medium",
+      "priority": "low",
       "status": "deferred",
-      "version": "V4",
-      "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Deployment-Automatisierung, Coolify-Template, vorkonfigurierte Env-Vars. Verschoben auf V3 — aktuelles Multi-Tenant mit RLS reicht. Nur bei konkretem Kundenbedarf.",
+      "version": "Dedicated Servers",
+      "description": "Jeder Kunde bekommt eigenen Hetzner-Server mit eigenem Blueprint-Stack. Erst wenn die Plattform feature-complete ist. Aktuelles Multi-Tenant mit RLS reicht vorerst.",
       "createdAt": "2026-03-28"
     },
     {
@@ -659,6 +659,16 @@
       "version": "V3.4",
       "description": "FEAT-038: Rollenbasierte Datenweitergabe an OS. GF/Owner: Rohdaten aus Free-Form Chat werden gespeichert und ans OS weitergegeben (Kontext fuer Beratung). Mirror/Mitarbeiter: Nur strukturierte, neutralisierte, nicht-rueckfuehrbare Antworten. Rohe Gespraechsdaten werden NICHT exportiert. Technisch: Export-Filter nach survey_type, freeform_conversations Zugriff einschraenken, ggf. TTL/Loeschung fuer Mirror-Rohdaten.",
       "createdAt": "2026-04-09"
+    },
+    {
+      "id": "BL-067",
+      "title": "Interne Meetings: geschuetzte Video/Audio-Meetings mit Aufzeichnung, Transkription und Fragebogen-Verkuepfung",
+      "type": "feature",
+      "priority": "high",
+      "status": "open",
+      "version": "V4",
+      "description": "FEAT-039: Interne Meetings zwischen Teilnehmern (GF-MA, MA-MA, Consultant-MA). Geschuetzte Umgebung mit Video/Audio (WebRTC). Aufzeichnung + Whisper-Transkription. Transkript als Datensatz. Optional: Verkuepfung mit Fragebogen-Fragen (statt KI stellt ein Mensch Rueckfragen). Optional: Screen-Recording fuer Prozessdokumentation. Erweitert Blueprint von reinem Assessment zu breiter einsetzbarer Onboarding-Plattform.",
+      "createdAt": "2026-04-13"
     }
   ]
 }

@@ -217,8 +217,12 @@ SLC-059 und SLC-060 können parallel nach SLC-058 laufen.
 QA nach jedem Slice.
 ```
 
-## V4 Slices (Geplant)
+## V4 Slices — Interne Meetings (Geplant)
+
+> Slices werden nach /discovery + /requirements + /architecture + /slice-planning definiert.
+
+## Deferred Slices
 
 | ID | Slice | Feature | Status | Priority | Created |
 |----|-------|---------|--------|----------|---------|
-| SLC-023 | Dedizierte Server pro Kunde | FEAT-020 | planned | Medium | 2026-03-29 |
+| SLC-023 | Dedizierte Server pro Kunde | FEAT-020 | deferred | Low | 2026-03-29 |
