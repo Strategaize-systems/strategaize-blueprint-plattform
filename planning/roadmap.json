@@ -66,15 +66,15 @@
     {
       "id": "v3-4",
       "name": "V3.4",
-      "status": "active",
-      "summary": "Feedback + Compliance — Feedback-Schleife im Workspace-Tab, rollenbasierte Datenweitergabe (GF: Rohdaten, Mirror: nur neutralisierte strukturierte Antworten)",
+      "status": "released",
+      "summary": "Feedback + Compliance — Feedback-Schleife im Workspace-Tab, rollenbasierte Datenweitergabe (GF: Rohdaten, Mirror: nur neutralisierte strukturierte Antworten). FINAL Blueprint Release — Produkt eingefroren.",
       "order": 10
     },
     {
       "id": "v4",
       "name": "V4",
-      "status": "planned",
-      "summary": "Interne Meetings — Geschützte Video/Audio-Meetings zwischen Teilnehmern mit Aufzeichnung, Transkription und Fragebogen-Verknüpfung. Erweitert die Plattform über reines Assessment hinaus.",
+      "status": "deferred",
+      "summary": "Interne Meetings — VERSCHOBEN in neue Onboarding-Plattform (separates Repo). Blueprint wird nach V3.4 eingefroren. V4 Interne Meetings wird dort als Teil der erweiterten Capture-Modi umgesetzt.",
       "order": 11
     },
     {

@@ -110,11 +110,11 @@
 |----|---------|--------|------|---------|
 | FEAT-037 | Unified Tabbed Workspace | deployed | [Spec](FEAT-037-unified-tabbed-workspace.md) | 2026-04-09 |
 
-## V3.4 Features (Feedback + Compliance)
+## V3.4 Features (Feedback + Compliance — FINAL Blueprint Release)
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | done | [Spec](FEAT-036-feedback-loop.md) | 2026-04-07 |
-| FEAT-038 | Compliance-Datentrennung (GF vs. Mirror Datenweitergabe) | done | [Spec](FEAT-038-compliance-data-separation.md) | 2026-04-09 |
+| FEAT-036 | Feedback-Schleife nach Fragebogen-Abschluss | deployed | [Spec](FEAT-036-feedback-loop.md) | 2026-04-07 |
+| FEAT-038 | Compliance-Datentrennung (GF vs. Mirror Datenweitergabe) | deployed | [Spec](FEAT-038-compliance-data-separation.md) | 2026-04-09 |
 
 ## Next Available ID: FEAT-040
